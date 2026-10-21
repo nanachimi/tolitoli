@@ -26,6 +26,16 @@ describe('Settings language picker', () => {
     }
   });
 
+  it('exposes each language once to screen readers (radio label only)', async () => {
+    await renderScreen(<SettingsScreen />);
+    for (const { nativeName } of UI_LANGUAGES) {
+      const inner = screen.getByText(nativeName, { includeHiddenElements: true });
+      expect(inner).toHaveProp('importantForAccessibility', 'no');
+      expect(inner).toHaveProp('accessibilityElementsHidden', true);
+      expect(screen.queryByText(nativeName)).toBeNull();
+    }
+  });
+
   it('switches the interface to German', async () => {
     const user = userEvent.setup();
     await renderScreen(<SettingsScreen />);

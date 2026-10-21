@@ -61,8 +61,15 @@ export default function SettingsScreen() {
                   },
                 ]}
               >
-                {/* Language names are data, written in their own language. */}
-                <AppText testID="i18n-data">{option.nativeName}</AppText>
+                {/* Language names are data, written in their own language. Hidden from
+                    screen readers: the radio's label already says it (D-019). */}
+                <AppText
+                  testID="i18n-data"
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                >
+                  {option.nativeName}
+                </AppText>
               </Pressable>
             );
           })}
