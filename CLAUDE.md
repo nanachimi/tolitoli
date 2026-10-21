@@ -131,3 +131,7 @@ npx eas update --branch preview
 - Pas de suppression de fichiers audio utilisateur dans du code de test ou de migration.
 - Pas de texte juridique (consentement, CGU, confidentialité) écrit de manière définitive : produire un brouillon marqué « À faire relire par un juriste ».
 - Pas de commit direct sur `main`.
+
+## Langue
+
+Réponds toujours en français
