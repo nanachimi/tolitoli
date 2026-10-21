@@ -17,6 +17,7 @@
     "doctor": "npx expo-doctor"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@formatjs/intl-getcanonicallocales": "^3.2.12",
     "@formatjs/intl-locale": "^5.3.12",
     "@formatjs/intl-pluralrules": "^6.3.16",

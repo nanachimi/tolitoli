@@ -134,4 +134,17 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
 - **Jest** : les paquets formatjs sont uniquement en ES modules, donc `@formatjs` est ajouté aux exceptions de `transformIgnorePatterns`.
 - **Diagnostic** : en dev, l'écran Réglages indique `[polyfill]` ou `[native]`.
 - **À surveiller** : d'autres API Intl (`DateTimeFormat`, `NumberFormat`, `RelativeTimeFormat`) peuvent manquer aussi sur cet appareil. À vérifier sur l'appareil au début de l'étape 2, avant d'afficher dates et durées dans la Bibliothèque. Je n'ajoute aucun polyfill sans constat.
+- **Résultat sur appareil** (2026-10-21, Samsung Galaxy A05 SM-A055F, APK de développement, captures prises par adb) : vérifié.
+  - Russe : la ligne de diagnostic affiche `Intl.PluralRules(ru) [polyfill] → ru: one, few, many, other`. 0 « записей », 1 « запись », 2 « записи », 5 « записей », 11 « записей », 21 « запись », 100 « записей ».
+  - Wolof : la ligne de diagnostic affiche `Intl.PluralRules(wo) [polyfill] → wo: other`. 1 « 1 baat yu ñu dénc », sans repli sur l'anglais.
 - **Numérotation** : la demande parlait de D-009, mais ce numéro était déjà pris par la détection tablette. Les entrées n'étant jamais renumérotées, celle-ci prend le numéro suivant libre.
+
+## D-013 — Icônes de la barre d'onglets
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Contexte** : sans icône, la barre d'onglets gardait une zone vide au-dessus des libellés (constaté sur l'appareil).
+- **Décision** : ajouter `@expo/vector-icons` ^15.0.2 (version du SDK 58). Il repose sur `expo-font`, déjà compilé dans le dev client, donc pas de nouvelle build.
+  - Icônes Ionicons **symétriques**, sans sens de lecture, donc rien à inverser en RTL : `albums` pour la Bibliothèque et `settings` pour les Réglages. Pleine sur l'onglet actif, en contour sinon.
+  - L'icône `library` d'Ionicons a été écartée parce que ses livres penchés auraient dû être inversés en RTL.
+  - Les libellés sont inchangés. Les icônes sont décoratives et masquées aux lecteurs d'écran : le nom accessible reste celui de l'onglet.
+- **Règle pour la suite** : toute icône directionnelle (flèches, lecture, retour) devra être inversée en RTL et testée en arabe.
