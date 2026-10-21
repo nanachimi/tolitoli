@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "Bibliyoteek",
+    "settings": "Tànneef yi"
+  },
+  "library": {
+    "title": "Bibliyoteek",
+    "empty": {
+      "title": "Amul benn baat bu ñu dénc",
+      "body": "Say baat yu ñu dénc ak seeni bind dinañu feeñ fii."
+    },
+    "count_other": "{{count}} baat yu ñu dénc",
+    "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii."
+  },
+  "settings": {
+    "title": "Tànneef yi",
+    "language": {
+      "title": "Làkku jumtukaay bi",
+      "hint": "Làkk bi ñuy bindee baat yi, dañu koy tànn ci beneen bérab.",
+      "restartRtl": "Aplikasioŋ bi dina tàmbaliwaat ngir soppi fan lañuy bindee.",
+      "optionA11y": "Làkku jumtukaay bi: {{language}}"
+    }
+  },
+  "dev": {
+    "title": "Saytu (defar)",
+    "pluralTitle": "Saytu wàll yu bare"
+  }
+}

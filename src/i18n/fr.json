@@ -1,0 +1,33 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "Bibliothèque",
+    "settings": "Réglages"
+  },
+  "library": {
+    "title": "Bibliothèque",
+    "empty": {
+      "title": "Aucun enregistrement",
+      "body": "Vos enregistrements et leurs transcriptions apparaîtront ici."
+    },
+    "count_one": "{{count}} enregistrement",
+    "count_many": "{{count}} d’enregistrements",
+    "count_other": "{{count}} enregistrements",
+    "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici."
+  },
+  "settings": {
+    "title": "Réglages",
+    "language": {
+      "title": "Langue de l’interface",
+      "hint": "La langue de transcription se règle séparément.",
+      "restartRtl": "L’application va redémarrer pour changer le sens d’écriture.",
+      "optionA11y": "Langue de l’interface : {{language}}"
+    }
+  },
+  "dev": {
+    "title": "Diagnostic (développement)",
+    "pluralTitle": "Test des pluriels"
+  }
+}

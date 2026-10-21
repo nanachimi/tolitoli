@@ -20,6 +20,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 - Ne commence jamais l'étape suivante sans que les critères de fin de l'étape en cours soient remplis.
 - Quand tu hésites entre deux approches, expose les deux avec leurs compromis et demande. Ne tranche pas seul sur : choix de bibliothèque native, schéma de base de données, modèle de tarification, texte juridique.
 - L'audio ne se teste que sur appareil physique. Le simulateur/émulateur n'a pas de micro fiable : dis-le quand un test manuel est requis et décris la procédure.
+- `npx expo install --fix` est exécuté à l'ouverture de chaque étape et avant chaque build EAS, et le résultat est commité séparément.
 
 ## Stack imposée
 
@@ -69,6 +70,7 @@ docs/                CAHIER_DES_CHARGES.md, DECISIONS.md, plans d'étapes (docs/
 - Accessibilité : chaque élément interactif a un `accessibilityLabel` ; polices dynamiques respectées.
 - Commits en anglais, impératif, préfixés par l'étape : `step-3: persist transcription queue`.
 - Avant tout commit : `npm run typecheck && npm run lint && npm test` verts.
+- Captures d'écran : enregistrées dans `docs/captures/step-N/` (N = étape en cours), réduites à 720 px de large, nom descriptif en minuscules et sans espace (`d014-apres-police2-reglages-de.png`), commitées avec l'étape et référencées depuis l'entrée de `docs/DECISIONS.md` qu'elles documentent. Jamais de capture d'une autre application ni de données personnelles.
 
 ## Contraintes produit non négociables
 
@@ -131,3 +133,7 @@ npx eas update --branch preview
 - Pas de suppression de fichiers audio utilisateur dans du code de test ou de migration.
 - Pas de texte juridique (consentement, CGU, confidentialité) écrit de manière définitive : produire un brouillon marqué « À faire relire par un juriste ».
 - Pas de commit direct sur `main`.
+
+## Langue
+
+Réponds toujours en français

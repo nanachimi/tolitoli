@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "Library",
+    "settings": "Settings"
+  },
+  "library": {
+    "title": "Library",
+    "empty": {
+      "title": "No recordings",
+      "body": "Your recordings and their transcripts will appear here."
+    },
+    "count_one": "{{count}} recording",
+    "count_other": "{{count}} recordings",
+    "detailPlaceholder": "Select a recording to show it here."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "App language",
+      "hint": "The transcription language is set separately.",
+      "restartRtl": "The app will restart to change the writing direction.",
+      "optionA11y": "App language: {{language}}"
+    }
+  },
+  "dev": {
+    "title": "Diagnostics (development)",
+    "pluralTitle": "Plural test"
+  }
+}

@@ -1,0 +1,52 @@
+// https://docs.expo.dev/guides/using-eslint/
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+const prettierConfig = require('eslint-config-prettier');
+const i18next = require('eslint-plugin-i18next');
+
+module.exports = defineConfig([
+  expoConfig,
+  prettierConfig,
+  {
+    ignores: ['node_modules/*', '.expo/*', 'dist/*', 'coverage/*', 'ios/*', 'android/*'],
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+  {
+    // UI text must go through i18n (CLAUDE.md); pseudo-localization tests cover runtime.
+    files: ['app/**/*.tsx', 'src/ui/**/*.tsx', 'src/features/**/*.tsx'],
+    ignores: ['**/__tests__/**'],
+    plugins: { i18next },
+    rules: {
+      'i18next/no-literal-string': ['error', { mode: 'jsx-text-only' }],
+    },
+  },
+  {
+    // Business services stay pure TypeScript, testable in Jest without a device.
+    files: ['src/services/**/*.ts', 'src/services/**/*.tsx'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'react',
+                'react-native',
+                'react-native-*',
+                'expo-router',
+                '@/ui/*',
+                '@/features/*',
+              ],
+              message: 'src/services must not depend on React or UI code.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+]);

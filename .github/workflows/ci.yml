@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # Includes translation key parity and the pseudo-localization render test.
+      - name: Test
+        run: npm test -- --ci
+
+      # Blocking: every doctor check except SDK version drift (D-018).
+      - name: Expo doctor
+        run: npm run doctor
+        env:
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: '1'
+
+      # Non-blocking: Expo ships SDK patch releases at any time, so drift only warns.
+      # Fix with `npx expo install --fix` (CLAUDE.md, Méthode de travail).
+      - name: Expo SDK versions (non-blocking)
+        run: |
+          if ! npx expo install --check; then
+            echo "::warning title=Expo SDK versions::Dependencies differ from the latest Expo SDK patch releases. Run 'npx expo install --fix' and commit the result separately."
+          fi
