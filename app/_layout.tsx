@@ -5,6 +5,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
+import { recoverAtLaunch } from '@/features/recording/recordingController';
 import { initI18n } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/ui';
 
@@ -17,12 +18,22 @@ function ThemedStack() {
     void SystemUI.setBackgroundColorAsync(theme.colors.background);
   }, [theme.colors.background]);
 
+  // Recordings left by a killed app are finalised and marked recovered, never deleted.
+  useEffect(() => {
+    void recoverAtLaunch();
+  }, []);
+
   return (
     <>
       <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
       {/* Android system navigation bar buttons follow the colour scheme (D-015). */}
       <NavigationBar style="auto" />
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="record"
+          options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
+        />
+      </Stack>
     </>
   );
 }

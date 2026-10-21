@@ -14,7 +14,14 @@
     },
     "count_one": "{{count}} Aufnahme",
     "count_other": "{{count}} Aufnahmen",
-    "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen."
+    "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen.",
+    "record": "Aufnehmen",
+    "recordA11y": "Aufnahme starten",
+    "listTitle": "Aufnahmen",
+    "recovered": "Wiederhergestellt",
+    "itemA11y": "Aufnahme vom {{date}}, Dauer {{duration}}",
+    "itemRecoveredA11y": "Aufnahme vom {{date}}, Dauer {{duration}}, nach einer Unterbrechung wiederhergestellt",
+    "durationUnknown": "unbekannt"
   },
   "settings": {
     "title": "Einstellungen",
@@ -24,6 +31,51 @@
       "restartRtl": "Die App wird neu gestartet, um die Schreibrichtung zu ändern.",
       "optionA11y": "Sprache der Benutzeroberfläche: {{language}}"
     }
+  },
+  "record": {
+    "start": "Aufnehmen",
+    "startA11y": "Aufnahme starten",
+    "title": "Aufnahme",
+    "consentReminder": "Informiere die Anwesenden, dass du aufnimmst.",
+    "pause": "Pause",
+    "resume": "Fortsetzen",
+    "stop": "Beenden",
+    "status": {
+      "preparing": "Wird vorbereitet …",
+      "recording": "Aufnahme läuft",
+      "paused": "Pausiert",
+      "interrupted": "Unterbrochen",
+      "stopping": "Datei wird gespeichert …",
+      "error": "Aufnahmefehler",
+      "local": "Gespeichert"
+    },
+    "interruption": {
+      "title": "Aufnahme unterbrochen",
+      "body": "Ein Anruf oder eine andere App hat das Mikrofon übernommen. Alles davor ist gespeichert.",
+      "resume": "Aufnahme fortsetzen"
+    },
+    "levelA11y": "Pegel: {{percent}} %",
+    "timerA11y": "Dauer: {{duration}}",
+    "notification": {
+      "title": "Aufnahme läuft",
+      "pausedTitle": "Aufnahme pausiert",
+      "text": "Tippen, um zur Aufnahme zurückzukehren",
+      "pause": "Pause",
+      "resume": "Fortsetzen",
+      "stop": "Beenden"
+    },
+    "permission": {
+      "title": "Mikrofonzugriff verweigert",
+      "body": "Tolitoli braucht das Mikrofon zum Aufnehmen. Du kannst es in den Einstellungen des Telefons erlauben.",
+      "openSettings": "Einstellungen öffnen",
+      "notificationsDenied": "Benachrichtigungen verweigert: Die Aufnahme läuft bei gesperrtem Bildschirm weiter, erscheint aber nicht in den Benachrichtigungen."
+    },
+    "disk": {
+      "low": "Wenig Speicher: noch etwa {{minutes}} Min. Aufnahme möglich.",
+      "insufficient": "Nicht genug Speicher: Es müssen mindestens 10 Minuten Aufnahme passen."
+    },
+    "error": "Die Aufnahme ist fehlgeschlagen. Das bereits Aufgenommene bleibt erhalten.",
+    "close": "Schließen"
   },
   "dev": {
     "title": "Diagnose (Entwicklung)",

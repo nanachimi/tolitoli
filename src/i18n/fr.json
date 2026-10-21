@@ -15,7 +15,14 @@
     "count_one": "{{count}} enregistrement",
     "count_many": "{{count}} d’enregistrements",
     "count_other": "{{count}} enregistrements",
-    "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici."
+    "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici.",
+    "record": "Enregistrer",
+    "recordA11y": "Démarrer un enregistrement",
+    "listTitle": "Enregistrements",
+    "recovered": "Récupéré",
+    "itemA11y": "Enregistrement du {{date}}, durée {{duration}}",
+    "itemRecoveredA11y": "Enregistrement du {{date}}, durée {{duration}}, récupéré après une interruption",
+    "durationUnknown": "inconnue"
   },
   "settings": {
     "title": "Réglages",
@@ -25,6 +32,51 @@
       "restartRtl": "L’application va redémarrer pour changer le sens d’écriture.",
       "optionA11y": "Langue de l’interface : {{language}}"
     }
+  },
+  "record": {
+    "start": "Enregistrer",
+    "startA11y": "Démarrer un enregistrement",
+    "title": "Enregistrement",
+    "consentReminder": "Informez les personnes présentes que vous enregistrez.",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "stop": "Arrêter",
+    "status": {
+      "preparing": "Préparation…",
+      "recording": "Enregistrement en cours",
+      "paused": "En pause",
+      "interrupted": "Interrompu",
+      "stopping": "Enregistrement du fichier…",
+      "error": "Erreur d’enregistrement",
+      "local": "Enregistré"
+    },
+    "interruption": {
+      "title": "Enregistrement interrompu",
+      "body": "Un appel ou une autre application a pris le micro. Tout ce qui précède est enregistré.",
+      "resume": "Reprendre l’enregistrement"
+    },
+    "levelA11y": "Niveau sonore : {{percent}} %",
+    "timerA11y": "Durée : {{duration}}",
+    "notification": {
+      "title": "Enregistrement en cours",
+      "pausedTitle": "Enregistrement en pause",
+      "text": "Touchez pour revenir à l’enregistrement",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "stop": "Arrêter"
+    },
+    "permission": {
+      "title": "Accès au micro refusé",
+      "body": "Tolitoli a besoin du micro pour enregistrer. Vous pouvez l’autoriser dans les réglages du téléphone.",
+      "openSettings": "Ouvrir les réglages",
+      "notificationsDenied": "Notifications refusées : l’enregistrement continue écran verrouillé, mais n’apparaît pas dans les notifications."
+    },
+    "disk": {
+      "low": "Espace faible : environ {{minutes}} min d’enregistrement possibles.",
+      "insufficient": "Espace insuffisant : il faut au moins 10 minutes d’enregistrement disponibles."
+    },
+    "error": "L’enregistrement a échoué. Ce qui a été capté est conservé.",
+    "close": "Fermer"
   },
   "dev": {
     "title": "Diagnostic (développement)",
