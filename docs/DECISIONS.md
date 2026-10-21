@@ -179,3 +179,18 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
 - **Contexte** : quand le sens d'écriture change (vers ou depuis l'arabe), l'app affiche « L'application va redémarrer… » pendant une seconde, avant de changer de langue (D-006). Le message est donc rédigé dans la langue que l'utilisateur quitte : en passant du russe à l'arabe, il s'affiche en russe.
 - **Décision** : **choix délibéré, conservé.** L'utilisateur lit forcément la langue qu'il quitte, puisqu'il vient de s'en servir pour trouver l'option, alors qu'il ne lit peut-être pas encore la langue choisie.
 - **Alternative écartée** : afficher le message dans la langue cible. Ce serait plus cohérent visuellement, mais potentiellement illisible pour la personne qui fait le choix.
+
+## D-017 — `expo-font` en dépendance directe et alignement sur les correctifs du SDK 58
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Constat (CI de la PR, `npm run doctor`)** :
+  1. `expo-font`, dépendance pair de `@expo/vector-icons` (D-013), n'était présent que de façon indirecte, via `expo`. Expo exige qu'un module natif pair soit déclaré directement.
+  2. Expo a publié des correctifs du SDK 58 dans la journée (`expo` 58.0.17, `expo-router` 58.0.25, `expo-updates` 58.0.18…). `expo-doctor` compare les versions installées aux dernières versions publiées : le contrôle qui passait le matin échouait le soir sans changement de notre côté.
+- **Décision** :
+  - `npx expo install expo-font` (~58.0.9, même version que celle déjà compilée dans l'APK).
+  - `npx expo install --fix` jusqu'à ce que `expo-doctor` passe ses 20 vérifications.
+- **Pas de nouvelle build** : j'ai comparé le contenu publié des versions concernées.
+  - Côté Android, seuls les numéros de version de `build.gradle` changent.
+  - Le seul changement natif est un module iOS ajouté à `expo-status-bar`, sans effet tant qu'il n'y a pas de build iOS.
+  - L'APK de développement reste compatible : l'app a été relancée sur un bundle neuf, sans erreur ([capture](captures/step-0/apres-correctifs-sdk-58-0-17.png)).
+- **Conséquence pour la CI** : l'étape « Expo doctor » reste bloquante. Elle peut donc échouer à chaque nouveau correctif publié par Expo, même sans changement dans le dépôt. La réponse attendue est `npx expo install --fix` dans la PR en cours. Si ces ruptures deviennent trop fréquentes, on pourra rendre ce contrôle de versions non bloquant et garder les autres contrôles du doctor bloquants. Ce n'est pas encore décidé.
