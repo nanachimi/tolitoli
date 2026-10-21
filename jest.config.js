@@ -1,6 +1,12 @@
+const expoPreset = require('jest-expo/jest-preset');
+
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'jest-expo',
+  // The formatjs Intl polyfills ship as ES modules only (D-012).
+  transformIgnorePatterns: expoPreset.transformIgnorePatterns.map((pattern) =>
+    pattern.startsWith('/node_modules/(?!(') ? pattern.replace('(?!(', '(?!(@formatjs|') : pattern,
+  ),
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

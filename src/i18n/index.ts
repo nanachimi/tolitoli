@@ -1,3 +1,6 @@
+// Must run before i18next resolves any plural rule.
+import './intlPolyfills';
+
 import { getLocales } from 'expo-localization';
 import Storage from 'expo-sqlite/kv-store';
 import * as Updates from 'expo-updates';

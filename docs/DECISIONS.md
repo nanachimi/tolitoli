@@ -114,3 +114,24 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
 - **TypeScript 6** : l'option `types` vaut `[]` par défaut, d'où `"types": ["jest"]` dans `tsconfig.json`.
 - **`projectId` EAS** : écrit en dur dans `app.config.ts` après `eas init`. C'est un identifiant public, pas un secret, et il doit être lisible sur les serveurs EAS sans variable d'environnement.
 - **Scripts d'installation npm 11** : ceux de `@parcel/watcher`, `fsevents` et `unrs-resolver` restent bloqués, car des binaires précompilés suffisent. À réexaminer si une build échoue.
+
+## D-012 — Polyfill Intl pour les pluriels (Hermes Android)
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Constat sur appareil** (premier test après installation de l'APK de développement, Android physique) : la section Diagnostic affiche `Intl.PluralRules: unavailable`. Sans cette API, i18next applique une règle anglaise one/other :
+  - le russe affiche une forme fausse pour 2, 5 ou 11 ;
+  - le wolof, qui n'a que la forme `other`, retombe sur l'anglais pour 1.
+
+  La CI sous Node, avec ICU complet, ne pouvait pas le voir.
+
+- **Décision** : charger les polyfills formatjs avant l'initialisation d'i18next (`src/i18n/intlPolyfills.ts`, importé en premier par `src/i18n/index.ts`), pour les sept langues de l'interface.
+  - `@formatjs/intl-getcanonicallocales` ^3.2.12 et `@formatjs/intl-locale` ^5.3.12 sont des prérequis documentés du polyfill de pluriels. `Intl.Locale` sert quand la langue demandée ne correspond pas exactement aux données (`zh-Hans` → données `zh`, `pseudo`).
+  - `@formatjs/intl-pluralrules` ^6.3.16, avec les données CLDR fr, en, de, ru, ar, wo et zh.
+  - Chargement conditionnel (`shouldPolyfill`) : un moteur doté d'une implémentation native complète ne charge rien. Dès qu'une seule langue manque, l'implémentation entière est remplacée (`polyfill-force`), pour que toutes les langues suivent les mêmes règles.
+- **Garde-fou CI** : `src/i18n/__tests__/intlPolyfills.test.ts`.
+  - Le test retire `Intl.PluralRules`, `Intl.Locale` et `Intl.getCanonicalLocales` pour reproduire Hermes, recharge i18n, puis vérifie les formes ru (1, 2, 5, 11, 21), wo, ar (0, 1, 2, 3, 11, 100), fr, de, en et zh-Hans.
+  - Sans le polyfill, 9 cas sur 14 échouent.
+- **Jest** : les paquets formatjs sont uniquement en ES modules, donc `@formatjs` est ajouté aux exceptions de `transformIgnorePatterns`.
+- **Diagnostic** : en dev, l'écran Réglages indique `[polyfill]` ou `[native]`.
+- **À surveiller** : d'autres API Intl (`DateTimeFormat`, `NumberFormat`, `RelativeTimeFormat`) peuvent manquer aussi sur cet appareil. À vérifier sur l'appareil au début de l'étape 2, avant d'afficher dates et durées dans la Bibliothèque. Je n'ajoute aucun polyfill sans constat.
+- **Numérotation** : la demande parlait de D-009, mais ce numéro était déjà pris par la détection tablette. Les entrées n'étant jamais renumérotées, celle-ci prend le numéro suivant libre.

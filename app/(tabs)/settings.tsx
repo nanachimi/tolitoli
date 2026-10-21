@@ -98,7 +98,8 @@ function pluralDiagnostic(language: string): string {
   }
   try {
     const options = new Intl.PluralRules(language).resolvedOptions();
-    return `Intl.PluralRules(${language}) → ${options.locale}: ${options.pluralCategories.join(', ')}`;
+    const source = 'polyfilled' in Intl.PluralRules ? 'polyfill' : 'native';
+    return `Intl.PluralRules(${language}) [${source}] → ${options.locale}: ${options.pluralCategories.join(', ')}`;
   } catch (error) {
     return `Intl.PluralRules(${language}): ${String(error)}`;
   }
