@@ -1,3 +1,4 @@
+import { NavigationBar } from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
@@ -19,6 +20,8 @@ function ThemedStack() {
   return (
     <>
       <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
+      {/* Android system navigation bar buttons follow the colour scheme (D-015). */}
+      <NavigationBar style="auto" />
       <Stack screenOptions={{ headerShown: false }} />
     </>
   );
