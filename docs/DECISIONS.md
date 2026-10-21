@@ -207,3 +207,88 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - Le doctor bloquant passe 19 contrôles sur 19.
   - Avec un écart simulé (`expo-status-bar` déclaré en 58.0.3 au lieu de 58.0.4, puis restauré), l'étape non bloquante affiche l'avertissement et sort avec le code 0, et le doctor bloquant reste vert.
 - **Alternative écartée** : `continue-on-error` sur tout le doctor, qui aurait aussi rendu non bloquants les autres contrôles, dont celui des dépendances pair manquantes qui a détecté `expo-font` (D-017).
+
+## D-019 — Test TalkBack par adb : ce qui est vérifié, ce qui reste à confirmer à l'oreille
+
+- **Date / étape** : 2026-10-21, étape 0. Galaxy A05 (SM-A055F), Android 14, TalkBack Samsung 14.1.00.6, APK de développement.
+- **Méthode** :
+  - Arbre d'accessibilité lu par `uiautomator dump`, en deux versions :
+    - le dump complet, qui contient toutes les vues ;
+    - le dump `--compressed`, qui ne garde que les vues importantes pour l'accessibilité, celles que TalkBack peut atteindre.
+  - Écrans Bibliothèque et Réglages, en français puis en arabe.
+  - Ensuite, TalkBack activé par `settings put secure enabled_accessibility_services`.
+
+### 1. Vérifié structurellement (arbre d'accessibilité)
+
+**Onglets**, dans l'ordre de l'arbre :
+
+| Langue | 1er                                                         | 2e                                 |
+| ------ | ----------------------------------------------------------- | ---------------------------------- |
+| fr     | « Bibliothèque », sélectionné sur la Bibliothèque, à gauche | « Réglages », à droite             |
+| ar     | « المكتبة » (Bibliothèque), à droite                        | « الإعدادات » (Réglages), à gauche |
+
+- Chaque onglet est un nœud focusable et cliquable, avec une description traduite. L'état `selected` suit l'onglet actif.
+- En arabe, l'ordre de l'arbre suit le sens de lecture : l'onglet de droite vient en premier.
+
+**Icônes d'onglet : exclues.**
+
+- Dans le dump complet, ce sont des `TextView` contenant un seul glyphe de police d'icônes (U+F10F/U+F110 pour `albums`, U+F56C/U+F56B pour `settings`), **sans description et non focusables**.
+- Elles sont **absentes du dump compressé**, donc hors de portée de TalkBack.
+- Vérifié sur les quatre écrans.
+
+**Options de langue (Réglages)** : 8 nœuds de classe `RadioButton`, cochables, focusables et cliquables, dans cet ordre : Français, English, Deutsch, Русский, العربية, Wolof, 简体中文, Pseudo (dev seulement).
+
+| Langue de l'interface | Libellé                                 | Cochée             |
+| --------------------- | --------------------------------------- | ------------------ |
+| fr                    | « Langue de l'interface : <nom natif> » | Français seulement |
+| ar                    | « لغة الواجهة: <nom natif> »            | العربية seulement  |
+
+**Ordre complet de l'arbre compressé**, Réglages en français :
+
+1. bouton « Tools » du dev client, absent de l'app publiée ;
+2. titre « Réglages » ;
+3. « Langue de l'interface » ;
+4. phrase d'aide ;
+5. les 8 options, chacune suivie de son `TextView` enfant portant le nom natif ;
+6. « Diagnostic (développement) » et ses lignes, en dev seulement ;
+7. onglet Bibliothèque ;
+8. onglet Réglages.
+
+En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](captures/step-0/d019-arbre-a11y-bibliotheque-ar.png)).
+
+**Annonce réellement captée.** Une seule : le message de redémarrage (région `accessibilityLiveRegion="polite"`) a été prononcé en arabe, « سيُعاد تشغيل التطبيق لتغيير اتجاه الكتابة. ». Il a été lu dans le bandeau « texte prononcé » des options de développeur de TalkBack ([capture](captures/step-0/d019-talkback-annonce-message-redemarrage-ar.png)).
+
+### 2. Ce qui n'a pas pu être fait par adb (constaté, pas déduit)
+
+- **Parcourir les éléments avec TalkBack** :
+  - Un `input tap` injecté n'est pas traité comme « explorer au toucher » : c'est un **vrai clic**. Toucher « Français » a activé l'option et relancé l'app en français.
+  - Les raccourcis clavier `Alt + flèche droite` (`input keycombination`) ne déplacent pas le focus : aucune annonce, aucun changement à l'écran ([capture](captures/step-0/d019-talkback-raccourci-clavier-sans-effet.png)).
+  - Aucune annonce d'onglet ou d'option n'a donc été captée.
+- **Lire les annonces dans logcat** : TalkBack ne journalise pas ses annonces à ce niveau, et le moteur vocal Samsung ne journalise qu'une forme chiffrée du texte (`[Synthesize] text = Po95l97BBIVKL6pYqzeG0w==`).
+- **Rôles et états annoncés** : `uiautomator dump` n'expose ni le rôle « onglet », ni l'en-tête (`accessibilityRole="header"`), ni le groupe d'options (`radiogroup`), ni la formulation « coché / non coché » que TalkBack prononce.
+
+### 3. Reste à confirmer à l'oreille (propriétaire)
+
+1. Annonce de chaque onglet : nom, rôle « onglet » et « sélectionné ». L'icône ne doit pas être lue.
+2. Annonce de chaque option : « Langue de l'interface : Français, case d'option, cochée » (ou formulation équivalente), et « non cochée » pour les autres.
+3. Pas de **double focus** sur une option : le `TextView` enfant (nom natif) ne doit pas recevoir son propre focus après le `RadioButton`.
+   - **Résolu par correctif, vérifié par adb.** Avant, le dump compressé montrait **deux nœuds par option** : le `RadioButton` focusable, avec son libellé complet, et un `TextView` enfant non focusable, avec le nom natif. Pour ne pas s'en remettre à la règle habituelle de TalkBack, le texte enfant est maintenant masqué aux lecteurs d'écran (`importantForAccessibility="no"` sur Android, `accessibilityElementsHidden` sur iOS).
+   - Résultat après relance sur un bundle neuf : **un seul nœud par option dans le dump compressé**, pour les 8 options, en français comme en arabe. C'est le `RadioButton` ; seule la langue active est cochée. Le texte reste visible et présent dans le dump complet ([capture ar](captures/step-0/d019-apres-correctif-reglages-ar.png)).
+   - Test unitaire ajouté (`__tests__/screens/settings.test.tsx`) : le nom natif porte ces deux attributs et n'est pas trouvé par les requêtes accessibles.
+4. Ordre de balayage droite/gauche conforme à l'arbre ci-dessus, en français et en arabe.
+5. Titres annoncés comme en-têtes (« Langue de l'interface », « Aucun enregistrement »).
+6. **Prononciation** : la synthèse du téléphone était réglée sur l'anglais (`FailoverTextToSpeech: Restored TTS locale to en_GB`). Il faut écouter comment sont lus les libellés français et arabes, ainsi que les noms natifs mêlés (« لغة الواجهة: Français »). Sur Android, React Native n'offre pas d'attribut de langue par élément (`accessibilityLanguage` est réservé à iOS). Si la lecture est mauvaise, une solution sera proposée à l'étape 5.
+
+### 4. Effets de bord sur le téléphone, et remise en état
+
+- Au premier démarrage, TalkBack a ouvert son tutoriel, fermé avec la touche Retour.
+- Il a aussi demandé l'autorisation « gérer les appels téléphoniques ». Elle a été **fermée avec Retour, sans choix enregistré** (`READ_PHONE_STATE: granted=false`).
+- L'app est passée de l'arabe au français : c'était son état initial.
+- Remise en état vérifiée, identique au relevé de départ :
+  - `enabled_accessibility_services` vide ;
+  - `accessibility_enabled=0` et `touch_exploration_enabled=0` ;
+  - aucun service lié ;
+  - police à 1.0 ;
+  - mode clair ;
+  - Tolitoli en français sur la Bibliothèque.
+- Les captures du tutoriel et de la demande d'autorisation ne sont pas versionnées, car ce sont des écrans d'une autre application.
