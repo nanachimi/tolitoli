@@ -20,12 +20,13 @@ const NAME_SUFFIX: Record<Variant, string> = {
   production: '',
 };
 
-// Public identifier written once after `npx eas-cli@25.3.0 init`; not a secret.
-const EAS_PROJECT_ID: string | undefined = undefined;
+// Public identifier from `eas init` (@tolitoli/tolitoli); not a secret (D-011).
+const EAS_PROJECT_ID = '705d0724-afde-4df4-83eb-6ad4db7b2cdf';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: `${fr.app.name}${NAME_SUFFIX[VARIANT]}`,
+  owner: 'tolitoli',
   slug: 'tolitoli',
   scheme: 'tolitoli',
   version: '0.1.0',
@@ -65,10 +66,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
   },
   runtimeVersion: { policy: 'fingerprint' },
-  ...(EAS_PROJECT_ID
-    ? {
-        updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
-        extra: { eas: { projectId: EAS_PROJECT_ID } },
-      }
-    : {}),
+  updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
+  extra: { eas: { projectId: EAS_PROJECT_ID } },
 });
