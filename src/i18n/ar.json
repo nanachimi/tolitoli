@@ -1,0 +1,36 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "المكتبة",
+    "settings": "الإعدادات"
+  },
+  "library": {
+    "title": "المكتبة",
+    "empty": {
+      "title": "لا توجد تسجيلات",
+      "body": "ستظهر هنا تسجيلاتك ونصوصها المكتوبة."
+    },
+    "count_zero": "لا توجد تسجيلات",
+    "count_one": "تسجيل واحد",
+    "count_two": "تسجيلان",
+    "count_few": "{{count}} تسجيلات",
+    "count_many": "{{count}} تسجيلًا",
+    "count_other": "{{count}} تسجيل",
+    "detailPlaceholder": "اختر تسجيلًا لعرضه هنا."
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "language": {
+      "title": "لغة الواجهة",
+      "hint": "تُضبط لغة النسخ بشكل منفصل.",
+      "restartRtl": "سيُعاد تشغيل التطبيق لتغيير اتجاه الكتابة.",
+      "optionA11y": "لغة الواجهة: {{language}}"
+    }
+  },
+  "dev": {
+    "title": "التشخيص (التطوير)",
+    "pluralTitle": "اختبار صيغ الجمع"
+  }
+}

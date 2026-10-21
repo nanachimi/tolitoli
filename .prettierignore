@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+coverage/
+ios/
+android/
+package-lock.json
+docs/CAHIER_DES_CHARGES.md
+CLAUDE.md

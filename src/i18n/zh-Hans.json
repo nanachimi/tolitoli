@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "录音库",
+    "settings": "设置"
+  },
+  "library": {
+    "title": "录音库",
+    "empty": {
+      "title": "暂无录音",
+      "body": "你的录音及其转写文本将显示在这里。"
+    },
+    "count_other": "{{count}} 条录音",
+    "detailPlaceholder": "选择一条录音以在此处显示。"
+  },
+  "settings": {
+    "title": "设置",
+    "language": {
+      "title": "界面语言",
+      "hint": "转写语言需单独设置。",
+      "restartRtl": "应用将重新启动以更改文字方向。",
+      "optionA11y": "界面语言：{{language}}"
+    }
+  },
+  "dev": {
+    "title": "诊断（开发）",
+    "pluralTitle": "复数测试"
+  }
+}

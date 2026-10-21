@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "Tolitoli"
+  },
+  "tabs": {
+    "library": "Bibliothek",
+    "settings": "Einstellungen"
+  },
+  "library": {
+    "title": "Bibliothek",
+    "empty": {
+      "title": "Keine Aufnahmen",
+      "body": "Deine Aufnahmen und ihre Transkriptionen erscheinen hier."
+    },
+    "count_one": "{{count}} Aufnahme",
+    "count_other": "{{count}} Aufnahmen",
+    "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": {
+      "title": "Sprache der Benutzeroberfläche",
+      "hint": "Die Transkriptionssprache wird separat eingestellt.",
+      "restartRtl": "Die App wird neu gestartet, um die Schreibrichtung zu ändern.",
+      "optionA11y": "Sprache der Benutzeroberfläche: {{language}}"
+    }
+  },
+  "dev": {
+    "title": "Diagnose (Entwicklung)",
+    "pluralTitle": "Pluraltest"
+  }
+}
