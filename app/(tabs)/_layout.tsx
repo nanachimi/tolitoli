@@ -1,10 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
-import type { ColorValue } from 'react-native';
+import { Text, useWindowDimensions, type ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme } from '@/ui';
+import {
+  getTabBarHeight,
+  TAB_LABEL_FONT_SIZE,
+  TAB_LABEL_LINE_HEIGHT,
+  TAB_LABEL_MAX_FONT_SCALE,
+  useTheme,
+} from '@/ui';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -36,19 +43,47 @@ function tabIcon(focused: IconName, unfocused: IconName) {
   return TabIcon;
 }
 
+/** Label capped at 1.5× the base size so it always fits the grown bar (D-014). */
+function tabLabel(text: string) {
+  function TabLabel({ color }: { color: ColorValue }) {
+    return (
+      <Text
+        allowFontScaling
+        maxFontSizeMultiplier={TAB_LABEL_MAX_FONT_SCALE}
+        numberOfLines={1}
+        style={{
+          color,
+          fontSize: TAB_LABEL_FONT_SIZE,
+          lineHeight: TAB_LABEL_LINE_HEIGHT,
+          fontWeight: '500',
+          textAlign: 'center',
+        }}
+      >
+        {text}
+      </Text>
+    );
+  }
+  return TabLabel;
+}
+
 export default function TabsLayout() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { fontScale } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.surface },
         headerTintColor: theme.colors.text,
-        tabBarStyle: { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+        tabBarStyle: {
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+          height: getTabBarHeight(fontScale, insets.bottom),
+        },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
-        tabBarAllowFontScaling: true,
       }}
     >
       <Tabs.Screen
@@ -56,7 +91,7 @@ export default function TabsLayout() {
         options={{
           title: t('library.title'),
           tabBarIcon: tabIcon('albums', 'albums-outline'),
-          tabBarLabel: t('tabs.library'),
+          tabBarLabel: tabLabel(t('tabs.library')),
           tabBarAccessibilityLabel: t('tabs.library'),
         }}
       />
@@ -65,7 +100,7 @@ export default function TabsLayout() {
         options={{
           title: t('settings.title'),
           tabBarIcon: tabIcon('settings', 'settings-outline'),
-          tabBarLabel: t('tabs.settings'),
+          tabBarLabel: tabLabel(t('tabs.settings')),
           tabBarAccessibilityLabel: t('tabs.settings'),
         }}
       />

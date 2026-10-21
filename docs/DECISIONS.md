@@ -148,3 +148,28 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - L'icône `library` d'Ionicons a été écartée parce que ses livres penchés auraient dû être inversés en RTL.
   - Les libellés sont inchangés. Les icônes sont décoratives et masquées aux lecteurs d'écran : le nom accessible reste celui de l'onglet.
 - **Règle pour la suite** : toute icône directionnelle (flèches, lecture, retour) devra être inversée en RTL et testée en arabe.
+
+## D-014 — Barre d'onglets et grandes polices
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Constat sur appareil** (Galaxy A05, Android 14, police système à 2.0) : les libellés des onglets étaient coupés par la barre de navigation système. La barre gardait la hauteur fixe de React Navigation (49 pt plus la marge système du bas), alors que le libellé de 10 pt doublait de taille.
+- **Décision** :
+  - Les libellés des onglets suivent la police système jusqu'à **1,5×** (`maxFontSizeMultiplier`), puis s'arrêtent. iOS ne grossit pas non plus les libellés de sa barre d'onglets au-delà d'un seuil.
+  - La barre **grandit** de la hauteur supplémentaire du libellé plafonné : `getTabBarHeight(fontScale, bottomInset)` dans `src/ui/layout/tabBar.ts`, testée unitairement.
+  - Le texte des écrans n'est **jamais** plafonné.
+- **Vérifié sur appareil** à police 2.0, en français et en allemand (« Einstellungen ») : libellés entiers, la barre commence à y = 1406 px au lieu de 1418.
+- **Leçon de méthode** : la première vérification a tourné sur l'ancien code, car la mise à jour à chaud n'avait pas été appliquée à la barre d'onglets. Avant toute vérification sur appareil d'un changement de layout, relancer complètement l'app (fermeture forcée, puis lien profond vers Metro).
+
+## D-015 — Barre de navigation Android en mode sombre : reportée à l'étape 1
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Constat sur appareil** : en mode sombre, la barre de navigation système d'Android reste claire, alors que le reste de l'app suit le thème.
+- **Décision** : corriger avec `expo-navigation-bar` (couleur et style des boutons selon le thème) **lors de la prochaine build native, c'est-à-dire à l'étape 1**, qui en demande une de toute façon pour l'audio. Le module est natif : l'ajouter maintenant imposerait une build supplémentaire pour un défaut purement esthétique.
+- **À faire à l'étape 1** : inscrire la dépendance dans le plan de l'étape 1, puis vérifier en clair et en sombre sur le Galaxy A05.
+
+## D-016 — Message de redémarrage dans la langue quittée
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Contexte** : quand le sens d'écriture change (vers ou depuis l'arabe), l'app affiche « L'application va redémarrer… » pendant une seconde, avant de changer de langue (D-006). Le message est donc rédigé dans la langue que l'utilisateur quitte : en passant du russe à l'arabe, il s'affiche en russe.
+- **Décision** : **choix délibéré, conservé.** L'utilisateur lit forcément la langue qu'il quitte, puisqu'il vient de s'en servir pour trouver l'option, alors qu'il ne lit peut-être pas encore la langue choisie.
+- **Alternative écartée** : afficher le message dans la langue cible. Ce serait plus cohérent visuellement, mais potentiellement illisible pour la personne qui fait le choix.
