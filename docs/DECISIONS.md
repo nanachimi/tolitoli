@@ -194,3 +194,16 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - Le seul changement natif est un module iOS ajouté à `expo-status-bar`, sans effet tant qu'il n'y a pas de build iOS.
   - L'APK de développement reste compatible : l'app a été relancée sur un bundle neuf, sans erreur ([capture](captures/step-0/apres-correctifs-sdk-58-0-17.png)).
 - **Conséquence pour la CI** : l'étape « Expo doctor » reste bloquante. Elle peut donc échouer à chaque nouveau correctif publié par Expo, même sans changement dans le dépôt. La réponse attendue est `npx expo install --fix` dans la PR en cours. Si ces ruptures deviennent trop fréquentes, on pourra rendre ce contrôle de versions non bloquant et garder les autres contrôles du doctor bloquants. Ce n'est pas encore décidé.
+
+## D-018 — Contrôle des versions du SDK non bloquant en CI
+
+- **Date / étape** : 2026-10-21, étape 0
+- **Contexte** : le contrôle de versions d'`expo-doctor` compare les dépendances installées aux derniers correctifs publiés par Expo. La CI peut donc échouer sans aucun changement dans le dépôt (D-017).
+- **Décision** :
+  - L'étape CI « Expo doctor » reste **bloquante** pour tous les autres contrôles (19 sur 20). Seul le contrôle de versions est désactivé, par la variable officielle `EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK=1`.
+  - Une étape séparée, « Expo SDK versions (non-blocking) », lance `npx expo install --check`. En cas d'écart, elle émet un **avertissement GitHub** visible dans la PR (`::warning`), sans faire échouer la CI.
+  - **Contrepartie**, inscrite dans CLAUDE.md (Méthode de travail) : `npx expo install --fix` est exécuté à l'ouverture de chaque étape et avant chaque build EAS, et le résultat est commité séparément.
+- **Vérifié en local** :
+  - Le doctor bloquant passe 19 contrôles sur 19.
+  - Avec un écart simulé (`expo-status-bar` déclaré en 58.0.3 au lieu de 58.0.4, puis restauré), l'étape non bloquante affiche l'avertissement et sort avec le code 0, et le doctor bloquant reste vert.
+- **Alternative écartée** : `continue-on-error` sur tout le doctor, qui aurait aussi rendu non bloquants les autres contrôles, dont celui des dépendances pair manquantes qui a détecté `expo-font` (D-017).

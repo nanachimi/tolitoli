@@ -20,6 +20,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 - Ne commence jamais l'étape suivante sans que les critères de fin de l'étape en cours soient remplis.
 - Quand tu hésites entre deux approches, expose les deux avec leurs compromis et demande. Ne tranche pas seul sur : choix de bibliothèque native, schéma de base de données, modèle de tarification, texte juridique.
 - L'audio ne se teste que sur appareil physique. Le simulateur/émulateur n'a pas de micro fiable : dis-le quand un test manuel est requis et décris la procédure.
+- `npx expo install --fix` est exécuté à l'ouverture de chaque étape et avant chaque build EAS, et le résultat est commité séparément.
 
 ## Stack imposée
 
