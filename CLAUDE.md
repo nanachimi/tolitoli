@@ -20,6 +20,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 - Ne commence jamais l'étape suivante sans que les critères de fin de l'étape en cours soient remplis.
 - Quand tu hésites entre deux approches, expose les deux avec leurs compromis et demande. Ne tranche pas seul sur : choix de bibliothèque native, schéma de base de données, modèle de tarification, texte juridique.
 - L'audio ne se teste que sur appareil physique. Le simulateur/émulateur n'a pas de micro fiable : dis-le quand un test manuel est requis et décris la procédure.
+- Dette iOS (D-022) : tant que le compte Apple Developer n'est pas pris, les étapes se clôturent sur Android ; chaque vérification iPhone non faite est ajoutée à la liste « dette iOS » de `docs/DECISIONS.md` (D-022). Cette dette (étapes 1 et 3) est soldée avant l'ouverture de l'étape 5.
 - `npx expo install --fix` est exécuté à l'ouverture de chaque étape et avant chaque build EAS, et le résultat est commité séparément.
 
 ## Stack imposée
@@ -28,7 +29,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 | --- | --- | --- |
 | Framework | Expo SDK 54+ (React Native, nouvelle architecture), TypeScript strict | Oui |
 | Navigation | expo-router | Oui |
-| Audio | expo-audio (fichier .m4a) + react-native-audio-api (flux PCM 16 kHz mono) | Oui |
+| Audio | react-native-audio-api (enregistrement : fichier + flux PCM 16 kHz mono) ; expo-audio (lecture) — voir D-020 | Oui |
 | Transcription locale | react-native-executorch, hook `useSpeechToText` (Whisper) | Oui |
 | Détection de voix | react-native-vad ou le VAD d'executorch | Non |
 | Base locale | expo-sqlite (ou op-sqlite si SQLCipher requis) + drizzle-orm, FTS5 | Oui |

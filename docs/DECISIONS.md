@@ -35,6 +35,7 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - Le compte Apple Developer et `eas device:create` sont **obligatoires avant la clôture de l'étape 1**, dont le critère de fin (60 min écran verrouillé sur iPhone et Android) exige l'iPhone : l'arrière-plan audio iOS est ce qui casse le plus souvent.
   - Aucun report sur les étapes 1 à 4.
 - **Alternative écartée** : Xcode avec un Apple ID gratuit (profil valable 7 jours, fragile, ne prépare pas TestFlight).
+- **Remplacée par [D-022](#d-022--compte-apple-developer-reporté--dette-ios) (2026-10-21)** : compte Apple reporté pour raison budgétaire, l'étape 1 se clôt sur Android seul.
 
 ## D-004 — Documents dans `docs/`, branches d'étape
 
@@ -292,3 +293,46 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - mode clair ;
   - Tolitoli en français sur la Bibliothèque.
 - Les captures du tutoriel et de la demande d'autorisation ne sont pas versionnées, car ce sont des écrans d'une autre application.
+
+## D-020 — Moteur d'enregistrement : react-native-audio-api seul
+
+- **Date / étape** : 2026-10-21, étape 1, choix du propriétaire.
+- **Contexte** : recherche sur expo-audio 58.0.10 et react-native-audio-api 0.13.6.
+  - Sur les deux bibliothèques, un `.m4a` n'est lisible qu'après un arrêt propre.
+  - expo-audio a trois limites pour l'enregistrement :
+    - sa notification Android est codée en dur en anglais (« Recording audio », « Stop »), sans aucun moyen de la traduire ;
+    - il n'émet aucun événement d'interruption sur Android, où le micro reçoit du silence sans erreur pendant un appel ;
+    - il ne permet aucun découpage du fichier.
+- **Décision** : react-native-audio-api est le **seul** moteur sur le micro. Il produit le fichier (étape 1) et le flux PCM 16 kHz pour Whisper (étape 3). Il apporte :
+  - une notification Android entièrement traduisible, avec boutons pause, reprise et stop ;
+  - des événements d'interruption (focus audio, appel) et de changement de sortie audio ;
+  - l'écriture en M4A ou WAV, avec ouverture d'un nouveau fichier par taille.
+
+  expo-audio reste prévu pour la **lecture** (étapes 2 et 4).
+
+- **Écart à la stack de CLAUDE.md** : la ligne Audio devient « react-native-audio-api : enregistrement (fichier + flux PCM 16 kHz) ; expo-audio : lecture ».
+- **Risques connus** :
+  - Bug iOS #1220 : pas de reprise après un appel. Neutralisé par la règle « l'interruption ferme le segment, la reprise en ouvre un nouveau ».
+  - Bug Android #1299 : perte d'environ 0,1 % au rééchantillonnage 16 kHz. Sans effet sur le fichier ; à traiter à l'étape 3.
+  - Cohabitation avec expo-audio sur le même micro : non documentée, évitée par construction.
+
+## D-022 — Compte Apple Developer reporté : dette iOS
+
+- **Date / étape** : 2026-10-21, étape 1, choix du propriétaire (raison budgétaire). **Remplace D-003.**
+- **Décision** :
+  - L'étape 1 se clôt **sur Android seul**.
+  - Les vérifications iPhone des étapes 1 et 3 forment une **dette iOS**, listée ci-dessous et complétée à chaque étape.
+  - Elle doit être **soldée avant l'ouverture de l'étape 5**. Il faut pour cela le compte Apple Developer, `eas device:create` et une build iOS de développement.
+- **Dette iOS à rejouer** (sur un iPhone physique) :
+  - Étape 0 : l'app vide se lance via le dev client ; sept langues ; arabe et RTL ; mode sombre ; police maximale ; pluriels sous Hermes iOS ; VoiceOver.
+  - Étape 1 :
+    - appel entrant en premier : pause automatique, segment fermé, reprise dans un nouveau segment, contournement du bug #1220 vérifié ;
+    - démarrage en moins de 2 s ;
+    - kill pendant l'enregistrement, puis récupération ;
+    - 60 min écran verrouillé, sur batterie ;
+    - indicateur orange du micro visible ;
+    - textes de permission micro dans les 7 langues.
+  - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
+- **Conséquences** :
+  - CLAUDE.md (Méthode de travail) et le cahier des charges (plan de développement, lignes 1, 3 et 5 ; coûts) sont ajustés.
+  - Le coût Apple (99 $/an) passe d'« avant TestFlight » à « avant l'ouverture de l'étape 5 ».
