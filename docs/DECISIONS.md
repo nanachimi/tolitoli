@@ -137,6 +137,7 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
 - **Résultat sur appareil** (2026-10-21, Samsung Galaxy A05 SM-A055F, APK de développement, captures prises par adb) : vérifié.
   - Russe : la ligne de diagnostic affiche `Intl.PluralRules(ru) [polyfill] → ru: one, few, many, other`. 0 « записей », 1 « запись », 2 « записи », 5 « записей », 11 « записей », 21 « запись », 100 « записей ».
   - Wolof : la ligne de diagnostic affiche `Intl.PluralRules(wo) [polyfill] → wo: other`. 1 « 1 baat yu ñu dénc », sans repli sur l'anglais.
+  - Captures : [russe](captures/step-0/d012-pluriels-russe-polyfill.png), [wolof](captures/step-0/d012-pluriels-wolof-polyfill.png), [arabe](captures/step-0/rtl-05-pluriels-arabe.png).
 - **Numérotation** : la demande parlait de D-009, mais ce numéro était déjà pris par la détection tablette. Les entrées n'étant jamais renumérotées, celle-ci prend le numéro suivant libre.
 
 ## D-013 — Icônes de la barre d'onglets
@@ -148,6 +149,7 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - L'icône `library` d'Ionicons a été écartée parce que ses livres penchés auraient dû être inversés en RTL.
   - Les libellés sont inchangés. Les icônes sont décoratives et masquées aux lecteurs d'écran : le nom accessible reste celui de l'onglet.
 - **Règle pour la suite** : toute icône directionnelle (flèches, lecture, retour) devra être inversée en RTL et testée en arabe.
+- **Capture** : [barre d'onglets avec icônes](captures/step-0/d013-icones-onglets.png).
 
 ## D-014 — Barre d'onglets et grandes polices
 
@@ -159,6 +161,10 @@ Une entrée par décision structurante. Format : date, étape, contexte, décisi
   - Le texte des écrans n'est **jamais** plafonné.
 - **Vérifié sur appareil** à police 2.0, en français et en allemand (« Einstellungen ») : libellés entiers, la barre commence à y = 1406 px au lieu de 1418.
 - **Leçon de méthode** : la première vérification a tourné sur l'ancien code, car la mise à jour à chaud n'avait pas été appliquée à la barre d'onglets. Avant toute vérification sur appareil d'un changement de layout, relancer complètement l'app (fermeture forcée, puis lien profond vers Metro).
+- **Captures** (police 2.0) :
+  - Avant le correctif : [Bibliothèque fr](captures/step-0/d014-avant-police2-bibliotheque-fr.png), [Réglages fr](captures/step-0/d014-avant-police2-reglages-fr.png), [Einstellungen de](captures/step-0/d014-avant-police2-reglages-de.png), [Bibliothek de](captures/step-0/d014-avant-police2-bibliotheque-de.png).
+  - Ancien bundle, vérification invalide : [Réglages fr](captures/step-0/d014-ancien-bundle-police2-reglages-fr.png), [Einstellungen de](captures/step-0/d014-ancien-bundle-police2-reglages-de.png).
+  - Après correctif et relance : [Bibliothèque fr](captures/step-0/d014-apres-police2-bibliotheque-fr.png), [Réglages fr](captures/step-0/d014-apres-police2-reglages-fr.png), [Einstellungen de](captures/step-0/d014-apres-police2-reglages-de.png), [Bibliothek de](captures/step-0/d014-apres-police2-bibliotheque-de.png).
 
 ## D-015 — Barre de navigation Android en mode sombre : reportée à l'étape 1
 

@@ -69,6 +69,7 @@ docs/                CAHIER_DES_CHARGES.md, DECISIONS.md, plans d'étapes (docs/
 - Accessibilité : chaque élément interactif a un `accessibilityLabel` ; polices dynamiques respectées.
 - Commits en anglais, impératif, préfixés par l'étape : `step-3: persist transcription queue`.
 - Avant tout commit : `npm run typecheck && npm run lint && npm test` verts.
+- Captures d'écran : enregistrées dans `docs/captures/step-N/` (N = étape en cours), réduites à 720 px de large, nom descriptif en minuscules et sans espace (`d014-apres-police2-reglages-de.png`), commitées avec l'étape et référencées depuis l'entrée de `docs/DECISIONS.md` qu'elles documentent. Jamais de capture d'une autre application ni de données personnelles.
 
 ## Contraintes produit non négociables
 
