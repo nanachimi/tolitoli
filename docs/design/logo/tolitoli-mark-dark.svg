@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Tolitoli — marque, thème sombre</title>
+  <rect width="1024" height="1024" rx="226" fill="#e47d52"/>
+  <g fill="#2a1309">
+    <rect x="266" y="412" width="124" height="200" rx="62"/>
+    <rect x="450" y="236" width="124" height="552" rx="62"/>
+    <rect x="634" y="332" width="124" height="360" rx="62"/>
+  </g>
+</svg>

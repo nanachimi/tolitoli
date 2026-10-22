@@ -1,0 +1,7 @@
+{
+  "name": "audio-encoder",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Encodes the PCM WAV files of a recording into one AAC .m4a (D-021).",
+  "main": "index.ts"
+}

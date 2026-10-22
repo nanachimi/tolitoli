@@ -1,0 +1,16 @@
+<!-- @dsCard group="Transcription" height=72 subtitle="bonne, moyenne, brouillon, en cours" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+.c{display:inline-flex;align-items:center;gap:var(--space-1);padding:4px var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--hairline);background:var(--surface-raised);color:var(--ink)}
+.c .ico{width:16px;height:16px}
+.c.good{color:var(--success)}.c.medium{color:var(--ink);background:var(--accent-soft);border-color:transparent}.c.draft{color:var(--warning)}.c.busy{color:var(--ink-muted)}
+</style></head><body>
+<span class="c good caption"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Swahili · bonne</span>
+<span class="c medium caption"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Lingala · moyenne</span>
+<span class="c draft caption"><svg class="ico" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Yoruba · brouillon</span>
+<span class="c busy caption"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Transcription…</span>
+</body></html>

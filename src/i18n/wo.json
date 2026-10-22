@@ -13,7 +13,14 @@
       "body": "Say baat yu ñu dénc ak seeni bind dinañu feeñ fii."
     },
     "count_other": "{{count}} baat yu ñu dénc",
-    "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii."
+    "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii.",
+    "record": "Dénc",
+    "recordA11y": "Tàmbali benn dénc",
+    "listTitle": "Baat yu ñu dénc",
+    "recovered": "Dellu nañu ko",
+    "itemA11y": "Dénc bu {{date}}, diir {{duration}}",
+    "itemRecoveredA11y": "Dénc bu {{date}}, diir {{duration}}, dellu nañu ko ginnaaw benn dog",
+    "durationUnknown": "xamuñu ko"
   },
   "settings": {
     "title": "Tànneef yi",
@@ -22,6 +29,57 @@
       "hint": "Làkk bi ñuy bindee baat yi, dañu koy tànn ci beneen bérab.",
       "restartRtl": "Aplikasioŋ bi dina tàmbaliwaat ngir soppi fan lañuy bindee.",
       "optionA11y": "Làkku jumtukaay bi: {{language}}"
+    }
+  },
+  "record": {
+    "start": "Dénc",
+    "startA11y": "Tàmbali benn dénc",
+    "title": "Dénc baat",
+    "consentReminder": "Xamal ñi fi nekk ne yaa ngi dénc seen baat.",
+    "pause": "Taxawal",
+    "resume": "Kontine",
+    "stop": "Jeexal",
+    "status": {
+      "preparing": "Mu ngi waajtu…",
+      "recording": "Dénc bi mu ngi dox",
+      "paused": "Taxaw na",
+      "interrupted": "Dog na",
+      "stopping": "Mu ngi denc fichier bi…",
+      "error": "Njuumte ci dénc bi",
+      "local": "Denc nañu ko"
+    },
+    "interruption": {
+      "title": "Dénc bi dog na",
+      "body": "Woote walla beneen aplikasioŋ jël na mikro bi. Li jiitu lépp denc nañu ko.",
+      "resume": "Kontine dénc bi",
+      "waitBody": "Woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi. Li jiitu lépp denc nañu ko. Mën nga kontine bu woote bi jeexee."
+    },
+    "levelA11y": "Kawteg baat bi: {{percent}} %",
+    "timerA11y": "Diir: {{duration}}",
+    "notification": {
+      "title": "Dénc bi mu ngi dox",
+      "pausedTitle": "Dénc bi taxaw na",
+      "text": "Bësal ngir dellu ci dénc bi",
+      "pause": "Taxawal",
+      "resume": "Kontine",
+      "stop": "Jeexal",
+      "channelName": "Dénc baat"
+    },
+    "permission": {
+      "title": "Mikro bi tere nañu ko",
+      "body": "Tolitoli soxla na mikro bi ngir dénc. Mën nga ko may ci tànneefu telefon bi.",
+      "openSettings": "Ubbi tànneef yi",
+      "notificationsDenied": "Yégle yi tere nañu leen: dénc bi dina kontine bu ekraan bi tëju, waaye du feeñ ci yégle yi."
+    },
+    "disk": {
+      "low": "Bérab bi tuuti na: lu tollu ci {{minutes}} simili dénc rekk a des.",
+      "insufficient": "Bérab bi doyul: fàww 10 simili dénc mën a dugg."
+    },
+    "error": "Dénc bi antuwul. Li ñu jot a dénc denc nañu ko.",
+    "close": "Tëj",
+    "micSilent": {
+      "title": "Mikro bi dafa mel ni dafa dagg",
+      "body": "Ay saa yii dara agsiwul. Xéy-na woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi."
     }
   },
   "dev": {

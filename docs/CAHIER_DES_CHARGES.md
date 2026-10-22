@@ -277,7 +277,7 @@ Principe : rien n'est jamais envoyé au cloud sans avoir d'abord été écrit su
 
 | Garantie | Mécanisme |
 | --- | --- |
-| Aucune perte pendant la capture | Écriture du .m4a par blocs sur le disque toutes les 2 s ; en cas de mort de l'app ou du système, le fichier partiel est finalisé au prochain lancement et marqué « récupéré » |
+| Aucune perte pendant la capture | Audio vidé sur le disque au moins toutes les 2 s (WAV continu vidé toutes les 200 ms, converti en .m4a à l'arrêt, voir D-021) ; en cas de mort de l'app ou du système, le fichier partiel est finalisé au prochain lancement et marqué « récupéré » |
 | Aucune perte avant la synchro | Boîte de sortie persistante (table `outbox`) : chaque changement local (nouvel audio, segment, renommage, suppression) y est inscrit dans la même transaction SQLite que la donnée elle-même |
 | Aucune corruption | Somme de contrôle SHA-256 calculée à la fin de l'enregistrement, vérifiée côté serveur après upload et après téléchargement sur un autre appareil |
 | Reprise après coupure | Upload résumable par morceaux de 5 Mo (TUS via Supabase Storage) ; un morceau envoyé n'est jamais renvoyé |
@@ -359,11 +359,11 @@ Dix étapes, chacune livrant quelque chose de testable sur un vrai téléphone. 
 | N° | Étape | Livrable | Critères de fin |
 | --- | --- | --- | --- |
 | 0 | Initialisation du projet | Projet Expo (TypeScript, expo-router), dev client, EAS configuré, i18n en sept langues (fr, en, de, ru, ar, wo, zh-Hans) avec prise en charge RTL et sélecteur de langue dans l'app, lint, tests, CI GitHub Actions, `CLAUDE.md`, structure de dossiers | L'app vide se lance sur un iPhone et un Android physiques via le dev client ; CI verte |
-| 1 | Enregistrement audio | Service `audio` : start / pause / resume / stop, fichier .m4a, niveau sonore, arrière-plan iOS et service de premier plan Android, gestion des interruptions | Enregistrement de 60 min écran verrouillé, sans perte, sur les deux plateformes ; appel entrant géré |
+| 1 | Enregistrement audio | Service `audio` : start / pause / resume / stop, fichier .m4a, niveau sonore, arrière-plan iOS et service de premier plan Android, gestion des interruptions | Enregistrement de 60 min écran verrouillé, sans perte, sur Android ; appel entrant géré ; vérification iPhone inscrite à la dette iOS (D-022) |
 | 2 | Base locale et bibliothèque | Schéma drizzle, migrations, FTS5, écran Bibliothèque, écran Détail minimal (lecteur audio) | Créer, renommer, supprimer, rechercher ; corbeille 30 jours ; tests unitaires du dépôt de données |
-| 3 | Transcription locale | Service `whisper` avec react-native-executorch, téléchargement des modèles, file d'attente persistante, transcription par segments avec progression, reprise après kill | 1 h d'audio français transcrite en moins de 15 min sur un iPhone 13 et un Android milieu de gamme ; reprise après fermeture forcée |
+| 3 | Transcription locale | Service `whisper` avec react-native-executorch, téléchargement des modèles, file d'attente persistante, transcription par segments avec progression, reprise après kill | 1 h d'audio français transcrite en moins de 15 min sur un Android milieu de gamme ; reprise après fermeture forcée ; vérification iPhone 13 inscrite à la dette iOS (D-022) |
 | 4 | Détail et lecture synchronisée | Texte synchronisé avec l'audio, appui sur un mot, vitesse, export .txt/.md/.m4a, feuille de partage | Décalage texte/audio inférieur à 300 ms ; export ouvert dans une autre app |
-| 5 | Tablette, accessibilité, finition MVP | Vue à deux panneaux, VoiceOver/TalkBack, polices dynamiques, onboarding avec consentement, réglages | Audit accessibilité passé ; revue UX sur iPad et tablette Android ; build TestFlight et test interne Play |
+| 5 | Tablette, accessibilité, finition MVP | Vue à deux panneaux, VoiceOver/TalkBack, polices dynamiques, onboarding avec consentement, réglages | Prérequis à l'ouverture : dette iOS des étapes 1 et 3 soldée (D-022). Audit accessibilité passé ; revue UX sur iPad et tablette Android ; build TestFlight et test interne Play |
 | 6 | Sauvegarde cloud utilisateur | iCloud Drive (iOS) et Google Drive (Android) : export automatique audio + JSON, restauration | Perte simulée de l'appareil : restauration complète sur un nouvel appareil de la même plateforme |
 | 7 | Backend Supabase et compte | Auth (Apple, Google, e-mail), schéma Postgres, RLS, Storage, synchro bidirectionnelle, suppression de compte | Synchro iPhone ↔ Android sous 30 s ; tests RLS automatisés ; suppression de compte vérifiée |
 | 8 | Transcription cloud et quota | Edge Function vers Deepgram, compteur de quota serveur, routage local/cloud selon la règle de la section 5, bannières d'incitation | Quota respecté sous tests concurrents ; clé API jamais présente dans l'app ; coût par minute mesuré |
@@ -383,7 +383,7 @@ Le MVP local coûte moins de 300 € la première année ; les coûts variables 
 
 | Poste | Coût | Quand |
 | --- | --- | --- |
-| Apple Developer Program | 99 $ / an | Avant TestFlight (étape 5) |
+| Apple Developer Program | 99 $ / an | Avant l'ouverture de l'étape 5, pour solder la dette iOS (D-022) |
 | Google Play Console | 25 $ une fois | Avant le test interne (étape 5) ; prévoir 12 testeurs pendant 14 jours avant la production pour un compte personnel |
 | EAS (Expo) | Gratuit jusqu'à 30 builds / mois ; environ 19 $ / mois au-delà | Étape 0 |
 | Supabase | Gratuit (500 Mo base, 1 Go stockage) puis environ 25 $ / mois (Pro) + stockage et sortie réseau à l'usage | Étape 7 |

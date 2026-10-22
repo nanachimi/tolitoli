@@ -1,0 +1,118 @@
+diff --git a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
+index b9c4636..f8aaa51 100644
+--- a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
++++ b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
+@@ -3,6 +3,8 @@ package com.swmansion.audioapi.system
+ import android.media.AudioFocusRequest
+ import android.media.AudioManager
+ import android.os.Build
++import android.os.Handler
++import android.os.Looper
+ import android.util.Log
+ import com.swmansion.audioapi.AudioAPIModule
+ import java.lang.ref.WeakReference
+@@ -32,7 +34,8 @@ class AudioFocusListener(
+         val body =
+           HashMap<String, Any>().apply {
+             put("type", "began")
+-            put("shouldResume", false)
++            // Transient loss (ringtone, call): focus is expected back, so "ended" will follow.
++            put("shouldResume", true)
+             isTransientLoss = true
+           }
+         audioAPIModule.get()?.invokeHandlerWithEventNameAndEventBody(AudioEvent.INTERRUPTION.ordinal, body)
+@@ -59,7 +62,9 @@ class AudioFocusListener(
+       this.focusRequest =
+         AudioFocusRequest
+           .Builder(focus)
+-          .setOnAudioFocusChangeListener(this)
++          // Main looper: without a handler, callbacks go to the looper of the thread that first
++          // created the process AudioManager, which may since have died (JS reload).
++          .setOnAudioFocusChangeListener(this, Handler(Looper.getMainLooper()))
+           .build()
+ 
+       audioManager.get()?.requestAudioFocus(focusRequest!!)
+diff --git a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/NotificationRegistry.kt b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/NotificationRegistry.kt
+index 91b1d34..1f40db4 100644
+--- a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/NotificationRegistry.kt
++++ b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/NotificationRegistry.kt
+@@ -154,7 +154,8 @@ class NotificationRegistry(
+             reactContext,
+             audioAPIModule,
+             RecordingNotification.ID,
+-            "audio_recording4",
++            // New id: an existing channel keeps its importance, and the old one was low (hidden).
++            RecordingNotification.CHANNEL_ID,
+           )
+         }
+ 
+diff --git a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/RecordingNotification.kt b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/RecordingNotification.kt
+index ca97de4..d1dc564 100644
+--- a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/RecordingNotification.kt
++++ b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/notification/RecordingNotification.kt
+@@ -28,6 +28,8 @@ class RecordingNotification(
+   companion object {
+     private const val TAG = "RecordingNotification"
+     const val ID = 200
++    const val CHANNEL_ID = "recording_visible"
++    private const val LEGACY_CHANNEL_ID = "audio_recording4"
+ 
+     private const val REQUEST_CODE_CONTENT = 2000
+     private const val REQUEST_CODE_PAUSE = 2001
+@@ -38,13 +40,13 @@ class RecordingNotification(
+ 
+   private val state = RecordingNotificationState()
+ 
+-  private fun initializeNotification() {
++  private fun initializeNotification(channelName: String?) {
+     val context = reactContext.get() ?: throw IllegalStateException("React context is null")
+     if (state.initialized) {
+       return
+     }
+ 
+-    createNotificationChannel(context)
++    createNotificationChannel(context, channelName)
+     state.receiver = RecordingNotificationReceiver(audioAPIModule.get()!!)
+     val filter =
+       IntentFilter().apply {
+@@ -63,7 +65,7 @@ class RecordingNotification(
+   }
+ 
+   override fun show(options: ReadableMap?): Notification {
+-    initializeNotification()
++    initializeNotification(options.stringOr("channelName", null))
+     val context = reactContext.get() ?: throw IllegalStateException("React context is null")
+     if (options !== state.cachedRNOptions) {
+       state.cachedRNOptions = options
+@@ -261,19 +263,28 @@ class RecordingNotification(
+     fallback: Int?,
+   ): Int? = if (this?.hasKey(key) == true) getInt(key) else fallback
+ 
+-  private fun createNotificationChannel(context: ReactApplicationContext) {
++  private fun createNotificationChannel(
++    context: ReactApplicationContext,
++    channelName: String?,
++  ) {
+     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++      // Default importance so the ongoing recording is shown among regular notifications,
++      // not folded into the silent ones; no sound or vibration. The name comes from the app.
+       val channel =
+         NotificationChannel(
+           channelId,
+-          "Recording Audio",
+-          NotificationManager.IMPORTANCE_LOW,
++          channelName ?: "Recording Audio",
++          NotificationManager.IMPORTANCE_DEFAULT,
+         ).apply {
+           description = "Notifications for ongoing audio recordings"
+           lockscreenVisibility = Notification.VISIBILITY_PUBLIC
++          setSound(null, null)
++          enableVibration(false)
++          setShowBadge(false)
+         }
+       val notificationManager =
+         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
++      notificationManager.deleteNotificationChannel(LEGACY_CHANNEL_ID)
+       notificationManager.createNotificationChannel(channel)
+     }
+     Log.d(TAG, "Notification channel created: $channelId")

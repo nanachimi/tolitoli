@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "NSMicrophoneUsageDescription": "Tolitoli utilise le micro pour enregistrer les conversations que vous lancez. L'audio reste sur l'appareil, sauf si vous activez le cloud."
+  }
+}

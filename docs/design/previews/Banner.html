@@ -1,0 +1,17 @@
+<!-- @dsCard group="Enregistrement" height=200 subtitle="interrompu, reprise, micro coupé" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+body{flex-direction:column;align-items:stretch;max-width:420px}
+.b{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--accent-soft);color:var(--ink)}
+.b .ico{flex:none;color:var(--accent)}.b p{margin:0}.b .caption{color:var(--ink-muted)}
+.b.warn{background:var(--surface-raised);border:1px solid var(--hairline)}.b.warn .ico{color:var(--danger)}
+.btn{margin-top:var(--space-2);display:inline-flex;align-items:center;min-height:40px;padding:0 var(--space-3);border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);border:0;font:inherit}
+</style></head><body>
+<div class="b"><svg class="ico" viewBox="0 0 24 24"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l.6-.6a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" x2="2" y1="2" y2="22"/></svg><div><p class="body-strong">Enregistrement interrompu</p><p class="caption">Vous pourrez reprendre à la fin de l'appel.</p></div></div>
+<div class="b"><svg class="ico" viewBox="0 0 24 24"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l.6-.6a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" x2="2" y1="2" y2="22"/></svg><div><p class="body-strong">Appel terminé</p><p class="caption">Ce qui précède l'appel est conservé.</p><button class="btn body-strong">Reprendre l'enregistrement</button></div></div>
+<div class="b warn"><svg class="ico" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><div><p class="body-strong">Le micro semble coupé</p><p class="caption">Une autre application utilise peut-être le micro.</p></div></div>
+</body></html>

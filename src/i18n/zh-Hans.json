@@ -13,7 +13,14 @@
       "body": "你的录音及其转写文本将显示在这里。"
     },
     "count_other": "{{count}} 条录音",
-    "detailPlaceholder": "选择一条录音以在此处显示。"
+    "detailPlaceholder": "选择一条录音以在此处显示。",
+    "record": "录音",
+    "recordA11y": "开始录音",
+    "listTitle": "录音",
+    "recovered": "已恢复",
+    "itemA11y": "{{date}} 的录音，时长 {{duration}}",
+    "itemRecoveredA11y": "{{date}} 的录音，时长 {{duration}}，中断后已恢复",
+    "durationUnknown": "未知"
   },
   "settings": {
     "title": "设置",
@@ -22,6 +29,57 @@
       "hint": "转写语言需单独设置。",
       "restartRtl": "应用将重新启动以更改文字方向。",
       "optionA11y": "界面语言：{{language}}"
+    }
+  },
+  "record": {
+    "start": "录音",
+    "startA11y": "开始录音",
+    "title": "录音",
+    "consentReminder": "请告知在场人员你正在录音。",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "停止",
+    "status": {
+      "preparing": "正在准备…",
+      "recording": "正在录音",
+      "paused": "已暂停",
+      "interrupted": "已中断",
+      "stopping": "正在保存文件…",
+      "error": "录音出错",
+      "local": "已保存"
+    },
+    "interruption": {
+      "title": "录音已中断",
+      "body": "来电或其他应用占用了麦克风。此前的内容均已保存。",
+      "resume": "继续录音",
+      "waitBody": "来电或其他应用正在使用麦克风。此前的内容均已保存。通话结束后即可继续。"
+    },
+    "levelA11y": "音量：{{percent}}%",
+    "timerA11y": "时长：{{duration}}",
+    "notification": {
+      "title": "正在录音",
+      "pausedTitle": "录音已暂停",
+      "text": "点按返回录音",
+      "pause": "暂停",
+      "resume": "继续",
+      "stop": "停止",
+      "channelName": "录音"
+    },
+    "permission": {
+      "title": "麦克风访问被拒绝",
+      "body": "Tolitoli 需要麦克风才能录音。你可以在手机设置中允许访问。",
+      "openSettings": "打开设置",
+      "notificationsDenied": "通知已被拒绝：锁屏时录音会继续，但不会显示在通知中。"
+    },
+    "disk": {
+      "low": "存储空间不足：约剩 {{minutes}} 分钟录音空间。",
+      "insufficient": "存储空间不够：至少需要可容纳 10 分钟录音的空间。"
+    },
+    "error": "录音失败。已录下的内容均已保留。",
+    "close": "关闭",
+    "micSilent": {
+      "title": "麦克风似乎已断开",
+      "body": "一段时间以来没有收到任何声音。可能有通话或其他应用正在使用麦克风。"
     }
   },
   "dev": {

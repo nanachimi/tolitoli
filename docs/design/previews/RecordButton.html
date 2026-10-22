@@ -1,0 +1,17 @@
+<!-- @dsCard group="Actions" height=140 subtitle="Enregistrer (72 px) et Arrêter (96 px)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+body{gap:32px}
+.rec{width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-pill);border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
+.rec .ico{width:32px;height:32px}
+.stop{width:var(--control-xl);height:var(--control-xl);border-radius:var(--radius-pill);border:2px solid var(--accent);background:var(--surface-raised);color:var(--accent);display:grid;place-items:center;cursor:pointer}
+.stop .sq{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--accent)}
+.lbl{display:flex;flex-direction:column;align-items:center;gap:var(--space-2)}.lbl span{color:var(--ink-muted)}
+</style></head><body>
+<div class="lbl"><button class="rec" aria-label="Enregistrer"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></button><span class="caption">Enregistrer</span></div>
+<div class="lbl"><button class="stop" aria-label="Arrêter l'enregistrement"><span class="sq"></span></button><span class="caption">Arrêter</span></div>
+</body></html>

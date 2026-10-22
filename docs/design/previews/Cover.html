@@ -1,0 +1,48 @@
+<!-- @dsCard height=288 -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:var(--surface)}
+.cover{position:relative;width:960px;height:288px;overflow:hidden}
+svg{position:absolute;inset:0}
+.accent{fill:var(--accent)}.ochre{fill:var(--ochre)}.ink{fill:var(--ink)}.soft{fill:var(--accent-soft)}.ground{fill:var(--surface)}
+.name{position:absolute;left:32px;bottom:54px;margin:0;font-family:var(--font-display);font-weight:600;font-size:88px;line-height:.95;color:var(--ink);letter-spacing:-0.01em}
+.tag{position:absolute;left:34px;bottom:30px;margin:0;font-family:var(--font-body);font-size:13px;line-height:18px;color:var(--ink-muted);max-width:440px}
+</style></head><body>
+<div class="cover">
+<!--
+blocks: accent slab 240×310 (space-8 ×7.5, bleeds top, rx radius-lg) · ochre 184×136 · ink 184×120 · accent-soft 24×288 relief strip ; all right of x=480
+arrangement: one tall slab with two satellites stacked on its right and a thin relief strip on its left
+pattern: pills (soft, friendly, large radii → pills from the radius scale) ; the brand's own three-bar mark is a trio of pills, so the pattern is the mark's own unit repeated
+scales: pill width space-4 (16), pitch space-8 (32), rx 8 = half the short side ; gaps between blocks space-4 (16) ; corners radius-lg (22) on the slab, radius-md (14) on satellites
+-->
+<svg viewBox="0 0 960 288" width="960" height="288" aria-hidden="true">
+  <rect class="soft" x="480" y="0" width="24" height="288"/>
+  <rect class="accent" x="520" y="-22" width="240" height="310" rx="22"/>
+  <rect class="ochre" x="776" y="0" width="184" height="136" rx="14"/>
+  <rect class="ink" x="776" y="152" width="184" height="136" rx="14"/>
+  <g class="ground">
+    <rect x="552" y="112" width="16" height="64" rx="8"/>
+    <rect x="584" y="56" width="16" height="176" rx="8"/>
+    <rect x="616" y="88" width="16" height="112" rx="8"/>
+    <rect x="648" y="128" width="16" height="32" rx="8"/>
+    <rect x="680" y="72" width="16" height="144" rx="8"/>
+    <rect x="712" y="104" width="16" height="80" rx="8"/>
+  </g>
+  <g class="ink">
+    <rect x="808" y="40" width="16" height="56" rx="8"/>
+    <rect x="840" y="24" width="16" height="88" rx="8"/>
+    <rect x="872" y="48" width="16" height="40" rx="8"/>
+    <rect x="904" y="32" width="16" height="72" rx="8"/>
+  </g>
+  <g class="ochre">
+    <rect x="808" y="200" width="16" height="40" rx="8"/>
+    <rect x="840" y="184" width="16" height="72" rx="8"/>
+    <rect x="872" y="208" width="16" height="24" rx="8"/>
+    <rect x="904" y="192" width="16" height="56" rx="8"/>
+  </g>
+</svg>
+<h1 class="name">Tolitoli</h1>
+<p class="tag">Enregistrer, transcrire, garder. Dix langues africaines, sept langues d'interface, le local d'abord.</p>
+</div>
+</body></html>

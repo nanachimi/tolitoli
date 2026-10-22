@@ -14,7 +14,14 @@
     },
     "count_one": "{{count}} recording",
     "count_other": "{{count}} recordings",
-    "detailPlaceholder": "Select a recording to show it here."
+    "detailPlaceholder": "Select a recording to show it here.",
+    "record": "Record",
+    "recordA11y": "Start a recording",
+    "listTitle": "Recordings",
+    "recovered": "Recovered",
+    "itemA11y": "Recording from {{date}}, duration {{duration}}",
+    "itemRecoveredA11y": "Recording from {{date}}, duration {{duration}}, recovered after an interruption",
+    "durationUnknown": "unknown"
   },
   "settings": {
     "title": "Settings",
@@ -23,6 +30,57 @@
       "hint": "The transcription language is set separately.",
       "restartRtl": "The app will restart to change the writing direction.",
       "optionA11y": "App language: {{language}}"
+    }
+  },
+  "record": {
+    "start": "Record",
+    "startA11y": "Start a recording",
+    "title": "Recording",
+    "consentReminder": "Tell the people present that you are recording.",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "status": {
+      "preparing": "Getting ready…",
+      "recording": "Recording",
+      "paused": "Paused",
+      "interrupted": "Interrupted",
+      "stopping": "Saving the file…",
+      "error": "Recording error",
+      "local": "Saved"
+    },
+    "interruption": {
+      "title": "Recording interrupted",
+      "body": "A call or another app took the microphone. Everything before it is saved.",
+      "resume": "Resume recording",
+      "waitBody": "A call or another app is using the microphone. Everything before is saved. You can resume once the call ends."
+    },
+    "levelA11y": "Sound level: {{percent}}%",
+    "timerA11y": "Duration: {{duration}}",
+    "notification": {
+      "title": "Recording",
+      "pausedTitle": "Recording paused",
+      "text": "Tap to return to the recording",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "channelName": "Audio recording"
+    },
+    "permission": {
+      "title": "Microphone access denied",
+      "body": "Tolitoli needs the microphone to record. You can allow it in the phone settings.",
+      "openSettings": "Open settings",
+      "notificationsDenied": "Notifications denied: recording continues with the screen locked, but does not show in notifications."
+    },
+    "disk": {
+      "low": "Low storage: about {{minutes}} min of recording left.",
+      "insufficient": "Not enough storage: at least 10 minutes of recording must fit."
+    },
+    "error": "Recording failed. What was captured is kept.",
+    "close": "Close",
+    "micSilent": {
+      "title": "The microphone seems cut off",
+      "body": "No sound has come in for a moment. A call or another app may be using it."
     }
   },
   "dev": {
