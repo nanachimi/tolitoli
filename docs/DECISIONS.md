@@ -353,6 +353,10 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - **Encodeur** : un module Expo local (`modules/audio-encoder/`), plutôt que react-native-compressor. Il utilise MediaCodec + MediaMuxer sur Android. Le code iOS est écrit, mais il ne sera testé qu'avec la dette iOS (D-022).
   - **Fréquence** : WAV en **16 kHz** mono. C'est la qualité d'une voix HD, celle qu'attendent Whisper et les moteurs cloud. Le WAV occupe 115 Mo/h pendant l'enregistrement.
   - Une seconde build Android embarque le module, comme prévu au plan.
+- **Vitesse d'encodage mesurée sur l'A05** :
+  - Première version : 22 s pour 2 min d'audio, soit 5 fois le temps réel. Elle ne récupérait qu'une trame AAC par passage de boucle, avec une attente de 10 ms.
+  - Après correction : **3,6 s pour 2 min, soit 33 fois le temps réel**. L'arrêt d'un enregistrement d'une heure prend donc environ 2 min.
+  - Le `.m4a` 16 kHz à 64 kbit/s déclare son délai d'amorçage (2 112 échantillons). Sa durée correspond à celle de la source à 40 ms près.
 
 ## D-022 — Compte Apple Developer reporté : dette iOS
 
@@ -413,4 +417,28 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
      - déclenchement : au moins 500 ms de crêtes à 4 LSB ou moins (environ −78 dBFS) sur la prise de niveau 16 kHz ;
      - effet : une bannière « Le micro semble coupé », **sans pause automatique**, pour qu'un faux positif ne coûte rien ;
      - le silence d'une pièce réelle mesuré sur l'A05 reste vers −73 dBFS, bien au-dessus du seuil.
-- **Vérification** : un nouveau test d'appel aura lieu sur la seconde build, qui contient le patch. Il couvrira un appel classique, un appel WhatsApp, un appel pendant la reprise et la notification après l'arrêt.
+- **Essai 3 (seconde build, avec le patch, après un rechargement du JS dans le même processus)** : c'est la situation qui faisait échouer l'essai 1. **Quatre appels sur quatre sont détectés** :
+  - deux appels classiques, dont un laissé sonner sans décrocher ;
+  - deux appels WhatsApp.
+
+  Détail des mesures :
+  - L'écouteur tourne désormais sur le fil principal, et le JS reçoit la perte de focus 2 à 35 ms après le début de la sonnerie.
+  - Pendant un appel WhatsApp, la bannière dit « Vous pourrez reprendre à la fin de l'appel », **sans bouton**. « Reprendre l'enregistrement » revient à la fin de l'appel.
+  - Rappel WhatsApp 12 s après une reprise : le nouveau segment (s001, 12,0 s) est fermé dès la sonnerie.
+  - Le fichier final est un `.m4a` de 1 584,57 s. Il correspond exactement à la somme des trois segments (1 523,05 + 11,99 + 49,52 s) et ne contient **aucun silence numérique** de 0,5 s ou plus : aucun appel n'a été enregistré.
+  - La notification disparaît après l'arrêt (0 notification Tolitoli active, contrôlé par adb).
+  - Le bouton « Reprendre » de la notification n'a pas été essayé pendant l'appel : le propriétaire n'a pas vu la notification (voir plus bas).
+
+  Captures, sans la barre d'état ni la barre de navigation :
+  - `docs/captures/step-1/d023-enregistrement-en-cours.png` ;
+  - `docs/captures/step-1/d023-appel-whatsapp-en-cours-sans-reprise.png` ;
+  - `docs/captures/step-1/d023-fin-appel-reprise-proposee.png`.
+
+- **Incident de capture** :
+  - Le script de captures ne s'arrêtait que sur l'état téléphonique « sonnerie ». Or un appel WhatsApp ne change pas cet état.
+  - Cinq captures ont donc saisi le bandeau d'appel entrant de WhatsApp, avec le nom et la photo du contact. Elles ont été effacées sans avoir été versionnées.
+  - Désormais, aucune capture automatique n'est prise pendant un test d'appel. Les captures sont déclenchées une à une, une fois l'appel terminé, ou pendant l'appel quand Tolitoli est au premier plan, après vérification.
+- **Notification peu visible** :
+  - react-native-audio-api crée son canal en dur, nommé « Recording Audio » (en anglais, non traduisible) avec l'importance `LOW`.
+  - Sur le Galaxy A05, la notification est donc rangée parmi les notifications silencieuses, avec une simple icône de micro dans la barre d'état, et le propriétaire ne l'a pas vue.
+  - Décision à prendre (voir l'étape suivante).
