@@ -32,6 +32,13 @@
       "recovered": "récupéré après une interruption",
       "longPress": "Appui long pour renommer ou mettre à la corbeille",
       "duration": "durée {{duration}}"
+    },
+    "model": {
+      "body": "Téléchargez-le pour transcrire sur l’appareil ({{size}}, wifi uniquement).",
+      "download": "Télécharger"
+    },
+    "storage": {
+      "manage": "Gérer l’espace"
     }
   },
   "settings": {
@@ -63,7 +70,7 @@
     },
     "dev": {
       "demo": "Données de démonstration",
-      "demoOn": "Activées. Huit enregistrements fictifs, jamais écrits sur l’appareil.",
+      "demoOn": "Activées. Des enregistrements fictifs, jamais écrits sur l’appareil.",
       "demoOff": "Désactivées. Seuls vos vrais enregistrements apparaissent."
     }
   },

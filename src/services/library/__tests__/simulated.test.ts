@@ -37,7 +37,7 @@ describe('SimulatedLibraryRepository', () => {
   it('lists real recordings as audio only, plus the demo set when enabled, newest first', () => {
     const { repository, setDemo } = setup();
     const items = repository.list();
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(10);
     expect(items.map((i) => i.createdAt)).toEqual(
       [...items.map((i) => i.createdAt)].sort().reverse(),
     );
@@ -58,7 +58,7 @@ describe('SimulatedLibraryRepository', () => {
         .map((i) => i.issue)
         .filter(Boolean),
     );
-    expect(issues).toEqual(new Set(['failed', 'model-missing', 'quota-exhausted']));
+    expect(issues).toEqual(new Set(['failed', 'model-missing', 'offline', 'quota-exhausted']));
     expect(demoItems(NOW).some((i) => i.recovered)).toBe(true);
     expect(demoItems(NOW).some((i) => i.language === 'wo' && i.quality === null)).toBe(true);
   });
@@ -79,7 +79,7 @@ describe('SimulatedLibraryRepository', () => {
     expect(repository.search('DELIVERY').map((i) => i.id)).toEqual(['demo-meeting']);
     expect(repository.search('pluriels').map((i) => i.id)).toEqual(['demo-lecture']);
     expect(repository.search('introuvable')).toEqual([]);
-    expect(repository.search('  ')).toHaveLength(9);
+    expect(repository.search('  ')).toHaveLength(10);
   });
 
   it('renames in memory; an empty title goes back to the default', () => {

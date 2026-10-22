@@ -16,6 +16,12 @@ import type { RecordingManifest } from '@/services/audio/recordingStore';
 
 import { renderScreen } from './renderScreen';
 
+jest.mock('@/features/library/storage', () => ({
+  itemBytes: () => 0,
+  totalBytes: () => 0,
+  freeBytes: () => 8 * 1024 ** 3,
+}));
+
 jest.mock('@/features/recording/recordingController', () => ({
   startRecording: jest.fn(async () => 'started'),
   pauseRecording: jest.fn(),

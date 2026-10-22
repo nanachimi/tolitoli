@@ -9,21 +9,28 @@ import {
   type OnboardingPageNumber,
 } from '@/features/onboarding/onboarding';
 import {
+  cancelModelDownload,
   SIMULATED_MODEL_BYTES,
-  useSimulatedDownload,
-} from '@/features/onboarding/useSimulatedDownload';
+  startModelDownload,
+  useModel,
+} from '@/features/transcription/model';
 import { OnboardingPage, Screen } from '@/ui';
 import { formatBytes } from '@/ui/format/display';
 
 /** Model page: the download is simulated until step 3. */
 function ModelPage({ onDone }: { onDone: () => void }) {
   const { t, i18n } = useTranslation();
-  const value = useSimulatedDownload();
+  const { status, progress } = useModel();
+  useEffect(() => startModelDownload(), []);
+  const value = status === 'ready' ? 1 : progress;
   return (
     <OnboardingPage
       page={3}
       onNext={onDone}
-      onLater={onDone}
+      onLater={() => {
+        cancelModelDownload();
+        onDone();
+      }}
       download={{
         value,
         done: value >= 1,

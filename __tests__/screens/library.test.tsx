@@ -3,6 +3,12 @@ import { router } from 'expo-router';
 
 import LibraryScreen, { SEARCH_DEBOUNCE_MS } from '../../app/(tabs)/index';
 import { library, setDemoDataEnabled } from '@/features/library/library';
+import { freeBytes } from '@/features/library/storage';
+import {
+  cancelModelDownload,
+  SIMULATED_DOWNLOAD_MS,
+  useModel,
+} from '@/features/transcription/model';
 import { i18next } from '@/i18n';
 import * as layout from '@/ui/layout/useLayoutMode';
 
@@ -14,6 +20,14 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(),
 }));
 
+const GB = 1024 ** 3;
+
+jest.mock('@/features/library/storage', () => ({
+  itemBytes: () => 0,
+  totalBytes: () => 0,
+  freeBytes: jest.fn(() => 8 * 1024 ** 3),
+}));
+
 jest.mock('@/ui/layout/useLayoutMode', () => ({
   ...jest.requireActual('@/ui/layout/useLayoutMode'),
   useLayoutMode: jest.fn(() => 'single'),
@@ -22,9 +36,12 @@ jest.mock('@/ui/layout/useLayoutMode', () => ({
 beforeEach(async () => {
   await i18next.changeLanguage('fr');
   setDemoDataEnabled(true);
+  useModel.setState({ status: 'ready', progress: 1 });
 });
 
 afterEach(() => {
+  cancelModelDownload();
+  jest.mocked(freeBytes).mockReturnValue(8 * GB);
   jest.useRealTimers();
   jest.mocked(router.push).mockClear();
   jest.mocked(layout.useLayoutMode).mockReturnValue('single');
@@ -55,10 +72,18 @@ describe('Library', () => {
       }),
     ).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /transcription en cours$/ })).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: /transcription en échec$/ })).toBeOnTheScreen();
     expect(
       screen.getByRole('button', { name: /récupéré après une interruption$/ }),
     ).toBeOnTheScreen();
+  });
+
+  it('says on the card that a transcription failed', async () => {
+    // The list renders its first rows only: newer cards are trashed to bring this one up.
+    for (const id of ['demo-meeting', 'demo-transcribing', 'demo-lecture', 'demo-recovered']) {
+      library.trash(id);
+    }
+    await renderScreen(<LibraryScreen />);
+    expect(screen.getByRole('button', { name: /transcription en échec$/ })).toBeOnTheScreen();
   });
 
   it('opens a recording', async () => {
@@ -106,5 +131,38 @@ describe('Library', () => {
     await renderScreen(<LibraryScreen />);
     const titles = new Set(library.list().map((item) => item.title));
     expect(hardCodedTexts().filter((text) => !titles.has(text))).toEqual([]);
+  });
+});
+
+describe('Library notices', () => {
+  it('offers the model when it was put off, and shows its download', async () => {
+    jest.useFakeTimers();
+    useModel.setState({ status: 'missing', progress: 0 });
+    await renderScreen(<LibraryScreen />);
+    expect(screen.getByText('Modèle de transcription absent')).toBeOnTheScreen();
+    await userEvent
+      .setup({ advanceTimers: jest.advanceTimersByTime })
+      .press(screen.getByRole('button', { name: 'Télécharger' }));
+    expect(screen.getByRole('progressbar', { name: 'Téléchargement du modèle' })).toBeOnTheScreen();
+    await act(() => jest.advanceTimersByTimeAsync(SIMULATED_DOWNLOAD_MS));
+    expect(screen.queryByRole('progressbar')).toBeNull();
+    expect(screen.queryByText('Modèle de transcription absent')).toBeNull();
+  });
+
+  it('warns when space runs low and leads to the storage screen', async () => {
+    jest.mocked(freeBytes).mockReturnValue(300 * 1024 * 1024);
+    await renderScreen(<LibraryScreen />);
+    expect(screen.getByText('Espace presque plein')).toBeOnTheScreen();
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Gérer l’espace' }));
+    expect(router.push).toHaveBeenCalledWith('/settings/storage');
+  });
+
+  it('has no hard-coded text in its notices (pseudo-locale)', async () => {
+    useModel.setState({ status: 'missing', progress: 0 });
+    jest.mocked(freeBytes).mockReturnValue(10 * 1024 * 1024);
+    setDemoDataEnabled(false);
+    await usePseudoLocale();
+    await renderScreen(<LibraryScreen />);
+    expect(hardCodedTexts()).toEqual([]);
   });
 });

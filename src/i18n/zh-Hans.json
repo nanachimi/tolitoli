@@ -30,6 +30,13 @@
       "recovered": "中断后已恢复",
       "longPress": "长按可重命名或移到回收站",
       "duration": "时长 {{duration}}"
+    },
+    "model": {
+      "body": "下载后即可在设备上转写（{{size}}，仅限 Wi‑Fi）。",
+      "download": "下载"
+    },
+    "storage": {
+      "manage": "管理空间"
     }
   },
   "settings": {
@@ -61,7 +68,7 @@
     },
     "dev": {
       "demo": "演示数据",
-      "demoOn": "已开启。八段虚构录音，从不写入设备。",
+      "demoOn": "已开启。虚构录音，从不写入设备。",
       "demoOff": "已关闭。只显示您的真实录音。"
     }
   },

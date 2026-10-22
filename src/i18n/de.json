@@ -31,6 +31,13 @@
       "recovered": "nach einer Unterbrechung wiederhergestellt",
       "longPress": "Lange drücken zum Umbenennen oder Löschen",
       "duration": "Dauer {{duration}}"
+    },
+    "model": {
+      "body": "Laden Sie es herunter, um auf dem Gerät zu transkribieren ({{size}}, nur WLAN).",
+      "download": "Herunterladen"
+    },
+    "storage": {
+      "manage": "Speicher verwalten"
     }
   },
   "settings": {
@@ -62,7 +69,7 @@
     },
     "dev": {
       "demo": "Demodaten",
-      "demoOn": "Aktiv. Acht fiktive Aufnahmen, nie auf das Gerät geschrieben.",
+      "demoOn": "Aktiv. Fiktive Aufnahmen, nie auf das Gerät geschrieben.",
       "demoOff": "Aus. Nur Ihre echten Aufnahmen erscheinen."
     }
   },

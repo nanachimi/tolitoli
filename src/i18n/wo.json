@@ -30,6 +30,13 @@
       "recovered": "delloo nañu ko ginnaaw ab dog",
       "longPress": "Bësal lu yàgg ngir soppi tur walla yobu ci mbalit mi",
       "duration": "diir {{duration}}"
+    },
+    "model": {
+      "body": "Wàccel ko ngir bind ci biir jumtukaay bi ({{size}}, wifi rekk).",
+      "download": "Wàcce"
+    },
+    "storage": {
+      "manage": "Toppatoo bérab bi"
     }
   },
   "settings": {
@@ -61,7 +68,7 @@
     },
     "dev": {
       "demo": "Done yu wone",
-      "demoOn": "Taal na. Juróom-ñett dénc yu dul dëgg, du ñu leen bind mukk ci jumtukaay bi.",
+      "demoOn": "Dox na. Ay bind yu dul dëgg, duñu leen bind mukk ci jumtukaay bi.",
       "demoOff": "Fey na. Say dénc yu dëgg rekk ñoo feeñ."
     }
   },

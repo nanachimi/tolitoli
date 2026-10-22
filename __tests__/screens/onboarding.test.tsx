@@ -9,7 +9,11 @@ import {
   isOnboardingDone,
   useOnboarding,
 } from '@/features/onboarding/onboarding';
-import { SIMULATED_DOWNLOAD_MS } from '@/features/onboarding/useSimulatedDownload';
+import {
+  cancelModelDownload,
+  SIMULATED_DOWNLOAD_MS,
+  useModel,
+} from '@/features/transcription/model';
 import { i18next } from '@/i18n';
 
 import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
@@ -18,10 +22,12 @@ import { renderScreen } from './renderScreen';
 beforeEach(async () => {
   Storage.clearSync();
   useOnboarding.setState({ done: false });
+  useModel.setState({ status: 'missing', progress: 0 });
   await i18next.changeLanguage('fr');
 });
 
 afterEach(() => {
+  cancelModelDownload();
   jest.useRealTimers();
   jest.restoreAllMocks();
 });
@@ -64,6 +70,7 @@ describe('Onboarding', () => {
     await renderScreen(<OnboardingScreen />);
     await userEvent.setup().press(screen.getByRole('button', { name: 'Télécharger plus tard' }));
     expect(isOnboardingDone()).toBe(true);
+    expect(useModel.getState().status).toBe('missing');
   });
 
   it('goes back from the consent to the promise with the system back button', async () => {

@@ -31,6 +31,13 @@
       "recovered": "recovered after an interruption",
       "longPress": "Long press to rename or move to trash",
       "duration": "length {{duration}}"
+    },
+    "model": {
+      "body": "Download it to transcribe on the device ({{size}}, wifi only).",
+      "download": "Download"
+    },
+    "storage": {
+      "manage": "Manage space"
     }
   },
   "settings": {
@@ -62,7 +69,7 @@
     },
     "dev": {
       "demo": "Demo data",
-      "demoOn": "On. Eight fictional recordings, never written to the device.",
+      "demoOn": "On. Fictional recordings, never written to the device.",
       "demoOff": "Off. Only your real recordings appear."
     }
   },

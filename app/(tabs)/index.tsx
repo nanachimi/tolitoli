@@ -7,11 +7,21 @@ import { itemTitle } from '@/features/library/display';
 import { useLibrary } from '@/features/library/library';
 import { RecordingActions } from '@/features/library/RecordingActions';
 import { RecordingDetail } from '@/features/library/RecordingDetail';
+import { freeBytes } from '@/features/library/storage';
+import {
+  SIMULATED_MODEL_BYTES,
+  startModelDownload,
+  useModel,
+} from '@/features/transcription/model';
+import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
+import { checkDiskSpace } from '@/services/audio/diskSpace';
 import type { LibraryItem } from '@/services/library';
 import { findTranscriptionLanguage } from '@/services/transcription/languages';
 import {
   AppText,
+  Banner,
   EmptyState,
+  ProgressBar,
   RecordButton,
   RecordingCard,
   Screen,
@@ -25,6 +35,7 @@ import {
 } from '@/ui';
 import {
   dayKey,
+  formatBytes,
   formatDayGroup,
   formatDurationShort,
   formatShortDate,
@@ -108,6 +119,51 @@ function Card({
   );
 }
 
+/** Waiting and warning states above the list: the model and the disk (cahier, « États à concevoir »). */
+function Notices() {
+  const { t, i18n } = useTranslation();
+  const model = useModel();
+  const disk = checkDiskSpace(freeBytes(), ACTIVE_PROFILE);
+  const size = (bytes: number) => formatBytes(bytes, i18n.language, t);
+  return (
+    <>
+      {model.status === 'missing' ? (
+        <Banner
+          kind="alert"
+          title={t('detail.issue.modelMissing.title')}
+          body={t('library.model.body', { size: size(SIMULATED_MODEL_BYTES) })}
+          action={{ label: t('library.model.download'), onPress: startModelDownload }}
+        />
+      ) : model.status === 'downloading' ? (
+        <ProgressBar
+          label={t('onboarding.model.progress')}
+          value={model.progress}
+          detail={t('onboarding.model.detail', {
+            done: size(SIMULATED_MODEL_BYTES * model.progress),
+            total: size(SIMULATED_MODEL_BYTES),
+          })}
+          state="running"
+        />
+      ) : null}
+      {disk.kind !== 'ok' ? (
+        <Banner
+          kind="alert"
+          title={t(disk.kind === 'low' ? 'storage.lowTitle' : 'storage.insufficientTitle')}
+          body={
+            disk.kind === 'low'
+              ? t('storage.lowBody', { minutes: disk.remainingMinutes })
+              : t('storage.insufficientBody')
+          }
+          action={{
+            label: t('library.storage.manage'),
+            onPress: () => router.push('/settings/storage'),
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
 export default function LibraryScreen() {
   const { t, i18n } = useTranslation();
   const library = useLibrary();
@@ -175,6 +231,7 @@ export default function LibraryScreen() {
           <AppText variant="display" accessibilityRole="header">
             {t('library.title')}
           </AppText>
+          <Notices />
           {all.length > 0 ? (
             <SearchField
               value={query}

@@ -97,6 +97,17 @@ export function demoItems(now: Date): LibraryItem[] {
     },
     {
       ...base,
+      id: 'demo-offline',
+      title: 'Assemblée de quartier',
+      createdAt: at(now, 2, 18, 30),
+      durationMs: 9 * MINUTE,
+      state: 'audio',
+      language: 'ig',
+      quality: null,
+      issue: 'offline',
+    },
+    {
+      ...base,
       id: 'demo-workshop',
       title: 'Atelier d’écriture',
       createdAt: at(now, 6, 9, 0),
