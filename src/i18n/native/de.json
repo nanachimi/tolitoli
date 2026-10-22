@@ -1,3 +1,5 @@
 {
-  "NSMicrophoneUsageDescription": "Tolitoli verwendet das Mikrofon, um die von dir gestarteten Gespräche aufzunehmen. Die Aufnahmen bleiben auf dem Gerät, außer du aktivierst die Cloud."
+  "ios": {
+    "NSMicrophoneUsageDescription": "Tolitoli verwendet das Mikrofon, um die von dir gestarteten Gespräche aufzunehmen. Die Aufnahmen bleiben auf dem Gerät, außer du aktivierst die Cloud."
+  }
 }

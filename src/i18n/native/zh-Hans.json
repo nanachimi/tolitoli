@@ -1,3 +1,5 @@
 {
-  "NSMicrophoneUsageDescription": "Tolitoli 使用麦克风录制您发起的对话。除非您开启云端功能，音频将保留在本设备上。"
+  "ios": {
+    "NSMicrophoneUsageDescription": "Tolitoli 使用麦克风录制您发起的对话。除非您开启云端功能，音频将保留在本设备上。"
+  }
 }

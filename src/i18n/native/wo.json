@@ -1,3 +1,5 @@
 {
-  "NSMicrophoneUsageDescription": "Tolitoli dafay jëfandikoo mikro bi ngir dénc waxtaan yi nga tàmbali. Baat yi dañuy des ci sa telefoon, su doon nga taal nuwaas bi."
+  "ios": {
+    "NSMicrophoneUsageDescription": "Tolitoli dafay jëfandikoo mikro bi ngir dénc waxtaan yi nga tàmbali. Baat yi dañuy des ci sa telefoon, su doon nga taal nuwaas bi."
+  }
 }
