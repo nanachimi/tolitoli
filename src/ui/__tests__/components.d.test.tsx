@@ -232,7 +232,7 @@ describe('Player', () => {
   it('shows the times, a labelled play/pause and 15 s skips', async () => {
     const onSkip = jest.fn();
     const onTogglePlay = jest.fn();
-    const view = await renderScreen(
+    await renderScreen(
       <Player {...base} playing={false} onSkip={onSkip} onTogglePlay={onTogglePlay} />,
     );
     expect(screen.getByText('12:14', { includeHiddenElements: true })).toBeTruthy();

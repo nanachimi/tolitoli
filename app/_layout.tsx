@@ -7,6 +7,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
+import { useOnboarding } from '@/features/onboarding/onboarding';
 import { recoverAtLaunch } from '@/features/recording/recordingController';
 import { initI18n } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/ui';
@@ -18,6 +19,7 @@ void SplashScreen.preventAutoHideAsync();
 
 function ThemedStack() {
   const theme = useTheme();
+  const onboarded = useOnboarding((state) => state.done);
 
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(theme.color.surface);
@@ -34,10 +36,22 @@ function ThemedStack() {
       {/* Android system navigation bar buttons follow the colour scheme (D-015). */}
       <NavigationBar style="auto" />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="record"
-          options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
-        />
+        {/* Nothing opens, not even by a link, before the recording consent (CLAUDE.md). */}
+        <Stack.Protected guard={!onboarded}>
+          <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={onboarded}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="record"
+            options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
+          />
+          <Stack.Screen name="recording/[id]" />
+          <Stack.Screen name="trash" />
+          <Stack.Screen name="settings/transcription-language" />
+          <Stack.Screen name="settings/storage" />
+          <Stack.Screen name="settings/about" />
+        </Stack.Protected>
       </Stack>
     </>
   );
