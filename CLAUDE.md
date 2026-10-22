@@ -161,6 +161,7 @@ npx eas-cli@25 update --branch preview
 - Pas de suppression de fichiers audio utilisateur dans du code de test ou de migration.
 - Pas de texte juridique (consentement, CGU, confidentialité) écrit de manière définitive : produire un brouillon marqué « À faire relire par un juriste ».
 - Pas de commit direct sur `main`.
+- Pas de `git add -A` ni `git add .` : ajouter nommément les fichiers modifiés par la session.
 - Pas de modification des réglages du téléphone par adb (police, thème, accessibilité, veille) sans les remettre à leur valeur initiale à la fin du test, et sans l'avoir dit.
 
 ## Langue
