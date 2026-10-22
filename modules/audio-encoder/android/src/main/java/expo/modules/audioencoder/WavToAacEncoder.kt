@@ -157,20 +157,24 @@ internal object WavToAacEncoder {
             }
           }
         }
-        val outIndex = codec.dequeueOutputBuffer(info, TIMEOUT_US)
-        if (outIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-          track = muxer.addTrack(codec.outputFormat)
-          muxer.start()
-        } else if (outIndex >= 0) {
-          val out = codec.getOutputBuffer(outIndex) ?: error("No output buffer")
-          if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) info.size = 0
-          if (info.size > 0 && track >= 0) {
-            out.position(info.offset)
-            out.limit(info.offset + info.size)
-            muxer.writeSampleData(track, out, info)
+        // Drain every frame ready now: one frame per pass (with a wait) made encoding ~5x real time.
+        while (!outputDone) {
+          val outIndex = codec.dequeueOutputBuffer(info, if (inputDone) TIMEOUT_US else 0L)
+          if (outIndex == MediaCodec.INFO_TRY_AGAIN_LATER) break
+          if (outIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+            track = muxer.addTrack(codec.outputFormat)
+            muxer.start()
+          } else if (outIndex >= 0) {
+            val out = codec.getOutputBuffer(outIndex) ?: error("No output buffer")
+            if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) info.size = 0
+            if (info.size > 0 && track >= 0) {
+              out.position(info.offset)
+              out.limit(info.offset + info.size)
+              muxer.writeSampleData(track, out, info)
+            }
+            codec.releaseOutputBuffer(outIndex, false)
+            if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) outputDone = true
           }
-          codec.releaseOutputBuffer(outIndex, false)
-          if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) outputDone = true
         }
       }
     } finally {
