@@ -19,3 +19,8 @@ export { ProgressBar } from './components/ProgressBar';
 export { ScreenHeader } from './components/ScreenHeader';
 export { SearchField } from './components/SearchField';
 export { TextField } from './components/TextField';
+export { ActionSheet, type ActionSheetItem } from './components/ActionSheet';
+export { Dialog } from './components/Dialog';
+export { OnboardingPage } from './components/OnboardingPage';
+export { PLAYBACK_RATES, Player, SKIP_MS } from './components/Player';
+export { StorageMeter } from './components/StorageMeter';

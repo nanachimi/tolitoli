@@ -98,7 +98,9 @@
     "hours_other": "{{count}} Std.",
     "hoursMinutes": "{{hours}} Std. {{minutes}}",
     "today": "Heute",
-    "yesterday": "Gestern"
+    "yesterday": "Gestern",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB"
   },
   "quality": {
     "good": "gut",
@@ -115,5 +117,51 @@
   },
   "progress": {
     "done": "Fertig"
+  },
+  "storage": {
+    "title": "Speicher",
+    "recordings": "Aufnahmen {{size}}",
+    "trash": "Papierkorb {{size}}",
+    "free": "Frei {{size}}",
+    "barA11y": "Aufnahmen {{recordings}}, Papierkorb {{trash}}, frei {{free}}",
+    "emptyTrash": "Papierkorb leeren",
+    "lowTitle": "Speicher fast voll",
+    "lowBody": "Noch etwa {{minutes}} Min. Aufnahme möglich.",
+    "insufficientTitle": "Zu wenig Speicher",
+    "insufficientBody": "Die Aufnahme startet nicht: Geben Sie zuerst Speicher frei."
+  },
+  "player": {
+    "play": "Abspielen",
+    "pause": "Pause",
+    "back15": "15 Sekunden zurück",
+    "forward15": "15 Sekunden vor",
+    "rateA11y": "Wiedergabegeschwindigkeit: {{rate}}",
+    "rateTitle": "Wiedergabegeschwindigkeit",
+    "seekA11y": "Wiedergabeposition",
+    "positionA11y": "{{position}} von {{total}}"
+  },
+  "onboarding": {
+    "continue": "Weiter",
+    "promise": {
+      "body": "Nehmen Sie ein Gespräch auf und finden Sie es als Text wieder.",
+      "caption": "Alles bleibt auf Ihrem Gerät. Kein Konto nötig."
+    },
+    "consent": {
+      "title": "Bevor Sie aufnehmen",
+      "body": "In vielen Ländern ist es illegal, ein Gespräch ohne Zustimmung der Anwesenden aufzunehmen.",
+      "caption": "Informieren Sie sie, bevor Sie die Aufnahme starten. Tolitoli zeigt während der Aufnahme immer eine sichtbare Anzeige.",
+      "checkbox": "Ich werde die Anwesenden informieren, dass ich aufnehme.",
+      "accept": "Akzeptieren und weiter",
+      "acceptHint": "Setzen Sie zuerst das Häkchen, um fortzufahren."
+    },
+    "model": {
+      "title": "Transkriptionsmodell",
+      "body": "Tolitoli transkribiert auf Ihrem Gerät. Das Modell wird nur einmal heruntergeladen.",
+      "progress": "Modell-Download",
+      "detail": "{{done}} von {{total}} · nur WLAN",
+      "downloading": "Wird heruntergeladen …",
+      "start": "Loslegen",
+      "later": "Später herunterladen"
+    }
   }
 }

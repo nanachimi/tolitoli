@@ -98,7 +98,9 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB"
   },
   "quality": {
     "good": "good",
@@ -115,5 +117,51 @@
   },
   "progress": {
     "done": "Done"
+  },
+  "storage": {
+    "title": "Storage",
+    "recordings": "Recordings {{size}}",
+    "trash": "Trash {{size}}",
+    "free": "Free {{size}}",
+    "barA11y": "Recordings {{recordings}}, trash {{trash}}, free {{free}}",
+    "emptyTrash": "Empty trash",
+    "lowTitle": "Storage almost full",
+    "lowBody": "About {{minutes}} min of recording left.",
+    "insufficientTitle": "Not enough storage",
+    "insufficientBody": "Recording will not start: free up some space first."
+  },
+  "player": {
+    "play": "Play",
+    "pause": "Pause",
+    "back15": "Back 15 seconds",
+    "forward15": "Forward 15 seconds",
+    "rateA11y": "Playback speed: {{rate}}",
+    "rateTitle": "Playback speed",
+    "seekA11y": "Playback position",
+    "positionA11y": "{{position}} of {{total}}"
+  },
+  "onboarding": {
+    "continue": "Continue",
+    "promise": {
+      "body": "Record a conversation, find it in writing.",
+      "caption": "Everything stays on your device. No account needed."
+    },
+    "consent": {
+      "title": "Before you record",
+      "body": "In many countries, recording a conversation without the agreement of the people present is illegal.",
+      "caption": "Tell them before you start recording. Tolitoli always shows a visible indicator while it records.",
+      "checkbox": "I will tell the people present that I am recording.",
+      "accept": "Accept and continue",
+      "acceptHint": "Tick the box first to continue."
+    },
+    "model": {
+      "title": "Transcription model",
+      "body": "Tolitoli transcribes on your device. The model downloads only once.",
+      "progress": "Model download",
+      "detail": "{{done}} of {{total}} · wifi only",
+      "downloading": "Downloading…",
+      "start": "Start",
+      "later": "Download later"
+    }
   }
 }

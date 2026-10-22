@@ -94,7 +94,9 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Tey",
-    "yesterday": "Démb"
+    "yesterday": "Démb",
+    "megabytes": "{{value}} Mo",
+    "gigabytes": "{{value}} Go"
   },
   "quality": {
     "good": "baax na",
@@ -111,5 +113,51 @@
   },
   "progress": {
     "done": "Jeex na"
+  },
+  "storage": {
+    "title": "Denc",
+    "recordings": "Dénc yi {{size}}",
+    "trash": "Pañe {{size}}",
+    "free": "Des {{size}}",
+    "barA11y": "Dénc yi {{recordings}}, pañe {{trash}}, des {{free}}",
+    "emptyTrash": "Setal pañe bi",
+    "lowTitle": "Denc bi dafa bëgg fees",
+    "lowBody": "Des na lu tollu ci {{minutes}} min ci dénc.",
+    "insufficientTitle": "Denc bi doyul",
+    "insufficientBody": "Dénc bi du tàmbali : jëkk ngay wàññi ci denc bi."
+  },
+  "player": {
+    "play": "Dégg",
+    "pause": "Taxaw",
+    "back15": "Dellu ginnaaw 15 saa",
+    "forward15": "Jëm kanam 15 saa",
+    "rateA11y": "Gaawaayu dégg : {{rate}}",
+    "rateTitle": "Gaawaayu dégg",
+    "seekA11y": "Fi dégg bi tollu",
+    "positionA11y": "{{position}} ci {{total}}"
+  },
+  "onboarding": {
+    "continue": "Kontine",
+    "promise": {
+      "body": "Dénc waxtaan, gis ko mu bindu.",
+      "caption": "Lépp ci sa jumtukaay lay des. Soxlaa kont."
+    },
+    "consent": {
+      "title": "Bala ngay dénc",
+      "body": "Ci réew yu bari, dénc waxtaan te nit ñi fi nekk nangouñu ko, sàñ-sàñu nekku ci.",
+      "caption": "Xamal leen bala ngay tàmbali dénc bi. Tolitoli dina wone lu nu gis saa su ngay dénc.",
+      "checkbox": "Dinaa xamal nit ñi fi nekk ne maa ngi dénc.",
+      "accept": "Nangu te kontine",
+      "acceptHint": "Jëkk ngay tànn kaaro bi ngir kontine."
+    },
+    "model": {
+      "title": "Modelu bind",
+      "body": "Tolitoli ci sa jumtukaay lay bind. Modelu bi benn yoon rekk lay wàcc.",
+      "progress": "Wàcce modelu bi",
+      "detail": "{{done}} ci {{total}} · wifi rekk",
+      "downloading": "Mi ngi wàcc…",
+      "start": "Tàmbali",
+      "later": "Wàcce ko ginnaaw"
+    }
   }
 }

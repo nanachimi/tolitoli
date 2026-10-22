@@ -94,7 +94,9 @@
     "hours_other": "{{count}} 小时",
     "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
     "today": "今天",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB"
   },
   "quality": {
     "good": "良好",
@@ -111,5 +113,51 @@
   },
   "progress": {
     "done": "已完成"
+  },
+  "storage": {
+    "title": "存储",
+    "recordings": "录音 {{size}}",
+    "trash": "回收站 {{size}}",
+    "free": "可用 {{size}}",
+    "barA11y": "录音 {{recordings}}，回收站 {{trash}}，可用 {{free}}",
+    "emptyTrash": "清空回收站",
+    "lowTitle": "存储空间即将用尽",
+    "lowBody": "大约还能录音 {{minutes}} 分钟。",
+    "insufficientTitle": "存储空间不足",
+    "insufficientBody": "无法开始录音：请先释放空间。"
+  },
+  "player": {
+    "play": "播放",
+    "pause": "暂停",
+    "back15": "后退 15 秒",
+    "forward15": "前进 15 秒",
+    "rateA11y": "播放速度：{{rate}}",
+    "rateTitle": "播放速度",
+    "seekA11y": "播放位置",
+    "positionA11y": "{{position}} / {{total}}"
+  },
+  "onboarding": {
+    "continue": "继续",
+    "promise": {
+      "body": "录下一段对话，再以文字找回它。",
+      "caption": "一切都保留在您的设备上，无需账户。"
+    },
+    "consent": {
+      "title": "录音之前",
+      "body": "在许多国家，未经在场者同意录制对话是违法的。",
+      "caption": "开始录音前请告知他们。Tolitoli 录音时始终显示可见的指示。",
+      "checkbox": "我会告知在场的人我正在录音。",
+      "accept": "接受并继续",
+      "acceptHint": "请先勾选方框再继续。"
+    },
+    "model": {
+      "title": "转写模型",
+      "body": "Tolitoli 在您的设备上转写，模型只需下载一次。",
+      "progress": "模型下载",
+      "detail": "{{done}} / {{total}} · 仅限 Wi-Fi",
+      "downloading": "正在下载…",
+      "start": "开始",
+      "later": "稍后下载"
+    }
   }
 }

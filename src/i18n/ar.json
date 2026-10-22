@@ -114,7 +114,9 @@
     "hours_other": "{{count}} س",
     "hoursMinutes": "{{hours}} س {{minutes}}",
     "today": "اليوم",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "megabytes": "{{value}} م.ب",
+    "gigabytes": "{{value}} ج.ب"
   },
   "quality": {
     "good": "جيدة",
@@ -131,5 +133,51 @@
   },
   "progress": {
     "done": "اكتمل"
+  },
+  "storage": {
+    "title": "التخزين",
+    "recordings": "التسجيلات {{size}}",
+    "trash": "سلة المهملات {{size}}",
+    "free": "متاح {{size}}",
+    "barA11y": "التسجيلات {{recordings}}، سلة المهملات {{trash}}، متاح {{free}}",
+    "emptyTrash": "إفراغ سلة المهملات",
+    "lowTitle": "المساحة توشك على النفاد",
+    "lowBody": "يتبقى نحو {{minutes}} دقيقة من التسجيل.",
+    "insufficientTitle": "المساحة غير كافية",
+    "insufficientBody": "لن يبدأ التسجيل: حرّر بعض المساحة أولًا."
+  },
+  "player": {
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "back15": "رجوع 15 ثانية",
+    "forward15": "تقديم 15 ثانية",
+    "rateA11y": "سرعة التشغيل: {{rate}}",
+    "rateTitle": "سرعة التشغيل",
+    "seekA11y": "موضع التشغيل",
+    "positionA11y": "{{position}} من {{total}}"
+  },
+  "onboarding": {
+    "continue": "متابعة",
+    "promise": {
+      "body": "سجّل محادثة واعثر عليها مكتوبة.",
+      "caption": "يبقى كل شيء على جهازك. لا حاجة إلى حساب."
+    },
+    "consent": {
+      "title": "قبل التسجيل",
+      "body": "في كثير من البلدان، يُعدّ تسجيل محادثة دون موافقة الحاضرين أمرًا غير قانوني.",
+      "caption": "أخبرهم قبل بدء التسجيل. يعرض Tolitoli دائمًا مؤشرًا ظاهرًا أثناء التسجيل.",
+      "checkbox": "سأُبلغ الحاضرين بأنني أسجّل.",
+      "accept": "قبول ومتابعة",
+      "acceptHint": "حدّد المربع أولًا للمتابعة."
+    },
+    "model": {
+      "title": "نموذج النسخ",
+      "body": "يُجري Tolitoli النسخ على جهازك. يُنزَّل النموذج مرة واحدة فقط.",
+      "progress": "تنزيل النموذج",
+      "detail": "{{done}} من {{total}} · عبر الواي فاي فقط",
+      "downloading": "جارٍ التنزيل…",
+      "start": "ابدأ",
+      "later": "التنزيل لاحقًا"
+    }
   }
 }

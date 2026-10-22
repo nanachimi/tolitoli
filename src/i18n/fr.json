@@ -102,7 +102,9 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Aujourd’hui",
-    "yesterday": "Hier"
+    "yesterday": "Hier",
+    "megabytes": "{{value}} Mo",
+    "gigabytes": "{{value}} Go"
   },
   "quality": {
     "good": "bonne",
@@ -119,5 +121,51 @@
   },
   "progress": {
     "done": "Terminé"
+  },
+  "storage": {
+    "title": "Stockage",
+    "recordings": "Enregistrements {{size}}",
+    "trash": "Corbeille {{size}}",
+    "free": "Libre {{size}}",
+    "barA11y": "Enregistrements {{recordings}}, corbeille {{trash}}, libre {{free}}",
+    "emptyTrash": "Vider la corbeille",
+    "lowTitle": "Espace presque plein",
+    "lowBody": "Il reste environ {{minutes}} min d’enregistrement.",
+    "insufficientTitle": "Espace insuffisant",
+    "insufficientBody": "L’enregistrement ne démarrera pas : libérez de l’espace d’abord."
+  },
+  "player": {
+    "play": "Lire",
+    "pause": "Pause",
+    "back15": "Reculer de 15 secondes",
+    "forward15": "Avancer de 15 secondes",
+    "rateA11y": "Vitesse de lecture : {{rate}}",
+    "rateTitle": "Vitesse de lecture",
+    "seekA11y": "Position de lecture",
+    "positionA11y": "{{position}} sur {{total}}"
+  },
+  "onboarding": {
+    "continue": "Continuer",
+    "promise": {
+      "body": "Enregistrez une conversation, retrouvez-la écrite.",
+      "caption": "Tout reste sur votre appareil. Aucun compte n’est nécessaire."
+    },
+    "consent": {
+      "title": "Avant d’enregistrer",
+      "body": "Dans de nombreux pays, enregistrer une conversation sans l’accord des personnes présentes est illégal.",
+      "caption": "Informez-les avant de lancer l’enregistrement. Tolitoli affiche toujours un indicateur visible pendant qu’il enregistre.",
+      "checkbox": "J’informerai les personnes présentes que j’enregistre.",
+      "accept": "Accepter et continuer",
+      "acceptHint": "Cochez d’abord la case pour continuer."
+    },
+    "model": {
+      "title": "Modèle de transcription",
+      "body": "Tolitoli transcrit sur votre appareil. Le modèle se télécharge une seule fois.",
+      "progress": "Téléchargement du modèle",
+      "detail": "{{done}} sur {{total}} · wifi uniquement",
+      "downloading": "Téléchargement…",
+      "start": "Commencer",
+      "later": "Télécharger plus tard"
+    }
   }
 }

@@ -96,3 +96,40 @@ export function formatDayGroup(date: Date, now: Date, language: string, t: Trans
 export function dayKey(date: Date): number {
   return startOfDay(date);
 }
+
+function numberLocale(language: string): string {
+  return language === 'pseudo' ? 'en' : (dateLocale(language) ?? 'en');
+}
+
+const MB = 1024 * 1024;
+const GB = 1024 * MB;
+
+/** `240 Mo`, `1,8 Go`: the most readable unit, in the locale (guide StorageMeter). */
+export function formatBytes(bytes: number, language: string, t: Translate): string {
+  const number = new Intl.NumberFormat(numberLocale(language), { maximumFractionDigits: 1 });
+  if (bytes >= GB) return t('format.gigabytes', { value: number.format(bytes / GB) });
+  return t('format.megabytes', { value: number.format(Math.max(0, bytes) / MB) });
+}
+
+/** Player times: `2:05`, `32:08`, `1:02:03`. */
+export function formatPlayerTime(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = pad(total % 60);
+  return hours > 0 ? `${hours}:${pad(minutes)}:${seconds}` : `${minutes}:${seconds}`;
+}
+
+/** `1,5×` in French, `1.5×` in English (Player guide: digits follow the locale). */
+export function formatRate(rate: number, language: string): string {
+  return `${new Intl.NumberFormat(numberLocale(language), { maximumFractionDigits: 2 }).format(rate)}×`;
+}
+
+/** Spoken position for screen readers: "12 min 14 s", never a percentage. */
+export function formatSpokenDuration(ms: number, t: Translate): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  if (minutes === 0) return t('format.seconds', { count: seconds });
+  return `${t('format.minutes', { count: minutes })} ${t('format.seconds', { count: seconds })}`;
+}
