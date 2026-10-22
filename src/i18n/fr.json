@@ -200,6 +200,56 @@
     "restore": "Restaurer",
     "restoreA11y": "Restaurer {{title}}",
     "confirmEmptyTitle": "Vider la corbeille ?",
-    "confirmEmptyBody": "Les enregistrements de la corbeille seront supprimés définitivement. Cette action est irréversible."
+    "confirmEmptyBody": "Les enregistrements de la corbeille seront supprimés définitivement. Cette action est irréversible.",
+    "confirmTitle": "Mettre à la corbeille ?",
+    "confirmBody": "« {{title}} » restera 30 jours dans la corbeille, d’où vous pourrez le restaurer."
+  },
+  "detail": {
+    "moreActions": "Autres actions",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Locuteur {{number}}",
+    "segmentHint": "Aller à {{time}}",
+    "notFoundTitle": "Enregistrement introuvable",
+    "notFoundBody": "Il a peut-être été mis à la corbeille. Revenez à la bibliothèque.",
+    "noTranscriptTitle": "Pas encore de transcription",
+    "noTranscriptBody": "L’audio est enregistré sur votre appareil. La transcription arrivera avec une prochaine version.",
+    "transcribing": "Transcription en cours",
+    "transcribingDetail": "Cela peut prendre quelques minutes. Vous pouvez quitter cet écran.",
+    "issue": {
+      "failed": {
+        "title": "La transcription a échoué",
+        "body": "L’audio est intact sur votre appareil. Vous pouvez relancer la transcription.",
+        "action": "Réessayer"
+      },
+      "modelMissing": {
+        "title": "Modèle de transcription absent",
+        "body": "La transcription démarrera une fois le modèle téléchargé, en wifi uniquement."
+      },
+      "offline": {
+        "title": "Hors ligne",
+        "body": "La transcription cloud reprendra au retour du réseau. L’audio reste sur votre appareil."
+      },
+      "quotaExhausted": {
+        "title": "Quota cloud épuisé",
+        "body": "Ce mois-ci, la transcription cloud n’est plus disponible. Elle reprendra le mois prochain."
+      }
+    },
+    "cloudRequired": {
+      "title": "Cloud requis pour cette langue",
+      "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). La transcription cloud sera proposée dans une prochaine version."
+    }
+  },
+  "actions": {
+    "rename": "Renommer",
+    "trash": "Mettre à la corbeille",
+    "exportNote": "L’export arrivera dans une prochaine version."
+  },
+  "rename": {
+    "title": "Renommer l’enregistrement",
+    "body": "Le titre aide à retrouver l’enregistrement dans la bibliothèque et la recherche.",
+    "label": "Titre",
+    "hint": "Laissez vide pour reprendre le titre par défaut.",
+    "tooLong": "{{max}} caractères au plus : raccourcissez le titre.",
+    "confirm": "Renommer"
   }
 }

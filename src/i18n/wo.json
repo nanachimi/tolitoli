@@ -192,6 +192,56 @@
     "restore": "Delloo",
     "restoreA11y": "Delloo {{title}}",
     "confirmEmptyTitle": "Setal pañe bi ?",
-    "confirmEmptyBody": "Dénc yi nekk ci pañe bi dinañu leen far ba fàww. Mënuloo ko dellu ginnaaw."
+    "confirmEmptyBody": "Dénc yi nekk ci pañe bi dinañu leen far ba fàww. Mënuloo ko dellu ginnaaw.",
+    "confirmTitle": "Yobu ko ci mbalit mi ?",
+    "confirmBody": "« {{title}} » dina des 30 fan ci mbalit mi, fa nga ko mënee delloo."
+  },
+  "detail": {
+    "moreActions": "Yeneen jëf",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Waxkat {{number}}",
+    "segmentHint": "Dem ci {{time}}",
+    "notFoundTitle": "Duñu gis bind bi",
+    "notFoundBody": "Xéj na ñu ko yobu ci mbalit mi. Dellul ci bibliotek bi.",
+    "noTranscriptTitle": "Amul bind bu jóge ci baat ba leegi",
+    "noTranscriptBody": "Baat bi denc nañu ko ci sa jumtukaay. Bind bi dina ñëw ci beneen sumb.",
+    "transcribing": "Bind bi mi ngi dox",
+    "transcribingDetail": "Mën na yàgg ay simili. Mën nga génn ci xët wii.",
+    "issue": {
+      "failed": {
+        "title": "Bind bi antuwul",
+        "body": "Baat bi mi ngi ci sa jumtukaay, yàqu ko. Mën nga ko delloo bind.",
+        "action": "Jéemaat"
+      },
+      "modelMissing": {
+        "title": "Masinu bind bi nekkul",
+        "body": "Bind bi dina tàmbali bu masin bi wàcce, ci wifi rekk."
+      },
+      "offline": {
+        "title": "Amul réseau",
+        "body": "Bind ci cloud bi dina dellu bu réseau bi dellusee. Baat bi dina des ci sa jumtukaay."
+      },
+      "quotaExhausted": {
+        "title": "Cloud bi jeex na ci weer wii",
+        "body": "Bind ci cloud amatul ci weer wii. Dina dellu weer wi ñëw."
+      }
+    },
+    "cloudRequired": {
+      "title": "Làkk wii dafa soxla cloud",
+      "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Bind ci cloud dina ñëw ci beneen sumb."
+    }
+  },
+  "actions": {
+    "rename": "Soppi tur",
+    "trash": "Yobu ci mbalit mi",
+    "exportNote": "Yónnee dina ñëw ci beneen sumb."
+  },
+  "rename": {
+    "title": "Soppi turu bind bi",
+    "body": "Tur bi dina la dimbali nga gis bind bi ci bibliotek bi ak ci seet bi.",
+    "label": "Tur",
+    "hint": "Bàyyil ko neen ngir delloo turu bu jëkk ba.",
+    "tooLong": "{{max}} araf rekk : gàttal tur bi.",
+    "confirm": "Soppi tur"
   }
 }

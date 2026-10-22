@@ -196,6 +196,56 @@
     "restore": "Wiederherstellen",
     "restoreA11y": "{{title}} wiederherstellen",
     "confirmEmptyTitle": "Papierkorb leeren?",
-    "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
+    "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+    "confirmTitle": "In den Papierkorb verschieben?",
+    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden."
+  },
+  "detail": {
+    "moreActions": "Weitere Aktionen",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Sprecher {{number}}",
+    "segmentHint": "Zu {{time}} springen",
+    "notFoundTitle": "Aufnahme nicht gefunden",
+    "notFoundBody": "Sie wurde vielleicht in den Papierkorb verschoben. Kehren Sie zur Bibliothek zurück.",
+    "noTranscriptTitle": "Noch keine Transkription",
+    "noTranscriptBody": "Der Ton ist auf Ihrem Gerät gespeichert. Die Transkription kommt mit einer späteren Version.",
+    "transcribing": "Wird transkribiert",
+    "transcribingDetail": "Das kann einige Minuten dauern. Sie können diesen Bildschirm verlassen.",
+    "issue": {
+      "failed": {
+        "title": "Transkription fehlgeschlagen",
+        "body": "Der Ton ist auf Ihrem Gerät unversehrt. Sie können die Transkription erneut starten.",
+        "action": "Erneut versuchen"
+      },
+      "modelMissing": {
+        "title": "Transkriptionsmodell fehlt",
+        "body": "Die Transkription startet, sobald das Modell geladen ist, nur über WLAN."
+      },
+      "offline": {
+        "title": "Offline",
+        "body": "Die Cloud-Transkription wird fortgesetzt, sobald das Netz zurück ist. Der Ton bleibt auf Ihrem Gerät."
+      },
+      "quotaExhausted": {
+        "title": "Cloud-Kontingent aufgebraucht",
+        "body": "Die Cloud-Transkription ist diesen Monat nicht mehr verfügbar. Sie geht nächsten Monat weiter."
+      }
+    },
+    "cloudRequired": {
+      "title": "Diese Sprache erfordert die Cloud",
+      "body": "Keine Erkennung auf dem Gerät transkribiert diese Sprache ({{language}}). Die Cloud-Transkription kommt in einer späteren Version."
+    }
+  },
+  "actions": {
+    "rename": "Umbenennen",
+    "trash": "In den Papierkorb",
+    "exportNote": "Der Export kommt in einer späteren Version."
+  },
+  "rename": {
+    "title": "Aufnahme umbenennen",
+    "body": "Der Titel hilft, die Aufnahme in der Bibliothek und in der Suche zu finden.",
+    "label": "Titel",
+    "hint": "Leer lassen, um den Standardtitel zu verwenden.",
+    "tooLong": "Höchstens {{max}} Zeichen: Kürzen Sie den Titel.",
+    "confirm": "Umbenennen"
   }
 }

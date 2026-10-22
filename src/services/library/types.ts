@@ -51,5 +51,7 @@ export interface LibraryRepository {
   restore(id: string): void;
   listTrash(): TrashedItem[];
   emptyTrash(): void;
+  /** Queues a failed transcription again (the queue itself comes with step 3). */
+  retryTranscription(id: string): void;
   subscribe(listener: () => void): () => void;
 }

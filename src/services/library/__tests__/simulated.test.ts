@@ -108,9 +108,22 @@ describe('SimulatedLibraryRepository', () => {
     unsubscribe();
   });
 
+  it('shows a retried transcription as running, without its issue', () => {
+    const { repository } = setup();
+    expect(repository.get('demo-failed')).toMatchObject({ state: 'failed', issue: 'failed' });
+    const listener = jest.fn();
+    repository.subscribe(listener);
+    repository.retryTranscription('demo-failed');
+    const item = repository.get('demo-failed');
+    expect(item?.state).toBe('transcribing');
+    expect(item?.issue).toBeUndefined();
+    expect(listener).toHaveBeenCalled();
+  });
+
   it('never writes, moves or deletes a file, whatever the user does', () => {
     const { fs, repository, writesBefore } = setup();
     repository.rename('real-1', 'Nouveau titre');
+    repository.retryTranscription('real-1');
     repository.trash('real-1');
     repository.emptyTrash();
     expect(fs.writes).toHaveLength(writesBefore);

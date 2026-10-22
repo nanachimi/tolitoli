@@ -42,6 +42,8 @@ export class SimulatedLibraryRepository implements LibraryRepository {
   private readonly trashed = new Map<string, string>();
   /** Hidden for this session once the trash is emptied; files stay on disk. */
   private readonly purged = new Set<string>();
+  /** Failed transcriptions sent again: shown as running, nothing actually runs. */
+  private readonly retried = new Set<string>();
   private readonly listeners = new Set<() => void>();
 
   constructor(private readonly options: SimulatedLibraryOptions) {}
@@ -55,6 +57,7 @@ export class SimulatedLibraryRepository implements LibraryRepository {
     return items
       .filter((item) => !this.purged.has(item.id))
       .map((item) => ({ ...item, title: this.titles.get(item.id) ?? item.title }))
+      .map((item) => (this.retried.has(item.id) ? retrying(item) : item))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
@@ -109,6 +112,11 @@ export class SimulatedLibraryRepository implements LibraryRepository {
     this.emit();
   }
 
+  retryTranscription(id: string): void {
+    this.retried.add(id);
+    this.emit();
+  }
+
   subscribe(listener: () => void): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -118,4 +126,9 @@ export class SimulatedLibraryRepository implements LibraryRepository {
   emit(): void {
     this.listeners.forEach((listener) => listener());
   }
+}
+
+function retrying(item: LibraryItem): LibraryItem {
+  const { issue: _issue, progress: _progress, ...rest } = item;
+  return { ...rest, state: 'transcribing' };
 }

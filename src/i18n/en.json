@@ -196,6 +196,56 @@
     "restore": "Restore",
     "restoreA11y": "Restore {{title}}",
     "confirmEmptyTitle": "Empty the trash?",
-    "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone."
+    "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone.",
+    "confirmTitle": "Move to trash?",
+    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it."
+  },
+  "detail": {
+    "moreActions": "More actions",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Speaker {{number}}",
+    "segmentHint": "Go to {{time}}",
+    "notFoundTitle": "Recording not found",
+    "notFoundBody": "It may have been moved to the trash. Go back to the library.",
+    "noTranscriptTitle": "No transcript yet",
+    "noTranscriptBody": "The audio is saved on your device. Transcription will come with a later version.",
+    "transcribing": "Transcribing",
+    "transcribingDetail": "This may take a few minutes. You can leave this screen.",
+    "issue": {
+      "failed": {
+        "title": "Transcription failed",
+        "body": "The audio is intact on your device. You can start the transcription again.",
+        "action": "Try again"
+      },
+      "modelMissing": {
+        "title": "Transcription model missing",
+        "body": "Transcription will start once the model is downloaded, over wifi only."
+      },
+      "offline": {
+        "title": "Offline",
+        "body": "Cloud transcription will resume when the network is back. The audio stays on your device."
+      },
+      "quotaExhausted": {
+        "title": "Cloud quota used up",
+        "body": "Cloud transcription is no longer available this month. It will resume next month."
+      }
+    },
+    "cloudRequired": {
+      "title": "This language needs the cloud",
+      "body": "No on-device engine transcribes this language ({{language}}). Cloud transcription will be offered in a later version."
+    }
+  },
+  "actions": {
+    "rename": "Rename",
+    "trash": "Move to trash",
+    "exportNote": "Export will come in a later version."
+  },
+  "rename": {
+    "title": "Rename the recording",
+    "body": "The title helps you find the recording in the library and in search.",
+    "label": "Title",
+    "hint": "Leave empty to go back to the default title.",
+    "tooLong": "{{max}} characters at most: shorten the title.",
+    "confirm": "Rename"
   }
 }

@@ -192,6 +192,56 @@
     "restore": "恢复",
     "restoreA11y": "恢复 {{title}}",
     "confirmEmptyTitle": "清空回收站？",
-    "confirmEmptyBody": "回收站中的录音将被永久删除，此操作无法撤销。"
+    "confirmEmptyBody": "回收站中的录音将被永久删除，此操作无法撤销。",
+    "confirmTitle": "移到回收站？",
+    "confirmBody": "“{{title}}”将在回收站保留 30 天，期间可以恢复。"
+  },
+  "detail": {
+    "moreActions": "更多操作",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "说话人 {{number}}",
+    "segmentHint": "跳到 {{time}}",
+    "notFoundTitle": "找不到录音",
+    "notFoundBody": "它可能已移到回收站。请返回资料库。",
+    "noTranscriptTitle": "尚无转写",
+    "noTranscriptBody": "音频已保存在您的设备上。转写将在后续版本中提供。",
+    "transcribing": "正在转写",
+    "transcribingDetail": "这可能需要几分钟。您可以离开此页面。",
+    "issue": {
+      "failed": {
+        "title": "转写失败",
+        "body": "音频在您的设备上完好无损。您可以重新开始转写。",
+        "action": "重试"
+      },
+      "modelMissing": {
+        "title": "缺少转写模型",
+        "body": "模型下载后即开始转写，仅限 Wi‑Fi。"
+      },
+      "offline": {
+        "title": "离线",
+        "body": "网络恢复后将继续云端转写。音频保留在您的设备上。"
+      },
+      "quotaExhausted": {
+        "title": "云端额度已用完",
+        "body": "本月云端转写已不可用，下月将恢复。"
+      }
+    },
+    "cloudRequired": {
+      "title": "此语言需要云端",
+      "body": "设备端没有可转写此语言（{{language}}）的引擎。云端转写将在后续版本中提供。"
+    }
+  },
+  "actions": {
+    "rename": "重命名",
+    "trash": "移到回收站",
+    "exportNote": "导出功能将在后续版本中提供。"
+  },
+  "rename": {
+    "title": "重命名录音",
+    "body": "标题有助于在资料库和搜索中找到录音。",
+    "label": "标题",
+    "hint": "留空即恢复默认标题。",
+    "tooLong": "最多 {{max}} 个字符：请缩短标题。",
+    "confirm": "重命名"
   }
 }

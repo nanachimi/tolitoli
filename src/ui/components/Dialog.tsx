@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../theme';
@@ -16,6 +17,8 @@ export type DialogProps = {
   onConfirm: () => void;
   onCancel: () => void;
   destructive?: boolean;
+  /** A field between the explanation and the buttons (the rename dialog's TextField). */
+  children?: ReactNode;
 };
 
 /** Confirmation for the few actions one cannot undo with a gesture (guide Dialog). */
@@ -28,6 +31,7 @@ export function Dialog({
   onConfirm,
   onCancel,
   destructive = false,
+  children,
 }: DialogProps) {
   const theme = useTheme();
   return (
@@ -67,6 +71,9 @@ export function Dialog({
           >
             {body}
           </AppText>
+          {children ? (
+            <View style={{ marginBottom: theme.space['space-6'] }}>{children}</View>
+          ) : null}
           {/* Least risky first: on the left in LTR, on the right in RTL. */}
           <View style={[styles.row, { gap: theme.space['space-2'] }]}>
             <Button label={cancelLabel} variant="ghost" onPress={onCancel} />
