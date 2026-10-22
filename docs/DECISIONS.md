@@ -474,3 +474,12 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - la notification porte la marque en couleur et un en-tête `#b84a24` ;
   - l'icône de l'app est le carré terre cuite.
 - **Hors étape 1** : le reste du système de design n'est pas encore appliqué. Cela concerne la transcription typée des tokens dans `src/ui/theme/tokens.ts`, Rubik, Lucide et les composants de `docs/design/components/`. Son intégration sera proposée dans le plan d'une étape suivante.
+
+## D-025 — Journal des tests de fumée de l'étape 1
+
+- **Règle** (CLAUDE.md, Méthode de travail) : après chaque build EAS installée, avant toute autre chose, l'app est relancée à froid et ses écrans principaux sont capturés. Les captures sont recadrées sans barre d'état ni barre de navigation.
+- Les builds 2 à 4 de l'étape ont précédé cette règle et n'ont pas de test de fumée versionné. Leurs vérifications sont décrites dans D-021 et D-023.
+
+| Build EAS                           | Profil      | Date       | Écrans                                                                    | Résultat                                                                                      |
+| ----------------------------------- | ----------- | ---------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `de5d066f` (n° 5, icônes de marque) | development | 2026-10-22 | `smoke-de5d066f-bibliotheque.png`, `-reglages.png`, `-enregistrement.png` | Aucune erreur rouge. Enregistrement démarré en 0,97 s, arrêté puis converti en `.m4a` (3,5 s) |
