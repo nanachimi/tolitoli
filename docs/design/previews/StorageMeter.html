@@ -1,0 +1,19 @@
+<!-- @dsCard group="Réglages" height=200 subtitle="répartition de l'espace" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);max-width:420px}
+.card{background:var(--surface-raised);border:1px solid var(--hairline);border-radius:var(--radius-md);padding:var(--space-4)}
+.card p{margin:0}
+.bar{display:flex;height:12px;border-radius:var(--radius-pill);overflow:hidden;background:var(--surface-sunken);border:1px solid var(--hairline);margin:var(--space-3) 0}
+.bar i{display:block;height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:var(--space-3)}
+.leg span{display:flex;align-items:center;gap:var(--space-1);color:var(--ink-muted)}
+.leg b{width:10px;height:10px;border-radius:3px;display:block}
+</style></head><body>
+<div class="card">
+<p class="heading">Stockage</p>
+<div class="bar" role="img" aria-label="Enregistrements 1,8 Go, corbeille 240 Mo, libre 12,4 Go"><i style="width:12%;background:var(--accent)"></i><i style="width:2%;background:var(--ochre)"></i></div>
+<div class="leg caption"><span><b style="background:var(--accent)"></b>Enregistrements 1,8 Go</span><span><b style="background:var(--ochre)"></b>Corbeille 240 Mo</span><span><b style="background:var(--surface-sunken);border:1px solid var(--hairline)"></b>Libre 12,4 Go</span></div>
+</div>
+</body></html>

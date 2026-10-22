@@ -1,0 +1,34 @@
+<!-- @dsCard group="Superpositions" height=400 subtitle="actions d'un enregistrement, choix de vitesse" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;gap:var(--space-4);align-items:flex-start;flex-wrap:wrap}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sheet{width:300px;background:var(--surface-raised);border:1px solid var(--hairline);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:var(--space-2) 0 var(--space-3);overflow:hidden}
+.grip{width:36px;height:4px;border-radius:var(--radius-pill);background:var(--hairline);margin:0 auto var(--space-2)}
+.hd{padding:var(--space-2) var(--space-4) var(--space-3);color:var(--ink-muted);margin:0}
+.it{display:flex;align-items:center;gap:var(--space-3);width:100%;min-height:var(--control-md);padding:var(--space-3) var(--space-4);background:none;border:0;text-align:start;font:inherit;color:var(--ink);cursor:pointer}
+.it .ck{margin-inline-start:auto;color:var(--accent)}
+.it.danger{color:var(--danger)}
+.sep{height:1px;background:var(--hairline);margin:var(--space-2) 0}
+</style></head><body>
+<div class="sheet" role="menu" aria-label="Actions de l'enregistrement">
+<span class="grip"></span>
+<p class="hd caption">Réunion fournisseur</p>
+<button class="it body" role="menuitem"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>Renommer</button>
+<button class="it body" role="menuitem"><svg class="ico" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>Exporter</button>
+<button class="it body" role="menuitem"><svg class="ico" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>Déplacer</button>
+<span class="sep"></span>
+<button class="it body danger" role="menuitem"><svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Mettre à la corbeille</button>
+</div>
+<div class="sheet" role="menu" aria-label="Vitesse de lecture">
+<span class="grip"></span>
+<p class="hd caption">Vitesse de lecture</p>
+<button class="it body" role="menuitemradio" aria-checked="false">0,5×</button>
+<button class="it body" role="menuitemradio" aria-checked="false">0,75×</button>
+<button class="it body" role="menuitemradio" aria-checked="true">1×<svg class="ico ck" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button>
+<button class="it body" role="menuitemradio" aria-checked="false">1,5×</button>
+<button class="it body" role="menuitemradio" aria-checked="false">2×</button>
+</div>
+</body></html>

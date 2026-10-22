@@ -1,0 +1,19 @@
+<!-- @dsCard group="Superpositions" height=300 subtitle="confirmation destructrice, confirmation simple" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-direction:column;gap:var(--space-6);max-width:420px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.scrim{background:var(--surface-sunken);border-radius:var(--radius-md);padding:var(--space-6) var(--space-4);display:grid;place-items:center}
+.dlg{background:var(--surface-raised);border:1px solid var(--hairline);border-radius:var(--radius-lg);padding:var(--space-6) var(--space-4) var(--space-4);max-width:320px;width:100%}
+.dlg p{margin:0 0 var(--space-2)}
+.dlg .caption{color:var(--ink-muted);margin-bottom:var(--space-6)}
+.row{display:flex;gap:var(--space-2);justify-content:flex-end}
+.btn{min-height:var(--control-md);padding:0 var(--space-4);border-radius:var(--radius-md);border:1px solid transparent;font:inherit;cursor:pointer}
+.ghost{background:none;color:var(--ink)}
+.danger{background:var(--danger);color:var(--surface-raised)}
+.primary{background:var(--accent);color:var(--on-accent)}
+</style></head><body>
+<div class="scrim"><div class="dlg" role="alertdialog" aria-labelledby="t1" aria-describedby="d1"><p class="heading" id="t1">Mettre à la corbeille ?</p><p class="caption" id="d1">« Réunion fournisseur » restera 30 jours dans la corbeille avant d'être supprimée définitivement.</p><div class="row"><button class="btn ghost body-strong">Annuler</button><button class="btn danger body-strong">Mettre à la corbeille</button></div></div></div>
+<div class="scrim"><div class="dlg" role="alertdialog" aria-labelledby="t2" aria-describedby="d2"><p class="heading" id="t2">Abandonner le nouveau titre ?</p><p class="caption" id="d2">Les modifications ne seront pas enregistrées.</p><div class="row"><button class="btn ghost body-strong">Continuer la saisie</button><button class="btn primary body-strong">Abandonner</button></div></div></div>
+</body></html>

@@ -1,0 +1,19 @@
+<!-- @dsCard group="Saisie" height=260 subtitle="vide, rempli, erreur" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-direction:column;gap:var(--space-4);max-width:420px}
+.ico{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.tf{display:flex;flex-direction:column;gap:var(--space-1)}
+.tf label{color:var(--ink-muted)}
+.tf input{min-height:var(--control-md);padding:0 var(--space-3);background:var(--surface-sunken);border:1px solid var(--hairline);border-radius:var(--radius-sm);font:inherit;color:var(--ink);outline:0}
+.tf input::placeholder{color:var(--ink-faint)}
+.tf .hint{color:var(--ink-muted)}
+.tf.err input{border-color:var(--danger)}
+.tf.err .hint{color:var(--danger);display:flex;align-items:center;gap:var(--space-1)}
+</style></head><body>
+<div class="tf"><label class="caption" for="a">Titre de l'enregistrement</label><input id="a" class="body" placeholder="Enregistrement du 22 oct. 14:02"><span class="hint caption">Visible dans la Bibliothèque et dans les exports.</span></div>
+<div class="tf"><label class="caption" for="b">Titre de l'enregistrement</label><input id="b" class="body" value="Réunion fournisseur"><span class="hint caption">Visible dans la Bibliothèque et dans les exports.</span></div>
+<div class="tf err"><label class="caption" for="c">Titre de l'enregistrement</label><input id="c" class="body" value="" aria-invalid="true" aria-describedby="e"><span class="hint caption" id="e"><svg class="ico" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Le titre ne peut pas être vide.</span></div>
+</body></html>

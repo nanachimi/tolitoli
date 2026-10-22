@@ -1,0 +1,19 @@
+<!-- @dsCard group="États" height=240 subtitle="déterminée, indéterminée, terminée" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-direction:column;gap:var(--space-6);max-width:420px}
+.ico{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.p .row{display:flex;justify-content:space-between;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)}
+.p p{margin:0}.p .caption{color:var(--ink-muted)}
+.track{height:8px;border-radius:var(--radius-pill);background:var(--surface-sunken);border:1px solid var(--hairline);overflow:hidden}
+.track i{display:block;height:100%;border-radius:var(--radius-pill);background:var(--accent)}
+.track.indet i{width:40%;animation:slide 1.4s ease-in-out infinite}
+@keyframes slide{0%{margin-inline-start:-40%}100%{margin-inline-start:100%}}
+@media (prefers-reduced-motion:reduce){.track.indet i{animation:none;width:100%;opacity:.35}}
+.done{color:var(--success);display:flex;align-items:center;gap:var(--space-1)}
+</style></head><body>
+<div class="p"><div class="row"><p class="body">Téléchargement du modèle</p><p class="caption">62 %</p></div><div class="track" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"><i style="width:62%"></i></div><p class="caption" style="margin-top:8px">145 Mo · wifi uniquement</p></div>
+<div class="p"><div class="row"><p class="body">Transcription en cours</p></div><div class="track indet" role="progressbar" aria-label="Transcription en cours"><i></i></div><p class="caption" style="margin-top:8px">Cela peut prendre quelques minutes.</p></div>
+<div class="p"><div class="row"><p class="body">Modèle téléchargé</p><p class="caption done"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Terminé</p></div><div class="track"><i style="width:100%"></i></div></div>
+</body></html>

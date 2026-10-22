@@ -1,0 +1,17 @@
+<!-- @dsCard group="États" height=380 subtitle="bibliothèque vide, aucun résultat, pas de transcription" -->
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-direction:column;gap:var(--space-8);max-width:420px}
+.ico{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.es{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-2);padding:var(--space-6) var(--space-4)}
+.es .halo{width:64px;height:64px;border-radius:var(--radius-pill);background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);margin-bottom:var(--space-2)}
+.es p{margin:0;max-width:300px}.es .caption{color:var(--ink-muted)}
+.es .btn{margin-top:var(--space-3);display:inline-flex;align-items:center;min-height:var(--control-md);padding:0 var(--space-4);border-radius:var(--radius-md);background:var(--accent);color:var(--on-accent);border:0;font:inherit}
+.es.quiet .halo{background:none;color:var(--ink-faint);margin:0}
+</style></head><body>
+<div class="es"><span class="halo"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></span><p class="heading">Aucun enregistrement</p><p class="caption">Appuyez sur Enregistrer pour commencer. Tout reste sur votre appareil.</p></div>
+<div class="es quiet"><span class="halo"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><p class="body-strong">Aucun résultat</p><p class="caption">Essayez un autre mot, ou cherchez dans le texte des transcriptions.</p></div>
+<div class="es"><span class="halo"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><p class="heading">Pas encore de transcription</p><p class="caption">Le wolof demande la transcription cloud, qui est désactivée.</p><button class="btn body-strong">Activer le cloud</button></div>
+</body></html>
