@@ -18,12 +18,11 @@
     "count_other": "{{count}} записи",
     "detailPlaceholder": "Выберите запись, чтобы открыть её здесь.",
     "record": "Записать",
-    "recordA11y": "Начать запись",
-    "listTitle": "Записи",
     "recovered": "Восстановлено",
     "itemA11y": "Запись от {{date}}, длительность {{duration}}",
     "itemRecoveredA11y": "Запись от {{date}}, длительность {{duration}}, восстановлена после прерывания",
-    "durationUnknown": "неизвестна"
+    "durationUnknown": "неизвестна",
+    "cardTitle": "Запись от {{date}}"
   },
   "settings": {
     "title": "Настройки",
@@ -53,9 +52,11 @@
     },
     "interruption": {
       "title": "Запись прервана",
-      "body": "Звонок или другое приложение заняли микрофон. Всё, что было до этого, сохранено.",
       "resume": "Продолжить запись",
-      "waitBody": "Микрофон занят звонком или другим приложением. Всё, что было до этого, сохранено. Продолжить можно после окончания звонка."
+      "waitBody": "Продолжить можно после окончания звонка.",
+      "callEndedTitle": "Звонок завершён",
+      "callEndedBody": "Всё, что было до звонка, сохранено.",
+      "takenBody": "Другое приложение заняло микрофон. Всё, что было до этого, сохранено."
     },
     "levelA11y": "Уровень звука: {{percent}} %",
     "timerA11y": "Длительность: {{duration}}",
@@ -82,11 +83,36 @@
     "close": "Закрыть",
     "micSilent": {
       "title": "Похоже, микрофон отключён",
-      "body": "Звук не поступает уже некоторое время. Возможно, микрофон занят звонком или другим приложением."
-    }
+      "body": "Возможно, микрофон занят другим приложением."
+    },
+    "stopA11y": "Остановить запись"
   },
   "dev": {
     "title": "Диагностика (разработка)",
     "pluralTitle": "Проверка множественного числа"
+  },
+  "format": {
+    "seconds_one": "{{count}} с",
+    "seconds_few": "{{count}} с",
+    "seconds_many": "{{count}} с",
+    "seconds_other": "{{count}} с",
+    "minutes_one": "{{count}} мин",
+    "minutes_few": "{{count}} мин",
+    "minutes_many": "{{count}} мин",
+    "minutes_other": "{{count}} мин",
+    "hours_one": "{{count}} ч",
+    "hours_few": "{{count}} ч",
+    "hours_many": "{{count}} ч",
+    "hours_other": "{{count}} ч",
+    "hoursMinutes": "{{hours}} ч {{minutes}}",
+    "today": "Сегодня",
+    "yesterday": "Вчера"
+  },
+  "quality": {
+    "good": "хорошее",
+    "medium": "среднее",
+    "draft": "черновик",
+    "busy": "Расшифровка…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { setUiLanguage, type SelectableLanguage } from '@/i18n';
 import { isRtl, PSEUDO_LANGUAGE, UI_LANGUAGES } from '@/i18n/languages';
-import { AppText, Screen, spacing, radius, useTheme } from '@/ui';
+import { AppText, OptionGroup, OptionRow, Screen, space } from '@/ui';
 
 /** Lets the restart notice show before a direction change reloads the app. */
 const RESTART_NOTICE_MS = 1000;
@@ -19,7 +19,6 @@ const OPTIONS: Option[] = __DEV__
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
-  const theme = useTheme();
   const [restarting, setRestarting] = useState(false);
 
   const select = (code: SelectableLanguage) => {
@@ -35,60 +34,50 @@ export default function SettingsScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
-        <AppText variant="title" accessibilityRole="header">
-          {t('settings.language.title')}
+        <AppText variant="title" accessibilityRole="header" style={styles.title}>
+          {t('settings.title')}
         </AppText>
-        <AppText muted>{t('settings.language.hint')}</AppText>
 
-        <View accessibilityRole="radiogroup" style={styles.group}>
-          {OPTIONS.map((option) => {
-            const selected = option.code === i18n.language;
-            return (
-              <Pressable
-                key={option.code}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: selected, disabled: restarting }}
-                accessibilityLabel={t('settings.language.optionA11y', {
-                  language: option.nativeName,
-                })}
-                disabled={restarting}
-                onPress={() => select(option.code)}
-                style={[
-                  styles.option,
-                  {
-                    borderColor: selected ? theme.colors.primary : theme.colors.border,
-                    backgroundColor: theme.colors.surface,
-                  },
-                ]}
-              >
-                {/* Language names are data, written in their own language. Hidden from
-                    screen readers: the radio's label already says it (D-019). */}
-                <AppText
-                  testID="i18n-data"
-                  importantForAccessibility="no"
-                  accessibilityElementsHidden
-                >
-                  {option.nativeName}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <OptionGroup title={t('settings.language.title')} exclusive>
+          {OPTIONS.map((option) => (
+            <OptionRow
+              key={option.code}
+              kind="radio"
+              label={option.nativeName}
+              labelIsData
+              // Says it before choosing: this language flips the writing direction and restarts.
+              description={
+                isRtl(option.code) !== isRtl(i18n.language)
+                  ? t('settings.language.restartRtl')
+                  : undefined
+              }
+              checked={option.code === i18n.language}
+              disabled={restarting}
+              accessibilityLabel={t('settings.language.optionA11y', {
+                language: option.nativeName,
+              })}
+              onPress={() => select(option.code)}
+            />
+          ))}
+        </OptionGroup>
+        <AppText variant="caption" color="ink-muted">
+          {t('settings.language.hint')}
+        </AppText>
 
         {restarting ? (
           <AppText accessibilityLiveRegion="polite">{t('settings.language.restartRtl')}</AppText>
         ) : null}
 
         {__DEV__ ? (
-          <View style={styles.group}>
-            <AppText variant="title" accessibilityRole="header">
+          <View style={styles.dev}>
+            <AppText variant="overline" color="ink-muted" accessibilityRole="header">
               {t('dev.title')}
             </AppText>
-            <AppText muted>{t('dev.pluralTitle')}</AppText>
+            <AppText color="ink-muted">{t('dev.pluralTitle')}</AppText>
             {PLURAL_SAMPLES.map((count) => (
               <AppText key={count}>{t('library.count', { count })}</AppText>
             ))}
-            <AppText testID="i18n-data" muted>
+            <AppText testID="i18n-data" variant="timestamp" color="ink-muted">
               {pluralDiagnostic(i18n.language)}
             </AppText>
           </View>
@@ -113,12 +102,7 @@ function pluralDiagnostic(language: string): string {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.md, gap: spacing.md },
-  group: { gap: spacing.sm },
-  option: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderWidth: 2,
-    borderRadius: radius.md,
-  },
+  content: { padding: space['space-4'], paddingTop: space['space-8'], gap: space['space-2'] },
+  title: { marginBottom: space['space-4'] },
+  dev: { marginTop: space['space-6'], gap: space['space-2'] },
 });

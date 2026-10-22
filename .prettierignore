@@ -9,3 +9,5 @@ docs/CAHIER_DES_CHARGES.md
 CLAUDE.md
 # Exported from the Tolitoli Design System; never edited here (docs/design/INDEX.md)
 docs/design/
+# Raw device captures and generated previews, kept on this Mac, never committed
+build/

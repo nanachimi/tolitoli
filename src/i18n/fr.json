@@ -17,12 +17,11 @@
     "count_other": "{{count}} enregistrements",
     "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici.",
     "record": "Enregistrer",
-    "recordA11y": "Démarrer un enregistrement",
-    "listTitle": "Enregistrements",
     "recovered": "Récupéré",
     "itemA11y": "Enregistrement du {{date}}, durée {{duration}}",
     "itemRecoveredA11y": "Enregistrement du {{date}}, durée {{duration}}, récupéré après une interruption",
-    "durationUnknown": "inconnue"
+    "durationUnknown": "inconnue",
+    "cardTitle": "Enregistrement du {{date}}"
   },
   "settings": {
     "title": "Réglages",
@@ -52,9 +51,11 @@
     },
     "interruption": {
       "title": "Enregistrement interrompu",
-      "body": "Un appel ou une autre application a pris le micro. Tout ce qui précède est enregistré.",
       "resume": "Reprendre l’enregistrement",
-      "waitBody": "Un appel ou une autre application utilise le micro. Tout ce qui précède est enregistré. Vous pourrez reprendre à la fin de l’appel."
+      "waitBody": "Vous pourrez reprendre à la fin de l’appel.",
+      "callEndedTitle": "Appel terminé",
+      "callEndedBody": "Ce qui précède l’appel est conservé.",
+      "takenBody": "Une autre application a pris le micro. Ce qui précède est conservé."
     },
     "levelA11y": "Niveau sonore : {{percent}} %",
     "timerA11y": "Durée : {{duration}}",
@@ -81,11 +82,33 @@
     "close": "Fermer",
     "micSilent": {
       "title": "Le micro semble coupé",
-      "body": "Aucun son n’arrive depuis un moment. Un appel ou une autre application l’utilise peut-être."
-    }
+      "body": "Une autre application utilise peut-être le micro."
+    },
+    "stopA11y": "Arrêter l’enregistrement"
   },
   "dev": {
     "title": "Diagnostic (développement)",
     "pluralTitle": "Test des pluriels"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_many": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_many": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier"
+  },
+  "quality": {
+    "good": "bonne",
+    "medium": "moyenne",
+    "draft": "brouillon",
+    "busy": "Transcription…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

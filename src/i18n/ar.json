@@ -20,12 +20,11 @@
     "count_other": "{{count}} تسجيل",
     "detailPlaceholder": "اختر تسجيلًا لعرضه هنا.",
     "record": "تسجيل",
-    "recordA11y": "بدء تسجيل",
-    "listTitle": "التسجيلات",
     "recovered": "مُستعاد",
     "itemA11y": "تسجيل بتاريخ {{date}}، المدة {{duration}}",
     "itemRecoveredA11y": "تسجيل بتاريخ {{date}}، المدة {{duration}}، مُستعاد بعد انقطاع",
-    "durationUnknown": "غير معروفة"
+    "durationUnknown": "غير معروفة",
+    "cardTitle": "تسجيل {{date}}"
   },
   "settings": {
     "title": "الإعدادات",
@@ -55,9 +54,11 @@
     },
     "interruption": {
       "title": "توقف التسجيل",
-      "body": "استحوذت مكالمة أو تطبيق آخر على الميكروفون. كل ما سبق ذلك محفوظ.",
       "resume": "استئناف التسجيل",
-      "waitBody": "مكالمة أو تطبيق آخر يستخدم الميكروفون. كل ما سبق ذلك محفوظ. يمكنك الاستئناف بعد انتهاء المكالمة."
+      "waitBody": "يمكنك الاستئناف بعد انتهاء المكالمة.",
+      "callEndedTitle": "انتهت المكالمة",
+      "callEndedBody": "كل ما سبق المكالمة محفوظ.",
+      "takenBody": "استحوذ تطبيق آخر على الميكروفون. كل ما سبق ذلك محفوظ."
     },
     "levelA11y": "مستوى الصوت: {{percent}}٪",
     "timerA11y": "المدة: {{duration}}",
@@ -84,11 +85,42 @@
     "close": "إغلاق",
     "micSilent": {
       "title": "يبدو أن الميكروفون مقطوع",
-      "body": "لم يصل أي صوت منذ لحظات. ربما تستخدم مكالمة أو تطبيق آخر الميكروفون."
-    }
+      "body": "ربما يستخدم تطبيق آخر الميكروفون."
+    },
+    "stopA11y": "إيقاف التسجيل"
   },
   "dev": {
     "title": "التشخيص (التطوير)",
     "pluralTitle": "اختبار صيغ الجمع"
+  },
+  "format": {
+    "seconds_zero": "{{count}} ث",
+    "seconds_one": "{{count}} ث",
+    "seconds_two": "{{count}} ث",
+    "seconds_few": "{{count}} ث",
+    "seconds_many": "{{count}} ث",
+    "seconds_other": "{{count}} ث",
+    "minutes_zero": "{{count}} د",
+    "minutes_one": "{{count}} د",
+    "minutes_two": "{{count}} د",
+    "minutes_few": "{{count}} د",
+    "minutes_many": "{{count}} د",
+    "minutes_other": "{{count}} د",
+    "hours_zero": "{{count}} س",
+    "hours_one": "{{count}} س",
+    "hours_two": "{{count}} س",
+    "hours_few": "{{count}} س",
+    "hours_many": "{{count}} س",
+    "hours_other": "{{count}} س",
+    "hoursMinutes": "{{hours}} س {{minutes}}",
+    "today": "اليوم",
+    "yesterday": "أمس"
+  },
+  "quality": {
+    "good": "جيدة",
+    "medium": "متوسطة",
+    "draft": "مسودة",
+    "busy": "جارٍ النسخ…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

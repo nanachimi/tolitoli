@@ -1,63 +1,36 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
-import type { ComponentProps } from 'react';
 import { Text, useWindowDimensions, type ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import {
   getTabBarHeight,
-  TAB_LABEL_FONT_SIZE,
-  TAB_LABEL_LINE_HEIGHT,
+  Icon,
+  TAB_BAR_PADDING_BOTTOM,
+  TAB_BAR_PADDING_TOP,
   TAB_LABEL_MAX_FONT_SCALE,
   useTheme,
+  type IconName,
 } from '@/ui';
 
-type IconName = ComponentProps<typeof Ionicons>['name'];
-
-/**
- * Symmetric glyphs only, so nothing needs mirroring in RTL (D-013). Icons are
- * decorative: the tab label already carries the accessible name.
- */
-function tabIcon(focused: IconName, unfocused: IconName) {
-  function TabIcon({
-    color,
-    size,
-    focused: isFocused,
-  }: {
-    color: ColorValue;
-    size: number;
-    focused: boolean;
-  }) {
-    return (
-      <Ionicons
-        name={isFocused ? focused : unfocused}
-        // Tint colors come from the theme (hex strings); ColorValue is wider than Ionicons accepts.
-        color={color as string}
-        size={size}
-        accessibilityElementsHidden
-        importantForAccessibility="no"
-      />
-    );
+/** Lucide icon, hidden from screen readers: the tab is announced by its label (D-019). */
+function tabIcon(name: IconName) {
+  function TabIcon({ focused }: { focused: boolean }) {
+    return <Icon name={name} color={focused ? 'accent' : 'ink-muted'} />;
   }
   return TabIcon;
 }
 
-/** Label capped at 1.5× the base size so it always fits the grown bar (D-014). */
+/** Caption label capped at 1.5× the system font size; the bar grows with it (D-014). */
 function tabLabel(text: string) {
   function TabLabel({ color }: { color: ColorValue }) {
+    const theme = useTheme();
     return (
       <Text
         allowFontScaling
         maxFontSizeMultiplier={TAB_LABEL_MAX_FONT_SCALE}
         numberOfLines={1}
-        style={{
-          color,
-          fontSize: TAB_LABEL_FONT_SIZE,
-          lineHeight: TAB_LABEL_LINE_HEIGHT,
-          fontWeight: '500',
-          textAlign: 'center',
-        }}
+        style={[theme.text.caption, { color, textAlign: 'center' }]}
       >
         {text}
       </Text>
@@ -75,22 +48,25 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.text,
+        headerShown: false,
         tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
+          backgroundColor: theme.color['surface-raised'],
+          borderTopColor: theme.color.hairline,
+          borderTopWidth: 1,
+          paddingTop: TAB_BAR_PADDING_TOP,
+          paddingBottom: TAB_BAR_PADDING_BOTTOM + insets.bottom,
           height: getTabBarHeight(fontScale, insets.bottom),
         },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarActiveTintColor: theme.color.accent,
+        tabBarInactiveTintColor: theme.color['ink-muted'],
+        sceneStyle: { backgroundColor: theme.color.surface },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: t('library.title'),
-          tabBarIcon: tabIcon('albums', 'albums-outline'),
+          tabBarIcon: tabIcon('list'),
           tabBarLabel: tabLabel(t('tabs.library')),
           tabBarAccessibilityLabel: t('tabs.library'),
         }}
@@ -99,7 +75,7 @@ export default function TabsLayout() {
         name="settings"
         options={{
           title: t('settings.title'),
-          tabBarIcon: tabIcon('settings', 'settings-outline'),
+          tabBarIcon: tabIcon('settings'),
           tabBarLabel: tabLabel(t('tabs.settings')),
           tabBarAccessibilityLabel: t('tabs.settings'),
         }}

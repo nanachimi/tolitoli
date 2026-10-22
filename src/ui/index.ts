@@ -1,6 +1,16 @@
 export { AppText } from './components/AppText';
+export { Icon, type IconName } from './components/Icon';
 export { Screen } from './components/Screen';
 export { SplitLayout } from './layout/SplitLayout';
 export { getLayoutMode, useLayoutMode } from './layout/useLayoutMode';
 export * from './layout/tabBar';
 export * from './theme';
+export { Banner, type BannerKind } from './components/Banner';
+export { Button, type ButtonVariant } from './components/Button';
+export { LevelMeter } from './components/LevelMeter';
+export { Timer, type TimerState } from './components/Timer';
+export { QualityChip, type Quality } from './components/QualityChip';
+export { RecordButton } from './components/RecordButton';
+export { RecordingCard, type RecordingCardState } from './components/RecordingCard';
+export { TranscriptSegment, type SegmentState } from './components/TranscriptSegment';
+export { OptionGroup, OptionRow, type OptionRowKind } from './components/OptionRow';

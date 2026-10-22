@@ -16,12 +16,11 @@
     "count_other": "{{count}} recordings",
     "detailPlaceholder": "Select a recording to show it here.",
     "record": "Record",
-    "recordA11y": "Start a recording",
-    "listTitle": "Recordings",
     "recovered": "Recovered",
     "itemA11y": "Recording from {{date}}, duration {{duration}}",
     "itemRecoveredA11y": "Recording from {{date}}, duration {{duration}}, recovered after an interruption",
-    "durationUnknown": "unknown"
+    "durationUnknown": "unknown",
+    "cardTitle": "Recording of {{date}}"
   },
   "settings": {
     "title": "Settings",
@@ -51,9 +50,11 @@
     },
     "interruption": {
       "title": "Recording interrupted",
-      "body": "A call or another app took the microphone. Everything before it is saved.",
       "resume": "Resume recording",
-      "waitBody": "A call or another app is using the microphone. Everything before is saved. You can resume once the call ends."
+      "waitBody": "You can resume once the call ends.",
+      "callEndedTitle": "Call ended",
+      "callEndedBody": "Everything before the call is kept.",
+      "takenBody": "Another app took the microphone. Everything before is kept."
     },
     "levelA11y": "Sound level: {{percent}}%",
     "timerA11y": "Duration: {{duration}}",
@@ -80,11 +81,30 @@
     "close": "Close",
     "micSilent": {
       "title": "The microphone seems cut off",
-      "body": "No sound has come in for a moment. A call or another app may be using it."
-    }
+      "body": "Another app may be using the microphone."
+    },
+    "stopA11y": "Stop recording"
   },
   "dev": {
     "title": "Diagnostics (development)",
     "pluralTitle": "Plural test"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "quality": {
+    "good": "good",
+    "medium": "fair",
+    "draft": "draft",
+    "busy": "Transcribing…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

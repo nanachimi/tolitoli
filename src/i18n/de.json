@@ -16,12 +16,11 @@
     "count_other": "{{count}} Aufnahmen",
     "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen.",
     "record": "Aufnehmen",
-    "recordA11y": "Aufnahme starten",
-    "listTitle": "Aufnahmen",
     "recovered": "Wiederhergestellt",
     "itemA11y": "Aufnahme vom {{date}}, Dauer {{duration}}",
     "itemRecoveredA11y": "Aufnahme vom {{date}}, Dauer {{duration}}, nach einer Unterbrechung wiederhergestellt",
-    "durationUnknown": "unbekannt"
+    "durationUnknown": "unbekannt",
+    "cardTitle": "Aufnahme vom {{date}}"
   },
   "settings": {
     "title": "Einstellungen",
@@ -51,9 +50,11 @@
     },
     "interruption": {
       "title": "Aufnahme unterbrochen",
-      "body": "Ein Anruf oder eine andere App hat das Mikrofon übernommen. Alles davor ist gespeichert.",
       "resume": "Aufnahme fortsetzen",
-      "waitBody": "Ein Anruf oder eine andere App verwendet das Mikrofon. Alles davor ist gespeichert. Sie können nach dem Anruf fortsetzen."
+      "waitBody": "Sie können nach dem Anruf fortsetzen.",
+      "callEndedTitle": "Anruf beendet",
+      "callEndedBody": "Alles vor dem Anruf ist gespeichert.",
+      "takenBody": "Eine andere App hat das Mikrofon übernommen. Alles davor ist gespeichert."
     },
     "levelA11y": "Pegel: {{percent}} %",
     "timerA11y": "Dauer: {{duration}}",
@@ -80,11 +81,30 @@
     "close": "Schließen",
     "micSilent": {
       "title": "Das Mikrofon scheint stummgeschaltet",
-      "body": "Seit einem Moment kommt kein Ton an. Vielleicht verwendet ein Anruf oder eine andere App das Mikrofon."
-    }
+      "body": "Vielleicht verwendet eine andere App das Mikrofon."
+    },
+    "stopA11y": "Aufnahme beenden"
   },
   "dev": {
     "title": "Diagnose (Entwicklung)",
     "pluralTitle": "Pluraltest"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} Min.",
+    "minutes_other": "{{count}} Min.",
+    "hours_one": "{{count}} Std.",
+    "hours_other": "{{count}} Std.",
+    "hoursMinutes": "{{hours}} Std. {{minutes}}",
+    "today": "Heute",
+    "yesterday": "Gestern"
+  },
+  "quality": {
+    "good": "gut",
+    "medium": "mittel",
+    "draft": "Entwurf",
+    "busy": "Transkription …",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

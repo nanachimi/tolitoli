@@ -6,6 +6,10 @@ import {
 } from '../layout/tabBar';
 
 describe('getTabBarHeight', () => {
+  it('fits a 24 px icon over a 13/18 caption with the preview padding', () => {
+    expect(TAB_BAR_BASE_HEIGHT).toBe(8 + 24 + 4 + 18 + 12);
+  });
+
   it('keeps the default height at the default font size', () => {
     expect(getTabBarHeight(1, 0)).toBe(TAB_BAR_BASE_HEIGHT);
   });
