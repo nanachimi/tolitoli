@@ -161,7 +161,7 @@ Le format actuel, `YYYY-MM-DD HH:mm` (`formatRecordingDate`), n'est plus utilis�
 
 ## Décisions
 
-Cette section recueille les décisions de l'étape 1b ; elles seront reportées dans `DECISIONS.md` à la fusion. Les premières sont les conflits avec l'étape 1 relevés pendant le plan.
+**Reportées dans `DECISIONS.md` (D-030), avec les résultats sur l'appareil.** Cette section recueillait les décisions de l'étape 1b ; Les premières sont les conflits avec l'étape 1 relevés pendant le plan.
 
 1. **Noms de tokens** : on garde les noms du design (`surface-raised`…), au prix de clés entre guillemets, parce que la parité et la recherche dans le code en deviennent triviales. Tout le code d'interface est renommé (`primary` → `accent`, `text` → `ink`…).
 2. **Formats** : le chrono en `HH:MM:SS` (guide Timer) et les durées en « 42 min » / « 1 h 12 » (brand book) remplacent le `m:ss` et le `YYYY-MM-DD` de l'étape 1, par des formateurs d'interface, sans toucher à `services/audio/duration.ts`.

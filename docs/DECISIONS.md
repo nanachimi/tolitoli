@@ -548,3 +548,41 @@ Critères de fin (cahier des charges, ligne 1, ajustés par D-022), vérifiés u
 4. **Dette iOS consignée** : remplie (D-022, liste complétée par D-023 et la présente entrée).
 
 Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après le retrait de l'app des récentes, et le démarrage prend 0,35 à 1,4 s (au-dessous des 2 s du cahier).
+
+## D-030 — Étape 1b : thème et composants
+
+- **Date / étape** : 2026-10-22, étape 1b (plan `docs/plans/step-1b.md`, validé par le propriétaire). Le plan a été rédigé quand l'étape 1 était ouverte. Le worktree parallèle a été abandonné : une seule session, branche `step-1b-design` partie de `main`.
+- **Livré** :
+  - `src/ui/theme/tokens.ts`, transcription de `docs/design/tokens.json` avec un test de parité ;
+  - Rubik 500/600 chargée avant la levée de l'écran de démarrage ;
+  - `Icon` sur `lucide-react-native` 0.544.0 ;
+  - **dix** composants : les neuf guides, plus `OptionRow` et `OptionGroup` (guide ajouté par le propriétaire) ;
+  - formateurs d'affichage ;
+  - Bibliothèque, Enregistrement et Réglages refaits avec ces composants. Aucune couleur en dur hors de `tokens.ts` : celle de la notification vient aussi des tokens.
+  - 286 tests Jest : pseudo-locale, RTL et accessibilité pour chaque composant.
+- **Décisions** :
+  1. Les tokens gardent les noms du design (`surface-raised`, `space-4`…). La parité est vérifiée nom par nom et valeur par valeur.
+  2. Le chrono s'affiche en `HH:MM:SS` et les durées en « 42 min » / « 1 h 12 », par des formateurs d'interface (`src/ui/format/display.ts`). `services/audio/duration.ts` est inchangé.
+  3. La bannière de reprise est titrée selon la cause (propriétaire) : « Appel terminé » après un appel ; « Enregistrement interrompu » et « Une autre application a pris le micro » après une perte définitive. La cause est tenue par `recordingController` (`interruptionCause`), sans toucher aux services.
+  4. Le rappel légal est une caption `ink-muted` sous le titre (propriétaire).
+  5. `OptionRow` est le dixième composant : choix exclusif, bascule ou lien. Le sous-titre d'une langue dit, avant le choix, qu'elle redémarre l'app (bascule RTL).
+  6. Pas de chevron sur les cartes tant que l'écran Détail n'existe pas : écart temporaire au guide.
+  7. Le libellé d'accessibilité du bouton rond est « Enregistrer » (guide).
+  8. Pas d'icône adaptative sombre : Android n'en a pas, l'écart est déjà noté en D-024.
+  9. Les actions de la notification restent du texte système : Android n'y permet ni icône Lucide ni forme pilule.
+  10. Le rôle `progressbar` remplace `meter`, que React Native n'a pas.
+  11. Rubik couvre l'arabe, le cyrillique et les lettres du wolof (vérifié sur les TTF). Le chinois passe par la police système, comme voulu.
+  12. `@expo/vector-icons` est retiré, les onglets étant en Lucide.
+- **Vérifications sur l'appareil** (build de développement `1af57476`, Galaxy A05) :
+  - **Test de fumée** : démarrage à froid, aucune erreur rouge. Enregistrement de 2 min 03 démarré, arrêté puis converti. Captures `docs/captures/step-1b/smoke-1af57476-{bibliotheque,reglages,enregistrement}.png`.
+  - **Chiffres tabulaires** (propriétaire) : sur quatre captures prises à des secondes différentes, les deux-points et chaque chiffre restent dans les mêmes colonnes de pixels. Rubik applique bien `tnum` et le chrono ne tremble pas. Pas besoin de largeur fixe.
+  - **`Intl.DateTimeFormat`** (propriétaire) : natif sous Hermes et correct en `fr` (« 22 oct. »), `ar` (chiffres arabes, « أكتوبر »), `wo` (« 22 Okt ») et `zh-Hans` (« 10月22日 »). **Le polyfill `@formatjs/intl-datetimeformat` n'est pas ajouté.** Le repli vers le français reste dans le code, sans avoir servi.
+  - Le téléphone a été remis dans son état initial : thème clair (`cmd uimode night no`), police 1.0, app en français.
+- **Captures de fin** : `docs/captures/step-1b/{fr-clair,fr-sombre,ar-clair,ar-sombre}-{bibliotheque,reglages,enregistrement}.png`.
+- **Comparaison avec les aperçus** (`docs/design/previews/`, rendus avec un `tokens.css` tiré de `tokens.json`, dans `build/`) :
+  - **Conformes** : couleurs des deux thèmes, Rubik sur les titres, carte (`surface-raised`, `hairline`, icône d'état, méta `caption`, badge « Récupéré »), groupe de dates en `overline`, `OptionRow` (coche `accent`, séparateurs `hairline`), Timer (point et chiffres), bouton Arrêter rond avec le carré `accent`, Pause en bouton secondaire, onglets (actif `accent`).
+  - **Écarts** :
+    - la légende « Enregistrer » sous le bouton flottant chevauche le texte des cartes quand la liste défile dessous. L'aperçu ne montre pas ce cas : il faudra trancher dans le système de design (fond derrière le bouton ou marge) ;
+    - pas de chevron sur les cartes (décision 6) ;
+    - le bouton d'outils du dev client recouvre le coin des titres, en développement seulement.
+  - Les bannières (appel, reprise, micro coupé) ne sont pas capturées : il faudrait un vrai appel. Elles sont couvertes par Jest et par les captures de D-023.
