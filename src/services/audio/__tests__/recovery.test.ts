@@ -9,6 +9,7 @@ const PROFILES = {
   'wav-continuous': wavContinuousProfile(),
 };
 const now = () => new Date(Date.UTC(2026, 9, 21, 13));
+const NO_WAIT = { wait: async () => {} };
 
 function interrupted(fs: MemoryFs, id: string, known: string[], onDisk: Record<string, string>) {
   const manifest = createRecording(
@@ -38,6 +39,7 @@ describe('recovery of recordings left by a killed app', () => {
       PROFILES,
       new FakeAudio(fs),
       now,
+      NO_WAIT,
     );
     expect(recovered).toMatchObject({
       status: 'local',
@@ -58,6 +60,7 @@ describe('recovery of recordings left by a killed app', () => {
       PROFILES,
       new FakeAudio(fs),
       now,
+      NO_WAIT,
     );
     expect(recovered).toMatchObject({
       status: 'local',
@@ -71,41 +74,51 @@ describe('recovery of recordings left by a killed app', () => {
   it('is idempotent across launches', async () => {
     const fs = new MemoryFs();
     interrupted(fs, 'rec-1', ['s000-0.m4a'], { 's000-0.m4a': 'ab' });
-    await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now);
+    await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now, NO_WAIT);
     const writes = fs.writes.length;
-    expect(await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now)).toEqual(
-      [],
-    );
+    expect(
+      await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now, NO_WAIT),
+    ).toEqual([]);
     expect(fs.writes.length).toBe(writes);
   });
 
   it('skips the recording currently in progress', async () => {
     const fs = new MemoryFs();
     interrupted(fs, 'rec-1', [], { 's000-0.m4a': 'ab' });
-    const result = await recoverInterruptedRecordings(
-      fs,
-      ROOT,
-      PROFILES,
-      new FakeAudio(fs),
-      now,
-      (id) => id === 'rec-1',
-    );
+    const result = await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now, {
+      ...NO_WAIT,
+      isActive: (id) => id === 'rec-1',
+    });
     expect(result).toEqual([]);
     expect(readManifest(fs, ROOT, 'rec-1')?.status).toBe('recording');
+  });
+
+  it('leaves alone a recording whose files still grow (recorder alive after a JS reload)', async () => {
+    const fs = new MemoryFs();
+    interrupted(fs, 'rec-1', [], { 's000-0.m4a': 'ab' });
+    const wait = async () => {
+      fs.writeText(`${ROOT}/rec-1/s000-0.m4a`, 'abc');
+    };
+    const result = await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now, {
+      wait,
+    });
+    expect(result).toEqual([]);
+    expect(readManifest(fs, ROOT, 'rec-1')?.status).toBe('recording');
+    expect(fs.deleted).toEqual([]);
   });
 
   it('repairs each segment before probing it (WAV header left stale by a kill)', async () => {
     const fs = new MemoryFs();
     interrupted(fs, 'rec-1', ['s000-0.m4a'], { 's000-0.m4a': 'ab' });
     const audio = new FakeAudio(fs);
-    await recoverInterruptedRecordings(fs, ROOT, PROFILES, audio, now);
+    await recoverInterruptedRecordings(fs, ROOT, PROFILES, audio, now, NO_WAIT);
     expect(audio.repaired).toEqual([`${ROOT}/rec-1/s000-0.m4a`]);
   });
 
   it('leaves no partial manifest: writes go through a temporary file', async () => {
     const fs = new MemoryFs();
     interrupted(fs, 'rec-1', ['s000-0.m4a'], { 's000-0.m4a': 'ab' });
-    await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now);
+    await recoverInterruptedRecordings(fs, ROOT, PROFILES, new FakeAudio(fs), now, NO_WAIT);
     const manifestWrites = fs.writes.filter((path) => path.endsWith('manifest.json'));
     expect(manifestWrites).toEqual([]);
     expect([...fs.files.keys()].some((path) => path.endsWith('.tmp'))).toBe(false);

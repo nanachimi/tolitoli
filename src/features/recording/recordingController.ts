@@ -243,7 +243,7 @@ export async function recoverAtLaunch(): Promise<void> {
     PROFILES,
     nativeAudioFiles,
     () => new Date(),
-    (id) => session?.snapshot().manifest?.id === id,
+    { isActive: (id) => session?.snapshot().manifest?.id === id },
   );
   if (recovered.length > 0) {
     log('recovered', JSON.stringify(recovered.map((m) => [m.id, m.durationMs, m.unreadable])));

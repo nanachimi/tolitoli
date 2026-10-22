@@ -107,6 +107,7 @@ describe('final file of a WAV recording (D-021)', () => {
       { 'm4a-segments': WAV, 'wav-continuous': WAV },
       new FakeAudio(fs),
       now,
+      { wait: async () => {} },
     );
     expect(recovered).toMatchObject({ finalFile: 'rec-1.m4a', recovered: true, durationMs: 2000 });
     expect(readManifest(fs, ROOT, 'rec-1')?.status).toBe('local');

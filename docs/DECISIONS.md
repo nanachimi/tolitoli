@@ -447,6 +447,13 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - Le nom du canal est passé par l'app (`channelName`, clé `record.notification.channelName` dans les 7 langues).
     - Quatrième build Android.
 
+- **Incident au test de 60 min n° 1 (14:03), test annulé** :
+  - À 14:06:38, Metro a rechargé le JS du dev client, parce que je modifiais des fichiers du projet (icônes, `app.config.ts`) pendant le test.
+  - L'enregistreur natif a continué, mais la nouvelle instance JS ne connaissait plus la session. La récupération au lancement a donc pris l'enregistrement en cours pour un enregistrement abandonné : elle l'a converti (199 s) puis a libéré le WAV que l'enregistreur écrivait encore. La suite de l'enregistrement est perdue.
+  - **Correctif** : avant de finaliser un manifeste resté en `recording`, la récupération observe ses fichiers pendant 1,5 s. S'ils grossissent, elle n'y touche pas (`STILL_WRITING_CHECK_MS`, testé).
+  - En production, le JS ne se recharge pas pendant un enregistrement : il n'y a pas de Metro, et aucune mise à jour EAS n'est appliquée en cours d'enregistrement.
+  - **Règle de test** : les tests de 60 min tournent sur une build `preview`, avec le JS embarqué, sans Metro ni rechargement, et sans l'écran maintenu allumé du dev client. Aucun fichier du projet n'est modifié pendant un test sur le dev client.
+
 ## D-024 — Marque Tolitoli dans l'app : icônes et notification
 
 - **Date / étape** : 2026-10-22, étape 1, à la demande du propriétaire. La notification d'enregistrement affichait un micro générique et l'app portait encore l'icône du modèle Expo.
