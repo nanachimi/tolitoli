@@ -376,6 +376,8 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - textes de permission micro dans les 7 langues ;
     - après un appel, l'événement « ended » arrive bien. Sinon la reprise reste masquée (D-023 : sur iOS, toute interruption est traitée comme passagère) ;
     - alerte « le micro semble coupé » (D-023) : vérifier ce que l'iPhone fournit à l'app quand le micro est pris.
+    - module `modules/audio-encoder` côté iOS (`AVAudioFile`, D-021) : écrit mais jamais compilé ni exécuté. À vérifier : conversion WAV → `.m4a`, durée contrôlée, libération des WAV ;
+    - textes de permission iOS rangés sous la clé `ios` des fichiers `src/i18n/native/*.json` (D-025) : présents dans les 7 `InfoPlist.strings`.
   - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
 - **Conséquences** :
   - CLAUDE.md (Méthode de travail) et le cahier des charges (plan de développement, lignes 1, 3 et 5 ; coûts) sont ajustés.
@@ -520,3 +522,29 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - Le processus, le service de premier plan et la notification restent, et le WAV continue de croître d'environ 32 Ko/s pendant 40 s.
   - Le retour par le lien de la notification (`tolitoli://record`) retrouve l'écran « Enregistrement en cours ».
   - L'enregistrement de 3 min 52 s est complet malgré un verrouillage de l'écran en cours de route : `docs/captures/step-1/d027-retrait-recents-enregistrement-continue.png`.
+
+## D-028 — Test de 60 min n° 2 : critère de fin de l'étape 1
+
+- **Date / étape** : 2026-10-22, étape 1. Build `preview` `e71d7ed2`, test mené par le propriétaire.
+- **Conditions** : téléphone **débranché, sur batterie**, « Rester activé » désactivé, **écran verrouillé par intermittence** (pas en continu), sans adb pendant l'enregistrement.
+- **Résultat** :
+  - Chrono de l'écran Enregistrement : **1:23:13**.
+  - Durée du fichier final dans la bibliothèque, mesurée sur le fichier : **1:23:10**.
+  - Pas de badge « Récupéré », donc un arrêt propre. Après l'arrêt, ni service de premier plan ni notification. Pendant le test, le propriétaire a vu la notification et son compteur. Il ne l'a pas vérifiée à la fin, mais adb confirme qu'elle n'existe plus.
+- **Écart de 3 s** entre le chrono et le fichier (0,06 %). Le test n° 1 donnait moins d'une seconde.
+  - La cause ne peut pas être établie : une build release n'est pas débogable, et `run-as` ne permet pas de récupérer les segments.
+  - Le chrono est calculé par l'interface. La durée du fichier est la somme des segments sondés.
+  - L'écart est consigné tel quel. Il est à remesurer sur une build de développement si une perte réelle est suspectée.
+- **Verdict** : l'enregistrement long sur batterie tient au-delà de 60 min. Le service de premier plan, la notification et la conversion fonctionnent, sans arrêt par l'optimisation de batterie Samsung. Le critère de fin est considéré comme rempli, avec la réserve de l'écran verrouillé par intermittence.
+- Capture : `docs/captures/step-1/t60-2-bibliotheque-duree.png`.
+
+## D-029 — Clôture de l'étape 1 (Android)
+
+Critères de fin (cahier des charges, ligne 1, ajustés par D-022), vérifiés un par un :
+
+1. **60 min sans perte sur Android, sur batterie** : rempli, avec réserve (D-028). 1:23:10 enregistrées, écran verrouillé par intermittence. L'écart de 3 s entre le chrono et le fichier n'est pas expliqué. Le test n° 1, en charge, donnait moins d'une seconde d'écart (D-026).
+2. **Appel entrant géré sur Android** : rempli (D-023). Appels classiques et WhatsApp détectés dès la sonnerie, même après un rechargement du JS. Segment fermé, « Reprendre » masqué jusqu'à la fin de l'appel, aucun audio d'appel enregistré.
+3. **Enregistrement interrompu brutalement, récupéré au lancement suivant et jamais supprimé** : rempli (D-027). 0,16 s perdues, badge « Récupéré ». La récupération ignore un enregistrement dont les fichiers grossissent encore (D-023).
+4. **Dette iOS consignée** : remplie (D-022, liste complétée par D-023 et la présente entrée).
+
+Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après le retrait de l'app des récentes, et le démarrage prend 0,35 à 1,4 s (au-dessous des 2 s du cahier).
