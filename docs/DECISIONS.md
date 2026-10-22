@@ -349,11 +349,10 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - Le tout est converti **une seule fois** en `.m4a` (AAC 64 kbit/s) à l'arrêt, ou à la récupération.
   - Le WAV n'est jamais supprimé tant que le `.m4a` n'est pas écrit et vérifié (durée lue). Une conversion interrompue est relancée au lancement suivant.
 - **Formulation « blocs de 2 s »** : les 2 s restent l'objectif de perte maximale. Le cahier des charges (§ Fiabilité) et CLAUDE.md disent désormais « vidé sur disque au moins toutes les 2 s ».
-- **En attente du propriétaire** :
-  - le choix de l'encodeur (bibliothèque native, CLAUDE.md) ;
-  - la fréquence d'échantillonnage du WAV.
-
-  Une seconde build Android suivra, comme prévu au plan.
+- **Choix du propriétaire (2026-10-22)** :
+  - **Encodeur** : un module Expo local (`modules/audio-encoder/`), plutôt que react-native-compressor. Il utilise MediaCodec + MediaMuxer sur Android. Le code iOS est écrit, mais il ne sera testé qu'avec la dette iOS (D-022).
+  - **Fréquence** : WAV en **16 kHz** mono. C'est la qualité d'une voix HD, celle qu'attendent Whisper et les moteurs cloud. Le WAV occupe 115 Mo/h pendant l'enregistrement.
+  - Une seconde build Android embarque le module, comme prévu au plan.
 
 ## D-022 — Compte Apple Developer reporté : dette iOS
 
@@ -370,8 +369,48 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - kill pendant l'enregistrement, puis récupération ;
     - 60 min écran verrouillé, sur batterie ;
     - indicateur orange du micro visible ;
-    - textes de permission micro dans les 7 langues.
+    - textes de permission micro dans les 7 langues ;
+    - après un appel, l'événement « ended » arrive bien. Sinon la reprise reste masquée (D-023 : sur iOS, toute interruption est traitée comme passagère) ;
+    - alerte « le micro semble coupé » (D-023) : vérifier ce que l'iPhone fournit à l'app quand le micro est pris.
   - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
 - **Conséquences** :
   - CLAUDE.md (Méthode de travail) et le cahier des charges (plan de développement, lignes 1, 3 et 5 ; coûts) sont ajustés.
   - Le coût Apple (99 $/an) passe d'« avant TestFlight » à « avant l'ouverture de l'étape 5 ».
+
+## D-023 — Détection d'appel sur Android : focus audio corrigé, reprise bloquée, alerte silence
+
+- **Date / étape** : 2026-10-22, étape 1. C'est le premier test de l'app réelle sur le Galaxy A05 : le propriétaire appelle l'A05 pendant un enregistrement, avec un appel classique puis un appel WhatsApp.
+- **Essai 1 (processus lancé la veille, JS rechargé plusieurs fois)** : **aucun des deux appels n'est détecté.**
+  - Le système envoie bien la perte de focus à l'app (`propagateFocusLossFromGainToAll`).
+  - Mais dans l'app, l'événement tombe sur un fil mort : `IllegalStateException: Handler … sending message to a Handler on a dead thread`.
+  - L'enregistrement continue. Il contient deux plages de silence numérique absolu, d'environ 20 s et 15 s.
+  - **Cause** : react-native-audio-api 0.13.6 enregistre son écouteur sans Handler (`AudioFocusRequest.Builder.setOnAudioFocusChangeListener(this)`). Android l'exécute alors sur le looper du fil qui a créé l'`AudioManager` du processus, ici le fil JS, que chaque rechargement remplace.
+- **Essai 2 (démarrage à froid)** : quatre appels sont détectés, classiques et WhatsApp.
+  - La perte de focus passagère (`AUDIOFOCUS_LOSS_TRANSIENT`) arrive **dès la sonnerie**, et le JS la reçoit 3 à 20 ms plus tard.
+  - Le segment est fermé et inscrit au manifeste en moins de 130 ms.
+  - À la fin de l'appel, le gain de focus arrive et la reprise est proposée.
+  - Le segment s000 (785 s) ne perd que 0,6 s, démarrage compris.
+- **Défauts trouvés à l'essai 2** :
+  - **Course** : la sonnerie WhatsApp est arrivée pendant le démarrage du nouvel enregistreur, après « Reprendre ». L'interruption a été ignorée et s001 a tourné pendant tout l'appel (12,9 s de zéros, plus 27,8 s sans données).
+  - **Reprise pendant un appel** : « Reprendre » restait proposé pendant la sonnerie et l'appel, et s002 et s003 ont démarré en plein appel. Android a rendu du silence (−90 dBFS ou zéros) : rien de l'appel n'a été capté. Mais le cahier interdit le micro pendant un appel, et un enregistrement de silence est un piège.
+  - **Notification restée affichée après l'arrêt** (signalée par le propriétaire, sans certitude) : non reproduite par adb, ni après un arrêt simple ni après une pause suivie d'une reprise. À revérifier au prochain test d'appel.
+- **Décisions (propriétaire)** :
+  1. **Patch de react-native-audio-api** par patch-package (`patches/react-native-audio-api+0.13.6.patch`, réappliqué par `postinstall`) :
+     - l'écouteur reçoit `Handler(Looper.getMainLooper())` ;
+     - une perte passagère est transmise comme `began` avec `shouldResume: true`, une perte définitive avec `false`.
+
+     Le patch est signalé aux mainteneurs et retiré dès qu'un correctif officiel paraît.
+
+  2. **Pas de READ_PHONE_STATE.** Le focus audio détecte l'appel classique et WhatsApp en 20 ms. Une seconde source ne verrait que la téléphonie, au prix d'une permission sensible et d'une déclaration Play Console. Il reste **en réserve** si un autre modèle de téléphone ne remonte pas le focus. Dans ce cas, il **complète** le focus audio sans le remplacer, pour que les appels VoIP restent détectés.
+  3. **« Reprendre » masqué pendant une perte passagère** :
+     - la bannière dit « Vous pourrez reprendre à la fin de l'appel » ;
+     - le bouton de la notification est ignoré ;
+     - « Reprendre » revient au gain de focus ;
+     - si une autre app garde le micro pour de bon (perte définitive), « Reprendre » est proposé tout de suite ;
+     - sur iOS, où le type de perte n'est pas transmis, toute interruption est traitée comme passagère (à vérifier, dette iOS).
+  4. **Course corrigée** : une interruption qui arrive pendant le démarrage d'un enregistreur (début ou reprise) le referme dès qu'il tourne.
+  5. **Filet de sécurité « silence numérique »**, en JS pur (`micSilence.ts`) :
+     - déclenchement : au moins 500 ms de crêtes à 4 LSB ou moins (environ −78 dBFS) sur la prise de niveau 16 kHz ;
+     - effet : une bannière « Le micro semble coupé », **sans pause automatique**, pour qu'un faux positif ne coûte rien ;
+     - le silence d'une pièce réelle mesuré sur l'A05 reste vers −73 dBFS, bien au-dessus du seuil.
+- **Vérification** : un nouveau test d'appel aura lieu sur la seconde build, qui contient le patch. Il couvrira un appel classique, un appel WhatsApp, un appel pendant la reprise et la notification après l'arrêt.

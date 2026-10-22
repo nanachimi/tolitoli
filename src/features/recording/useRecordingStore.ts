@@ -15,6 +15,10 @@ export type RecordingState = {
   /** 0..1 input level. */
   level: number;
   resumeOffered: boolean;
+  /** A call or ringtone holds the microphone: resuming is not offered yet. */
+  micBusy: boolean;
+  /** Digital silence for a while during recording: the microphone seems cut. */
+  micSilent: boolean;
   notice: RecordingNotice | null;
   diskMinutes: number | null;
   recordings: RecordingManifest[];
@@ -26,6 +30,8 @@ export const initialRecordingState: RecordingState = {
   runningSince: null,
   level: 0,
   resumeOffered: false,
+  micBusy: false,
+  micSilent: false,
   notice: null,
   diskMinutes: null,
   recordings: [],

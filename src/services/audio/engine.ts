@@ -12,6 +12,10 @@ export interface RecordingEngine {
 }
 
 export type SystemInterruption =
-  | { kind: 'interruption-began' }
+  /** `transient`: the microphone is expected back (ringtone, call), so an "ended" event will follow. */
+  | { kind: 'interruption-began'; transient: boolean }
   | { kind: 'interruption-ended'; shouldResume: boolean }
   | { kind: 'route-lost' };
+
+/** One buffer of the 16 kHz monitoring tap: meter level, peak and duration. */
+export type AudioFrame = { level: number; peak: number; durationMs: number };

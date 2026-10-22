@@ -100,6 +100,28 @@ describe('Record screen', () => {
     expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
   });
 
+  it('offers no resume while a call still holds the microphone', async () => {
+    setRecording({ status: 'interrupted', resumeOffered: false, micBusy: true });
+    await renderScreen(<RecordScreen />);
+    expect(screen.getByText(/Vous pourrez reprendre à la fin de l’appel/)).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Reprendre l’enregistrement' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
+  });
+
+  it('hides resume on a user pause while a call holds the microphone', async () => {
+    setRecording({ status: 'paused', micBusy: true });
+    await renderScreen(<RecordScreen />);
+    expect(screen.queryByRole('button', { name: 'Reprendre' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
+  });
+
+  it('warns when the microphone seems cut, without stopping anything', async () => {
+    setRecording({ status: 'recording', micSilent: true });
+    await renderScreen(<RecordScreen />);
+    expect(screen.getByText('Le micro semble coupé')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Pause' })).toBeOnTheScreen();
+  });
+
   it('explains a denied microphone and links to settings', async () => {
     setRecording({ status: 'idle', notice: 'permission-denied' });
     await renderScreen(<RecordScreen />);
@@ -110,6 +132,9 @@ describe('Record screen', () => {
   it.each<[string, Partial<RecordingState>]>([
     ['recording', { status: 'recording' }],
     ['interrupted', { status: 'interrupted', notice: 'notifications-denied' }],
+    ['interrupted by a call', { status: 'interrupted', micBusy: true }],
+    ['interrupted, resume offered', { status: 'interrupted', resumeOffered: true }],
+    ['mic silent', { status: 'recording', micSilent: true }],
     ['paused with low disk', { status: 'paused', notice: 'disk-low', diskMinutes: 42 }],
     ['saved', { status: 'local' }],
     ['permission denied', { status: 'idle', notice: 'permission-denied' }],

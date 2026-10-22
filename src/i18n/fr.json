@@ -53,7 +53,8 @@
     "interruption": {
       "title": "Enregistrement interrompu",
       "body": "Un appel ou une autre application a pris le micro. Tout ce qui précède est enregistré.",
-      "resume": "Reprendre l’enregistrement"
+      "resume": "Reprendre l’enregistrement",
+      "waitBody": "Un appel ou une autre application utilise le micro. Tout ce qui précède est enregistré. Vous pourrez reprendre à la fin de l’appel."
     },
     "levelA11y": "Niveau sonore : {{percent}} %",
     "timerA11y": "Durée : {{duration}}",
@@ -76,7 +77,11 @@
       "insufficient": "Espace insuffisant : il faut au moins 10 minutes d’enregistrement disponibles."
     },
     "error": "L’enregistrement a échoué. Ce qui a été capté est conservé.",
-    "close": "Fermer"
+    "close": "Fermer",
+    "micSilent": {
+      "title": "Le micro semble coupé",
+      "body": "Aucun son n’arrive depuis un moment. Un appel ou une autre application l’utilise peut-être."
+    }
   },
   "dev": {
     "title": "Diagnostic (développement)",

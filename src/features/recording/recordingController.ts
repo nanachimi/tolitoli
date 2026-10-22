@@ -5,7 +5,9 @@ import { AudioManager, RecordingNotificationManager } from 'react-native-audio-a
 import { i18next } from '@/i18n';
 import { ACTIVE_PROFILE, PROFILES } from '@/services/audio/activeProfile';
 import { checkDiskSpace } from '@/services/audio/diskSpace';
+import type { AudioFrame } from '@/services/audio/engine';
 import { fromInterruptionEvent } from '@/services/audio/interruptions';
+import { isMicSilent, nextSilentMs } from '@/services/audio/micSilence';
 import type { RecorderStatus } from '@/services/audio/recorderMachine';
 import { listRecordings } from '@/services/audio/recordingStore';
 import { recoverInterruptedRecordings } from '@/services/audio/recovery';
@@ -20,6 +22,8 @@ type Subscription = { remove(): void };
 
 let session: RecordingSession | null = null;
 let subscriptions: Subscription[] = [];
+/** Running length of digital silence while recording (micSilence.ts). */
+let silentMs = 0;
 
 function log(...args: unknown[]): void {
   console.log('[recording]', ...args);
@@ -35,9 +39,12 @@ function onSnapshot(snapshot: SessionSnapshot): void {
   const now = Date.now();
   const wasRunning = state.runningSince !== null;
   const isRunning = snapshot.status === 'recording';
+  if (!isRunning) silentMs = 0;
   setState({
     status: snapshot.status,
     resumeOffered: snapshot.resumeOffered,
+    micBusy: snapshot.micBusy,
+    micSilent: isRunning && state.micSilent,
     accumulatedMs:
       wasRunning && !isRunning
         ? state.accumulatedMs + (now - (state.runningSince ?? now))
@@ -45,6 +52,18 @@ function onSnapshot(snapshot: SessionSnapshot): void {
     runningSince: isRunning ? (state.runningSince ?? now) : null,
   });
   void updateNotification(snapshot.status);
+}
+
+function onFrame(frame: AudioFrame): void {
+  const state = useRecordingStore.getState();
+  if (state.status !== 'recording') {
+    setState({ level: frame.level });
+    return;
+  }
+  silentMs = nextSilentMs(silentMs, frame.peak, frame.durationMs);
+  const micSilent = isMicSilent(silentMs);
+  if (micSilent !== state.micSilent) log('mic silent', micSilent, Date.now());
+  setState({ level: frame.level, micSilent });
 }
 
 async function updateNotification(status: RecorderStatus): Promise<void> {
@@ -73,7 +92,8 @@ function listen(active: RecordingSession): void {
   subscriptions = [
     AudioManager.addSystemEventListener('interruption', (event) => {
       log('interruption', JSON.stringify(event), Date.now());
-      void active.handleSystemEvent(fromInterruptionEvent(event));
+      // Only the Android patch reports whether a focus loss is transient (D-023).
+      void active.handleSystemEvent(fromInterruptionEvent(event, Platform.OS === 'android'));
     }),
     AudioManager.addSystemEventListener('routeChange', (event) => {
       log('routeChange', JSON.stringify(event));
@@ -104,6 +124,7 @@ export type StartResult = 'started' | 'permission-denied' | 'disk-insufficient' 
 export async function startRecording(): Promise<StartResult> {
   if (session) return 'started';
   const t0 = Date.now();
+  silentMs = 0;
   setState({ ...initialRecordingState, recordings: useRecordingStore.getState().recordings });
 
   let permission = await AudioManager.checkRecordingPermissions();
@@ -135,7 +156,7 @@ export async function startRecording(): Promise<StartResult> {
   const active = new RecordingSession({
     fs: expoFs,
     root: recordingsRoot(),
-    engine: new RnAudioApiEngine(ACTIVE_PROFILE, (level) => setState({ level })),
+    engine: new RnAudioApiEngine(ACTIVE_PROFILE, onFrame),
     audio: nativeAudioFiles,
     profile: ACTIVE_PROFILE,
     now: () => new Date(),
@@ -163,7 +184,8 @@ export function pauseRecording(): void {
 export async function resumeRecording(): Promise<void> {
   if (!session) return;
   try {
-    await session.resume();
+    // Refused while a call holds the microphone (also from the notification button).
+    if (!(await session.resume())) log('resume refused: microphone busy');
   } catch (error) {
     log('resume failed', String(error));
     setState({ notice: 'error' });

@@ -67,8 +67,13 @@ export class FakeEngine implements RecordingEngine {
   private dir = '';
   private prefix = '';
   constructor(private readonly fs: MemoryFs) {}
+  /** Runs while a recorder is starting, to deliver system events mid-open. */
+  duringOpen: (() => Promise<void>) | null = null;
   async open(dir: string, prefix: string) {
     this.calls.push(`open ${prefix}`);
+    const duringOpen = this.duringOpen;
+    this.duringOpen = null;
+    if (duringOpen) await duringOpen();
     if (this.failNextOpens > 0) {
       this.failNextOpens -= 1;
       throw new Error('recorder would not start');

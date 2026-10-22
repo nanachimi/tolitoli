@@ -6,12 +6,14 @@ import { AppText, radius, spacing, useTheme } from '@/ui';
 
 type Props = {
   status: RecorderStatus;
+  /** False while a call holds the microphone: a paused recording cannot resume yet. */
+  canResume: boolean;
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
 };
 
-export function RecordingControls({ status, onPause, onResume, onStop }: Props) {
+export function RecordingControls({ status, canResume, onPause, onResume, onStop }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
   const canStop = status === 'recording' || status === 'paused' || status === 'interrupted';
@@ -19,7 +21,7 @@ export function RecordingControls({ status, onPause, onResume, onStop }: Props) 
 
   return (
     <View style={styles.row}>
-      {status === 'recording' || status === 'paused' ? (
+      {status === 'recording' || (status === 'paused' && canResume) ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={pauseLabel}

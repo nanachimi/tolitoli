@@ -8,12 +8,16 @@ import {
   IOSAudioQuality,
 } from 'react-native-audio-api';
 
-import type { RecordingEngine } from '@/services/audio/engine';
+import type { AudioFrame, RecordingEngine } from '@/services/audio/engine';
 import { aacSegmentBytes, type FormatProfile } from '@/services/audio/formatProfile';
 import { levelFromSamples } from '@/services/audio/level';
+import { peak } from '@/services/audio/micSilence';
 
-/** Level updates every 100 ms from a 16 kHz mono tap. */
+/** Level and silence checks every 100 ms from a 16 kHz mono tap. */
 const LEVEL_TAP = { sampleRate: 16_000, bufferLength: 1600, channelCount: 1 };
+
+/** Sent when the recorder stops or pauses: empty meter, silence count untouched. */
+const QUIET_FRAME: AudioFrame = { level: 0, peak: 0, durationMs: 0 };
 
 function baseName(path: string): string {
   return path.split('/').pop() ?? path;
@@ -34,7 +38,7 @@ export class RnAudioApiEngine implements RecordingEngine {
 
   constructor(
     private readonly profile: FormatProfile,
-    private readonly onLevel: (level: number) => void,
+    private readonly onFrame: (frame: AudioFrame) => void,
   ) {}
 
   async open(dir: string, segmentPrefix: string): Promise<void> {
@@ -61,7 +65,12 @@ export class RnAudioApiEngine implements RecordingEngine {
     if (enabled.status === 'error') throw new Error(enabled.message);
 
     recorder.onAudioReady(LEVEL_TAP, (event) => {
-      this.onLevel(levelFromSamples(event.buffer.getChannelData(0)));
+      const samples = event.buffer.getChannelData(0);
+      this.onFrame({
+        level: levelFromSamples(samples),
+        peak: peak(samples),
+        durationMs: (samples.length / LEVEL_TAP.sampleRate) * 1000,
+      });
     });
     const started = await recorder.start();
     if (started.status === 'error') {
@@ -76,7 +85,7 @@ export class RnAudioApiEngine implements RecordingEngine {
     this.recorder = null;
     if (!recorder) return [];
     recorder.clearOnAudioReady();
-    this.onLevel(0);
+    this.onFrame(QUIET_FRAME);
     const result = await recorder.stop();
     if (result.status === 'success') return result.paths.map(baseName);
     // Already stopped natively (notification Stop button): use what it finalised.
@@ -87,7 +96,7 @@ export class RnAudioApiEngine implements RecordingEngine {
 
   pause(): void {
     this.recorder?.pause();
-    this.onLevel(0);
+    this.onFrame(QUIET_FRAME);
   }
 
   resume(): void {

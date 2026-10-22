@@ -5,6 +5,7 @@ import { BackHandler, Linking, Pressable, ScrollView, StyleSheet, View } from 'r
 
 import { InterruptionBanner } from '@/features/recording/components/InterruptionBanner';
 import { LevelMeter } from '@/features/recording/components/LevelMeter';
+import { MicSilentBanner } from '@/features/recording/components/MicSilentBanner';
 import { RecordingControls } from '@/features/recording/components/RecordingControls';
 import { RecordingTimer } from '@/features/recording/components/RecordingTimer';
 import {
@@ -93,8 +94,12 @@ export default function RecordScreen() {
         <RecordingTimer accumulatedMs={state.accumulatedMs} runningSince={state.runningSince} />
         <LevelMeter level={state.status === 'recording' ? state.level : 0} />
         {state.status === 'interrupted' ? (
-          <InterruptionBanner onResume={() => void resumeRecording()} />
+          <InterruptionBanner
+            resumeOffered={state.resumeOffered}
+            onResume={() => void resumeRecording()}
+          />
         ) : null}
+        {state.status === 'recording' && state.micSilent ? <MicSilentBanner /> : null}
         {state.notice === 'notifications-denied' ? (
           <AppText muted>{t('record.permission.notificationsDenied')}</AppText>
         ) : null}
@@ -105,6 +110,7 @@ export default function RecordScreen() {
         {capturing ? (
           <RecordingControls
             status={state.status}
+            canResume={!state.micBusy}
             onPause={pauseRecording}
             onResume={() => void resumeRecording()}
             onStop={() => void stopRecording()}

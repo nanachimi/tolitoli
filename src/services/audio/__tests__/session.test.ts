@@ -4,6 +4,11 @@ import { InvalidSessionTransition, RecordingSession } from '../session';
 import { FakeAudio, FakeEngine, MemoryFs } from './fakes';
 
 const ROOT = 'doc/recordings';
+/** Transient focus loss: ringtone or call. */
+const CALL = { kind: 'interruption-began', transient: true } as const;
+const CALL_ENDED = { kind: 'interruption-ended', shouldResume: true } as const;
+/** Another app keeps the microphone for good: no "ended" will come. */
+const TAKEN = { kind: 'interruption-began', transient: false } as const;
 
 function setup() {
   const fs = new MemoryFs();
@@ -49,7 +54,7 @@ describe('RecordingSession', () => {
     session.subscribe((s) =>
       seen.push(`${s.status}:${readManifest(fs, ROOT, 'rec-1')?.segments.length ?? 0}`),
     );
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
     expect(engine.calls).toEqual(['open s000-', 'close']);
     expect(seen).toEqual(['interrupted:1']);
   });
@@ -57,16 +62,22 @@ describe('RecordingSession', () => {
   it('offers to resume when the interruption ends but never resumes alone', async () => {
     const { engine, session } = setup();
     await session.start();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
-    await session.handleSystemEvent({ kind: 'interruption-ended', shouldResume: true });
-    expect(session.snapshot()).toMatchObject({ status: 'interrupted', resumeOffered: true });
+    await session.handleSystemEvent(CALL);
+    expect(session.snapshot()).toMatchObject({ resumeOffered: false, micBusy: true });
+    await session.handleSystemEvent(CALL_ENDED);
+    expect(session.snapshot()).toMatchObject({
+      status: 'interrupted',
+      resumeOffered: true,
+      micBusy: false,
+    });
     expect(engine.calls).toEqual(['open s000-', 'close']);
   });
 
   it('resumes into a new segment with a fresh recorder', async () => {
     const { engine, session } = setup();
     await session.start();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
     await session.resume();
     expect(session.snapshot()).toMatchObject({ status: 'recording', resumeOffered: false });
     const manifest = await session.stop();
@@ -78,7 +89,8 @@ describe('RecordingSession', () => {
   it('falls back to another fresh recorder when resuming fails once (iOS #1220)', async () => {
     const { engine, session } = setup();
     await session.start();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
     engine.failNextOpens = 1;
     await session.resume();
     expect(session.snapshot().status).toBe('recording');
@@ -89,7 +101,8 @@ describe('RecordingSession', () => {
   it('keeps the earlier segment when the fresh recorder cannot start at all', async () => {
     const { fs, engine, session } = setup();
     await session.start();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
     engine.failNextOpens = 2;
     await expect(session.resume()).rejects.toThrow('recorder would not start');
     expect(session.snapshot().status).toBe('interrupted');
@@ -100,7 +113,8 @@ describe('RecordingSession', () => {
     const { engine, session } = setup();
     await session.start();
     session.pause();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
     expect(session.snapshot().status).toBe('paused');
     await session.resume();
     await session.stop();
@@ -127,7 +141,7 @@ describe('RecordingSession', () => {
   it('can be stopped while interrupted', async () => {
     const { session } = setup();
     await session.start();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
     expect((await session.stop()).status).toBe('local');
   });
 
@@ -139,10 +153,72 @@ describe('RecordingSession', () => {
 
   it('ignores route loss and interruptions when idle', async () => {
     const { engine, session } = setup();
-    await session.handleSystemEvent({ kind: 'interruption-began' });
+    await session.handleSystemEvent(CALL);
     await session.start();
     await session.handleSystemEvent({ kind: 'route-lost' });
-    expect(session.snapshot().status).toBe('recording');
+    expect(session.snapshot()).toMatchObject({ status: 'recording', micBusy: false });
     expect(engine.calls).toEqual(['open s000-']);
+  });
+
+  it('refuses to resume while a call holds the microphone, even from the notification', async () => {
+    const { engine, session } = setup();
+    await session.start();
+    await session.handleSystemEvent(CALL);
+    expect(await session.resume()).toBe(false);
+    expect(session.snapshot().status).toBe('interrupted');
+    expect(engine.calls).toEqual(['open s000-', 'close']);
+  });
+
+  it('refuses to resume a user pause while a call holds the microphone', async () => {
+    const { engine, session } = setup();
+    await session.start();
+    session.pause();
+    await session.handleSystemEvent(CALL);
+    expect(await session.resume()).toBe(false);
+    expect(session.snapshot()).toMatchObject({ status: 'paused', micBusy: true });
+    expect(engine.calls).toEqual(['open s000-', 'pause', 'close']);
+  });
+
+  it('offers to resume at once when another app keeps the microphone', async () => {
+    const { session } = setup();
+    await session.start();
+    await session.handleSystemEvent(TAKEN);
+    expect(session.snapshot()).toMatchObject({
+      status: 'interrupted',
+      resumeOffered: true,
+      micBusy: false,
+    });
+    expect(await session.resume()).toBe(true);
+    expect(session.snapshot().status).toBe('recording');
+  });
+
+  it('blocks resuming again when a second call rings before the user resumes', async () => {
+    const { session } = setup();
+    await session.start();
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
+    await session.handleSystemEvent(CALL);
+    expect(session.snapshot()).toMatchObject({ resumeOffered: false, micBusy: true });
+    expect(await session.resume()).toBe(false);
+  });
+
+  it('closes a recorder that was starting when a call rang (resume)', async () => {
+    const { fs, engine, session } = setup();
+    await session.start();
+    await session.handleSystemEvent(CALL);
+    await session.handleSystemEvent(CALL_ENDED);
+    engine.duringOpen = () => session.handleSystemEvent(CALL);
+    await session.resume();
+    expect(session.snapshot()).toMatchObject({ status: 'interrupted', micBusy: true });
+    expect(engine.calls).toEqual(['open s000-', 'close', 'open s001-', 'close']);
+    expect(readManifest(fs, ROOT, 'rec-1')?.segments).toEqual(['s000-0.m4a', 's001-0.m4a']);
+  });
+
+  it('closes a recorder that was starting when a call rang (start)', async () => {
+    const { engine, session } = setup();
+    engine.duringOpen = () => session.handleSystemEvent(CALL);
+    await session.start();
+    expect(session.snapshot()).toMatchObject({ status: 'interrupted', micBusy: true });
+    expect(engine.calls).toEqual(['open s000-', 'close']);
   });
 });

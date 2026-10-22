@@ -51,7 +51,8 @@
     "interruption": {
       "title": "Dénc bi dog na",
       "body": "Woote walla beneen aplikasioŋ jël na mikro bi. Li jiitu lépp denc nañu ko.",
-      "resume": "Kontine dénc bi"
+      "resume": "Kontine dénc bi",
+      "waitBody": "Woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi. Li jiitu lépp denc nañu ko. Mën nga kontine bu woote bi jeexee."
     },
     "levelA11y": "Kawteg baat bi: {{percent}} %",
     "timerA11y": "Diir: {{duration}}",
@@ -74,7 +75,11 @@
       "insufficient": "Bérab bi doyul: fàww 10 simili dénc mën a dugg."
     },
     "error": "Dénc bi antuwul. Li ñu jot a dénc denc nañu ko.",
-    "close": "Tëj"
+    "close": "Tëj",
+    "micSilent": {
+      "title": "Mikro bi dafa mel ni dafa dagg",
+      "body": "Ay saa yii dara agsiwul. Xéy-na woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi."
+    }
   },
   "dev": {
     "title": "Saytu (defar)",

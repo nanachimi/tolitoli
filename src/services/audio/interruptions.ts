@@ -15,12 +15,17 @@ export function interruptionAction(event: SystemInterruption): InterruptionActio
   }
 }
 
-/** Maps react-native-audio-api's `interruption` event payload. */
-export function fromInterruptionEvent(event: {
-  type: 'began' | 'ended';
-  shouldResume: boolean;
-}): SystemInterruption {
+/**
+ * Maps react-native-audio-api's `interruption` event payload. With our patch
+ * (patches/, D-023), Android reports a transient focus loss as `began` with
+ * `shouldResume: true`. Where the loss kind is not reported (iOS), every
+ * interruption is treated as transient: the "ended" event is awaited.
+ */
+export function fromInterruptionEvent(
+  event: { type: 'began' | 'ended'; shouldResume: boolean },
+  lossKindReported: boolean,
+): SystemInterruption {
   return event.type === 'began'
-    ? { kind: 'interruption-began' }
+    ? { kind: 'interruption-began', transient: lossKindReported ? event.shouldResume : true }
     : { kind: 'interruption-ended', shouldResume: event.shouldResume };
 }

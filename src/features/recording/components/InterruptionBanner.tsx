@@ -3,7 +3,13 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText, radius, spacing, useTheme } from '@/ui';
 
-export function InterruptionBanner({ onResume }: { onResume: () => void }) {
+type Props = {
+  /** False while a call still holds the microphone: no resume button (D-023). */
+  resumeOffered: boolean;
+  onResume: () => void;
+};
+
+export function InterruptionBanner({ resumeOffered, onResume }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
   return (
@@ -17,17 +23,21 @@ export function InterruptionBanner({ onResume }: { onResume: () => void }) {
       <AppText variant="title" accessibilityRole="header">
         {t('record.interruption.title')}
       </AppText>
-      <AppText muted>{t('record.interruption.body')}</AppText>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('record.interruption.resume')}
-        onPress={onResume}
-        style={[styles.button, { backgroundColor: theme.colors.primary }]}
-      >
-        <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
-          {t('record.interruption.resume')}
-        </AppText>
-      </Pressable>
+      <AppText muted>
+        {resumeOffered ? t('record.interruption.body') : t('record.interruption.waitBody')}
+      </AppText>
+      {resumeOffered ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('record.interruption.resume')}
+          onPress={onResume}
+          style={[styles.button, { backgroundColor: theme.colors.primary }]}
+        >
+          <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
+            {t('record.interruption.resume')}
+          </AppText>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
