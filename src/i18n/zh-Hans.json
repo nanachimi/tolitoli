@@ -9,17 +9,28 @@
   "library": {
     "title": "录音库",
     "empty": {
-      "title": "暂无录音",
-      "body": "你的录音及其转写文本将显示在这里。"
+      "title": "点按“录音”开始",
+      "body": "您的录音及其转写都保留在此设备上。"
     },
     "count_other": "{{count}} 条录音",
     "detailPlaceholder": "选择一条录音以在此处显示。",
     "record": "录音",
     "recovered": "已恢复",
-    "itemA11y": "{{date}} 的录音，时长 {{duration}}",
-    "itemRecoveredA11y": "{{date}} 的录音，时长 {{duration}}，中断后已恢复",
     "durationUnknown": "未知",
-    "cardTitle": "{{date}} 的录音"
+    "cardTitle": "{{date}} 的录音",
+    "searchPlaceholder": "搜索录音",
+    "noResults": {
+      "title": "无结果",
+      "body": "换个词试试：搜索范围包括标题和转写。"
+    },
+    "a11y": {
+      "transcribing": "正在转写",
+      "quality": "{{language}}，质量{{quality}}",
+      "failed": "转写失败",
+      "recovered": "中断后已恢复",
+      "longPress": "长按可重命名或移到回收站",
+      "duration": "时长 {{duration}}"
+    }
   },
   "settings": {
     "title": "设置",
@@ -120,7 +131,8 @@
     "today": "今天",
     "yesterday": "昨天",
     "megabytes": "{{value}} MB",
-    "gigabytes": "{{value}} GB"
+    "gigabytes": "{{value}} GB",
+    "listSeparator": "，"
   },
   "quality": {
     "good": "良好",

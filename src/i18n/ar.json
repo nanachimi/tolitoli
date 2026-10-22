@@ -9,8 +9,8 @@
   "library": {
     "title": "المكتبة",
     "empty": {
-      "title": "لا توجد تسجيلات",
-      "body": "ستظهر هنا تسجيلاتك ونصوصها المكتوبة."
+      "title": "اضغط على تسجيل للبدء",
+      "body": "تبقى تسجيلاتك ونصوصها المكتوبة على هذا الجهاز."
     },
     "count_zero": "لا توجد تسجيلات",
     "count_one": "تسجيل واحد",
@@ -21,10 +21,21 @@
     "detailPlaceholder": "اختر تسجيلًا لعرضه هنا.",
     "record": "تسجيل",
     "recovered": "مُستعاد",
-    "itemA11y": "تسجيل بتاريخ {{date}}، المدة {{duration}}",
-    "itemRecoveredA11y": "تسجيل بتاريخ {{date}}، المدة {{duration}}، مُستعاد بعد انقطاع",
     "durationUnknown": "غير معروفة",
-    "cardTitle": "تسجيل {{date}}"
+    "cardTitle": "تسجيل {{date}}",
+    "searchPlaceholder": "البحث في التسجيلات",
+    "noResults": {
+      "title": "لا توجد نتائج",
+      "body": "جرّب كلمة أخرى: يشمل البحث العناوين والنصوص المكتوبة."
+    },
+    "a11y": {
+      "transcribing": "جارٍ النسخ",
+      "quality": "{{language}}، الجودة {{quality}}",
+      "failed": "فشل النسخ",
+      "recovered": "تمت استعادته بعد انقطاع",
+      "longPress": "اضغط مطولًا لإعادة التسمية أو النقل إلى سلة المهملات",
+      "duration": "المدة {{duration}}"
+    }
   },
   "settings": {
     "title": "الإعدادات",
@@ -140,7 +151,8 @@
     "today": "اليوم",
     "yesterday": "أمس",
     "megabytes": "{{value}} م.ب",
-    "gigabytes": "{{value}} ج.ب"
+    "gigabytes": "{{value}} ج.ب",
+    "listSeparator": "، "
   },
   "quality": {
     "good": "جيدة",

@@ -9,8 +9,8 @@
   "library": {
     "title": "Bibliothèque",
     "empty": {
-      "title": "Aucun enregistrement",
-      "body": "Vos enregistrements et leurs transcriptions apparaîtront ici."
+      "title": "Appuyez sur Enregistrer pour commencer",
+      "body": "Vos enregistrements et leurs transcriptions restent sur cet appareil."
     },
     "count_one": "{{count}} enregistrement",
     "count_many": "{{count}} d’enregistrements",
@@ -18,10 +18,21 @@
     "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici.",
     "record": "Enregistrer",
     "recovered": "Récupéré",
-    "itemA11y": "Enregistrement du {{date}}, durée {{duration}}",
-    "itemRecoveredA11y": "Enregistrement du {{date}}, durée {{duration}}, récupéré après une interruption",
     "durationUnknown": "inconnue",
-    "cardTitle": "Enregistrement du {{date}}"
+    "cardTitle": "Enregistrement du {{date}}",
+    "searchPlaceholder": "Rechercher dans les enregistrements",
+    "noResults": {
+      "title": "Aucun résultat",
+      "body": "Essayez un autre mot : la recherche porte sur les titres et les transcriptions."
+    },
+    "a11y": {
+      "transcribing": "transcription en cours",
+      "quality": "{{language}}, qualité {{quality}}",
+      "failed": "transcription en échec",
+      "recovered": "récupéré après une interruption",
+      "longPress": "Appui long pour renommer ou mettre à la corbeille",
+      "duration": "durée {{duration}}"
+    }
   },
   "settings": {
     "title": "Réglages",
@@ -128,7 +139,8 @@
     "today": "Aujourd’hui",
     "yesterday": "Hier",
     "megabytes": "{{value}} Mo",
-    "gigabytes": "{{value}} Go"
+    "gigabytes": "{{value}} Go",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "bonne",

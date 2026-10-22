@@ -32,6 +32,8 @@ export type RecordingCardProps = {
   /** Opens the recording; the chevron only shows when there is somewhere to go. */
   onPress?: () => void;
   onLongPress?: () => void;
+  /** Says what the long press opens, since nothing on screen shows it. */
+  accessibilityHint?: string;
 };
 
 /** A Library row (guide RecordingCard). */
@@ -40,6 +42,7 @@ export function RecordingCard({
   accessibilityLabel,
   onPress,
   onLongPress,
+  accessibilityHint,
 }: RecordingCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -49,6 +52,7 @@ export function RecordingCard({
       accessible
       accessibilityRole={interactive ? 'button' : undefined}
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       disabled={!interactive && !onLongPress}
       onPress={onPress}
       onLongPress={onLongPress}

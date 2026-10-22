@@ -9,17 +9,28 @@
   "library": {
     "title": "Bibliyoteek",
     "empty": {
-      "title": "Amul benn baat bu ñu dénc",
-      "body": "Say baat yu ñu dénc ak seeni bind dinañu feeñ fii."
+      "title": "Bësal Bind ngir tàmbali",
+      "body": "Sa bind yi ak seen mbind dañuy des ci jumtukaay bii."
     },
     "count_other": "{{count}} baat yu ñu dénc",
     "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii.",
     "record": "Dénc",
     "recovered": "Dellu nañu ko",
-    "itemA11y": "Dénc bu {{date}}, diir {{duration}}",
-    "itemRecoveredA11y": "Dénc bu {{date}}, diir {{duration}}, dellu nañu ko ginnaaw benn dog",
     "durationUnknown": "xamuñu ko",
-    "cardTitle": "Dénc bu {{date}}"
+    "cardTitle": "Dénc bu {{date}}",
+    "searchPlaceholder": "Seet ci bind yi",
+    "noResults": {
+      "title": "Dara feeñul",
+      "body": "Jéemal beneen baat : seet bi dafay xool tur yi ak mbind yi."
+    },
+    "a11y": {
+      "transcribing": "bind bi mi ngi dox",
+      "quality": "{{language}}, kalite {{quality}}",
+      "failed": "bind bi antuwul",
+      "recovered": "delloo nañu ko ginnaaw ab dog",
+      "longPress": "Bësal lu yàgg ngir soppi tur walla yobu ci mbalit mi",
+      "duration": "diir {{duration}}"
+    }
   },
   "settings": {
     "title": "Tànneef yi",
@@ -120,7 +131,8 @@
     "today": "Tey",
     "yesterday": "Démb",
     "megabytes": "{{value}} Mo",
-    "gigabytes": "{{value}} Go"
+    "gigabytes": "{{value}} Go",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "baax na",

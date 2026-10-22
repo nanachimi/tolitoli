@@ -167,7 +167,7 @@ describe('Record screen', () => {
   });
 });
 
-describe('Library list (provisional)', () => {
+describe('Library list from the manifests', () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date(2026, 9, 22, 12), doNotFake: ['setImmediate', 'nextTick'] });
   });

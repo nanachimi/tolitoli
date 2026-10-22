@@ -9,18 +9,29 @@
   "library": {
     "title": "Bibliothek",
     "empty": {
-      "title": "Keine Aufnahmen",
-      "body": "Deine Aufnahmen und ihre Transkriptionen erscheinen hier."
+      "title": "Tippen Sie auf Aufnehmen, um zu beginnen",
+      "body": "Ihre Aufnahmen und ihre Transkriptionen bleiben auf diesem Gerät."
     },
     "count_one": "{{count}} Aufnahme",
     "count_other": "{{count}} Aufnahmen",
     "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen.",
     "record": "Aufnehmen",
     "recovered": "Wiederhergestellt",
-    "itemA11y": "Aufnahme vom {{date}}, Dauer {{duration}}",
-    "itemRecoveredA11y": "Aufnahme vom {{date}}, Dauer {{duration}}, nach einer Unterbrechung wiederhergestellt",
     "durationUnknown": "unbekannt",
-    "cardTitle": "Aufnahme vom {{date}}"
+    "cardTitle": "Aufnahme vom {{date}}",
+    "searchPlaceholder": "In Aufnahmen suchen",
+    "noResults": {
+      "title": "Keine Ergebnisse",
+      "body": "Versuchen Sie ein anderes Wort: Die Suche umfasst Titel und Transkriptionen."
+    },
+    "a11y": {
+      "transcribing": "wird transkribiert",
+      "quality": "{{language}}, Qualität {{quality}}",
+      "failed": "Transkription fehlgeschlagen",
+      "recovered": "nach einer Unterbrechung wiederhergestellt",
+      "longPress": "Lange drücken zum Umbenennen oder Löschen",
+      "duration": "Dauer {{duration}}"
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -124,7 +135,8 @@
     "today": "Heute",
     "yesterday": "Gestern",
     "megabytes": "{{value}} MB",
-    "gigabytes": "{{value}} GB"
+    "gigabytes": "{{value}} GB",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "gut",

@@ -9,18 +9,29 @@
   "library": {
     "title": "Library",
     "empty": {
-      "title": "No recordings",
-      "body": "Your recordings and their transcripts will appear here."
+      "title": "Tap Record to start",
+      "body": "Your recordings and their transcripts stay on this device."
     },
     "count_one": "{{count}} recording",
     "count_other": "{{count}} recordings",
     "detailPlaceholder": "Select a recording to show it here.",
     "record": "Record",
     "recovered": "Recovered",
-    "itemA11y": "Recording from {{date}}, duration {{duration}}",
-    "itemRecoveredA11y": "Recording from {{date}}, duration {{duration}}, recovered after an interruption",
     "durationUnknown": "unknown",
-    "cardTitle": "Recording of {{date}}"
+    "cardTitle": "Recording of {{date}}",
+    "searchPlaceholder": "Search recordings",
+    "noResults": {
+      "title": "No results",
+      "body": "Try another word: search covers titles and transcripts."
+    },
+    "a11y": {
+      "transcribing": "transcribing",
+      "quality": "{{language}}, {{quality}} quality",
+      "failed": "transcription failed",
+      "recovered": "recovered after an interruption",
+      "longPress": "Long press to rename or move to trash",
+      "duration": "length {{duration}}"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -124,7 +135,8 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "megabytes": "{{value}} MB",
-    "gigabytes": "{{value}} GB"
+    "gigabytes": "{{value}} GB",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "good",
