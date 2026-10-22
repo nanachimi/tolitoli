@@ -15,8 +15,8 @@ function ThemedStack() {
   const theme = useTheme();
 
   useEffect(() => {
-    void SystemUI.setBackgroundColorAsync(theme.colors.background);
-  }, [theme.colors.background]);
+    void SystemUI.setBackgroundColorAsync(theme.color['surface']);
+  }, [theme.color['surface']]);
 
   // Recordings left by a killed app are finalised and marked recovered, never deleted.
   useEffect(() => {

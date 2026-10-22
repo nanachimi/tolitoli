@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useRecordingStore } from '@/features/recording/useRecordingStore';
 import { formatDuration, formatRecordingDate } from '@/services/audio/duration';
 import type { RecordingManifest } from '@/services/audio/recordingStore';
-import { AppText, Screen, SplitLayout, radius, spacing, useTheme } from '@/ui';
+import { AppText, Screen, SplitLayout, radius, space, useTheme } from '@/ui';
 
 /** Provisional list read from manifests; the real library comes with SQLite (step 2). */
 function RecordingRow({ item }: { item: RecordingManifest }) {
@@ -21,7 +21,7 @@ function RecordingRow({ item }: { item: RecordingManifest }) {
         date,
         duration,
       })}
-      style={[styles.row, { borderColor: theme.colors.border }]}
+      style={[styles.row, { borderColor: theme.color['hairline'] }]}
     >
       <AppText testID="i18n-data">{date}</AppText>
       <View style={styles.rowEnd}>
@@ -29,7 +29,7 @@ function RecordingRow({ item }: { item: RecordingManifest }) {
           <AppText
             style={[
               styles.badge,
-              { color: theme.colors.primary, borderColor: theme.colors.primary },
+              { color: theme.color['accent'], borderColor: theme.color['accent'] },
             ]}
           >
             {t('library.recovered')}
@@ -80,9 +80,9 @@ export default function LibraryScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('library.recordA11y')}
               onPress={() => router.push('/record')}
-              style={[styles.recordButton, { backgroundColor: theme.colors.primary }]}
+              style={[styles.recordButton, { backgroundColor: theme.color['accent'] }]}
             >
-              <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
+              <AppText style={{ color: theme.color['on-accent'], fontWeight: '600' }}>
                 {t('library.record')}
               </AppText>
             </Pressable>
@@ -104,31 +104,31 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
+    gap: space['space-2'],
+    paddingHorizontal: space['space-6'],
   },
-  list: { padding: spacing.md, gap: spacing.sm },
+  list: { padding: space['space-4'], gap: space['space-2'] },
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
+    gap: space['space-2'],
+    padding: space['space-4'],
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius['radius-md'],
   },
-  rowEnd: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  rowEnd: { flexDirection: 'row', alignItems: 'center', gap: space['space-2'] },
   badge: {
     borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.xs,
+    borderRadius: radius['radius-sm'],
+    paddingHorizontal: space['space-1'],
     fontSize: 13,
   },
   recordButton: {
-    margin: spacing.md,
+    margin: space['space-4'],
     alignItems: 'center',
-    paddingVertical: spacing.md,
-    borderRadius: radius.md,
+    paddingVertical: space['space-4'],
+    borderRadius: radius['radius-md'],
   },
 });

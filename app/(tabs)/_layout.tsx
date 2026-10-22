@@ -75,15 +75,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.text,
+        headerStyle: { backgroundColor: theme.color['surface-raised'] },
+        headerTintColor: theme.color['ink'],
         tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
+          backgroundColor: theme.color['surface-raised'],
+          borderTopColor: theme.color['hairline'],
           height: getTabBarHeight(fontScale, insets.bottom),
         },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarActiveTintColor: theme.color['accent'],
+        tabBarInactiveTintColor: theme.color['ink-muted'],
       }}
     >
       <Tabs.Screen

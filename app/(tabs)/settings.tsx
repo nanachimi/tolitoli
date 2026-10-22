@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { setUiLanguage, type SelectableLanguage } from '@/i18n';
 import { isRtl, PSEUDO_LANGUAGE, UI_LANGUAGES } from '@/i18n/languages';
-import { AppText, Screen, spacing, radius, useTheme } from '@/ui';
+import { AppText, Screen, space, radius, useTheme } from '@/ui';
 
 /** Lets the restart notice show before a direction change reloads the app. */
 const RESTART_NOTICE_MS = 1000;
@@ -56,8 +56,8 @@ export default function SettingsScreen() {
                 style={[
                   styles.option,
                   {
-                    borderColor: selected ? theme.colors.primary : theme.colors.border,
-                    backgroundColor: theme.colors.surface,
+                    borderColor: selected ? theme.color['accent'] : theme.color['hairline'],
+                    backgroundColor: theme.color['surface-raised'],
                   },
                 ]}
               >
@@ -113,12 +113,12 @@ function pluralDiagnostic(language: string): string {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.md, gap: spacing.md },
-  group: { gap: spacing.sm },
+  content: { padding: space['space-4'], gap: space['space-4'] },
+  group: { gap: space['space-2'] },
   option: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
+    paddingVertical: space['space-4'],
+    paddingHorizontal: space['space-4'],
     borderWidth: 2,
-    borderRadius: radius.md,
+    borderRadius: radius['radius-md'],
   },
 });

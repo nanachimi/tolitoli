@@ -17,9 +17,8 @@ export function AppText({ variant = 'body', muted = false, style, ...props }: Ap
       allowFontScaling
       style={[
         {
-          color: muted ? theme.colors.textMuted : theme.colors.text,
-          fontSize: theme.fontSize[variant],
-          fontWeight: variant === 'title' ? '600' : '400',
+          ...theme.text[variant],
+          color: muted ? theme.color['ink-muted'] : theme.color.ink,
         },
         style,
       ]}

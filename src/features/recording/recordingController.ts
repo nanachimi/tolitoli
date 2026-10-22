@@ -12,6 +12,7 @@ import type { RecorderStatus } from '@/services/audio/recorderMachine';
 import { listRecordings } from '@/services/audio/recordingStore';
 import { recoverInterruptedRecordings } from '@/services/audio/recovery';
 import { RecordingSession, type SessionSnapshot } from '@/services/audio/session';
+import { color } from '@/ui/theme/tokens';
 
 import { availableDiskSpace, expoFs, recordingsRoot } from './expoFs';
 import { nativeAudioFiles } from './nativeAudioFiles';
@@ -69,8 +70,8 @@ function onFrame(frame: AudioFrame): void {
 /** Drawables added by plugins/withNotificationIcons.js (brand mark, D-023). */
 const NOTIFICATION_SMALL_ICON = 'ic_stat_tolitoli';
 const NOTIFICATION_LARGE_ICON = 'tolitoli_notification_large';
-/** `accent` of docs/design/tokens.json: tints the silhouette and app name in the header. */
-const NOTIFICATION_COLOR = processColor('#b84a24');
+/** Light-theme `accent` (tokens.ts): tints the silhouette and app name in the header. */
+const NOTIFICATION_COLOR = processColor(color.light.accent);
 
 /** `channelName` is read by our react-native-audio-api patch (D-023), not by its typings. */
 type RecordingNotificationOptions = Parameters<typeof RecordingNotificationManager.show>[0] & {

@@ -1,4 +1,4 @@
-import { colors, type ColorScheme } from '../theme/tokens';
+import { color, type ColorName, type ColorScheme } from '../theme/tokens';
 
 function luminance(hex: string): number {
   const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -13,17 +13,25 @@ function contrast(a: string, b: string): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-describe.each<ColorScheme>(['light', 'dark'])('%s colors', (scheme) => {
-  const c = colors[scheme];
+const SURFACES: ColorName[] = ['surface', 'surface-raised', 'surface-sunken'];
 
-  it.each([
-    ['text', c.text, c.background],
-    ['text on surface', c.text, c.surface],
-    ['muted text', c.textMuted, c.background],
-    ['muted text on surface', c.textMuted, c.surface],
-    ['primary', c.primary, c.background],
-    ['on primary', c.onPrimary, c.primary],
-  ])('%s meets WCAG AA (4.5:1)', (_name, foreground, background) => {
-    expect(contrast(foreground, background)).toBeGreaterThanOrEqual(4.5);
+/** Contrast promises written in the usage notes of docs/design/tokens.json. */
+describe.each<ColorScheme>(['light', 'dark'])('%s colours keep the design contrasts', (scheme) => {
+  const c = color[scheme];
+
+  it.each(SURFACES)('ink is at least 12:1 on %s', (surface) => {
+    expect(contrast(c.ink, c[surface])).toBeGreaterThanOrEqual(12);
+  });
+
+  it.each(SURFACES)('ink-muted is at least 5:1 on %s', (surface) => {
+    expect(contrast(c['ink-muted'], c[surface])).toBeGreaterThanOrEqual(5);
+  });
+
+  it('on-accent is readable on accent (4.5:1)', () => {
+    expect(contrast(c['on-accent'], c.accent)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('warning text is readable on surface (4.5:1)', () => {
+    expect(contrast(c.warning, c.surface)).toBeGreaterThanOrEqual(4.5);
   });
 });

@@ -10,7 +10,7 @@ export function Screen({ children }: { children: ReactNode }) {
   return (
     <SafeAreaView
       edges={['left', 'right', 'bottom']}
-      style={[styles.root, { backgroundColor: theme.colors.background }]}
+      style={[styles.root, { backgroundColor: theme.color['surface'] }]}
     >
       <View style={styles.root}>{children}</View>
     </SafeAreaView>

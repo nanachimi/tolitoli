@@ -16,12 +16,12 @@ export function LevelMeter({ level }: { level: number }) {
       accessibilityValue={{ min: 0, max: 100, now: percent }}
       style={[
         styles.track,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+        { backgroundColor: theme.color['surface-raised'], borderColor: theme.color['hairline'] },
       ]}
     >
       <View
         testID="level-fill"
-        style={[styles.fill, { width: `${percent}%`, backgroundColor: theme.colors.primary }]}
+        style={[styles.fill, { width: `${percent}%`, backgroundColor: theme.color['accent'] }]}
       />
     </View>
   );
@@ -30,7 +30,7 @@ export function LevelMeter({ level }: { level: number }) {
 const styles = StyleSheet.create({
   track: {
     height: 12,
-    borderRadius: radius.sm,
+    borderRadius: radius['radius-sm'],
     borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     flexDirection: 'row',

@@ -16,7 +16,7 @@ import {
   stopRecording,
 } from '@/features/recording/recordingController';
 import { useRecordingStore } from '@/features/recording/useRecordingStore';
-import { AppText, Screen, radius, spacing, useTheme } from '@/ui';
+import { AppText, Screen, radius, space, useTheme } from '@/ui';
 
 const CAPTURING = new Set(['preparing', 'recording', 'paused', 'interrupted', 'stopping']);
 
@@ -60,9 +60,9 @@ export default function RecordScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('record.permission.openSettings')}
               onPress={() => void Linking.openSettings()}
-              style={[styles.primary, { backgroundColor: theme.colors.primary }]}
+              style={[styles.primary, { backgroundColor: theme.color['accent'] }]}
             >
-              <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
+              <AppText style={{ color: theme.color['on-accent'], fontWeight: '600' }}>
                 {t('record.permission.openSettings')}
               </AppText>
             </Pressable>
@@ -72,7 +72,7 @@ export default function RecordScreen() {
             accessibilityLabel={t('record.close')}
             onPress={close}
           >
-            <AppText style={{ color: theme.colors.primary }}>{t('record.close')}</AppText>
+            <AppText style={{ color: theme.color['accent'] }}>{t('record.close')}</AppText>
           </Pressable>
         </View>
       </Screen>
@@ -85,7 +85,7 @@ export default function RecordScreen() {
         <AppText variant="title" accessibilityRole="header">
           {t('record.title')}
         </AppText>
-        <View style={[styles.reminder, { borderColor: theme.colors.border }]}>
+        <View style={[styles.reminder, { borderColor: theme.color['hairline'] }]}>
           <AppText>{t('record.consentReminder')}</AppText>
         </View>
         <AppText muted accessibilityLiveRegion="polite">
@@ -120,9 +120,9 @@ export default function RecordScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('record.close')}
             onPress={close}
-            style={[styles.primary, { backgroundColor: theme.colors.primary }]}
+            style={[styles.primary, { backgroundColor: theme.color['accent'] }]}
           >
-            <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
+            <AppText style={{ color: theme.color['on-accent'], fontWeight: '600' }}>
               {t('record.close')}
             </AppText>
           </Pressable>
@@ -133,13 +133,13 @@ export default function RecordScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, gap: spacing.lg },
-  centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, gap: spacing.md },
-  reminder: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md },
+  content: { padding: space['space-6'], gap: space['space-6'] },
+  centered: { flex: 1, justifyContent: 'center', padding: space['space-6'], gap: space['space-4'] },
+  reminder: { borderWidth: 1, borderRadius: radius['radius-md'], padding: space['space-4'] },
   primary: {
     alignSelf: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radius.md,
+    paddingVertical: space['space-4'],
+    paddingHorizontal: space['space-8'],
+    borderRadius: radius['radius-md'],
   },
 });

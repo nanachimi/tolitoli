@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, radius, spacing, useTheme } from '@/ui';
+import { AppText, radius, space, useTheme } from '@/ui';
 
 /** Alert only: digital silence while recording (D-023). The recording goes on. */
 export function MicSilentBanner() {
@@ -12,7 +12,7 @@ export function MicSilentBanner() {
       accessibilityLiveRegion="assertive"
       style={[
         styles.banner,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary },
+        { backgroundColor: theme.color['surface-raised'], borderColor: theme.color['accent'] },
       ]}
     >
       <AppText variant="title" accessibilityRole="header">
@@ -24,5 +24,10 @@ export function MicSilentBanner() {
 }
 
 const styles = StyleSheet.create({
-  banner: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, borderWidth: 2 },
+  banner: {
+    gap: space['space-2'],
+    padding: space['space-4'],
+    borderRadius: radius['radius-md'],
+    borderWidth: 2,
+  },
 });

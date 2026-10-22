@@ -24,7 +24,7 @@ export function SplitLayout({ list, detail }: Props) {
 
   return (
     <View testID="split-layout" style={styles.row}>
-      <View testID="split-list" style={[styles.list, { borderEndColor: theme.colors.border }]}>
+      <View testID="split-list" style={[styles.list, { borderEndColor: theme.color['hairline'] }]}>
         {list}
       </View>
       <View testID="split-detail" style={styles.fill}>

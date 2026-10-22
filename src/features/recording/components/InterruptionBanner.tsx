@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, radius, spacing, useTheme } from '@/ui';
+import { AppText, radius, space, useTheme } from '@/ui';
 
 type Props = {
   /** False while a call still holds the microphone: no resume button (D-023). */
@@ -17,7 +17,7 @@ export function InterruptionBanner({ resumeOffered, onResume }: Props) {
       accessibilityLiveRegion="assertive"
       style={[
         styles.banner,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary },
+        { backgroundColor: theme.color['surface-raised'], borderColor: theme.color['accent'] },
       ]}
     >
       <AppText variant="title" accessibilityRole="header">
@@ -31,9 +31,9 @@ export function InterruptionBanner({ resumeOffered, onResume }: Props) {
           accessibilityRole="button"
           accessibilityLabel={t('record.interruption.resume')}
           onPress={onResume}
-          style={[styles.button, { backgroundColor: theme.colors.primary }]}
+          style={[styles.button, { backgroundColor: theme.color['accent'] }]}
         >
-          <AppText style={{ color: theme.colors.onPrimary, fontWeight: '600' }}>
+          <AppText style={{ color: theme.color['on-accent'], fontWeight: '600' }}>
             {t('record.interruption.resume')}
           </AppText>
         </Pressable>
@@ -43,11 +43,16 @@ export function InterruptionBanner({ resumeOffered, onResume }: Props) {
 }
 
 const styles = StyleSheet.create({
-  banner: { gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, borderWidth: 2 },
+  banner: {
+    gap: space['space-2'],
+    padding: space['space-4'],
+    borderRadius: radius['radius-md'],
+    borderWidth: 2,
+  },
   button: {
     alignSelf: 'flex-start',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.md,
+    paddingVertical: space['space-2'],
+    paddingHorizontal: space['space-4'],
+    borderRadius: radius['radius-md'],
   },
 });
