@@ -14,7 +14,8 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "jest",
-    "doctor": "npx expo-doctor"
+    "doctor": "npx expo-doctor",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -56,6 +57,7 @@
     "eslint-plugin-i18next": "^6.1.5",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.12",
+    "patch-package": "^8.0.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3"
   }

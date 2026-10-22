@@ -1,0 +1,34 @@
+diff --git a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
+index b9c4636..f8aaa51 100644
+--- a/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
++++ b/node_modules/react-native-audio-api/android/src/main/java/com/swmansion/audioapi/system/AudioFocusListener.kt
+@@ -3,6 +3,8 @@ package com.swmansion.audioapi.system
+ import android.media.AudioFocusRequest
+ import android.media.AudioManager
+ import android.os.Build
++import android.os.Handler
++import android.os.Looper
+ import android.util.Log
+ import com.swmansion.audioapi.AudioAPIModule
+ import java.lang.ref.WeakReference
+@@ -32,7 +34,8 @@ class AudioFocusListener(
+         val body =
+           HashMap<String, Any>().apply {
+             put("type", "began")
+-            put("shouldResume", false)
++            // Transient loss (ringtone, call): focus is expected back, so "ended" will follow.
++            put("shouldResume", true)
+             isTransientLoss = true
+           }
+         audioAPIModule.get()?.invokeHandlerWithEventNameAndEventBody(AudioEvent.INTERRUPTION.ordinal, body)
+@@ -59,7 +62,9 @@ class AudioFocusListener(
+       this.focusRequest =
+         AudioFocusRequest
+           .Builder(focus)
+-          .setOnAudioFocusChangeListener(this)
++          // Main looper: without a handler, callbacks go to the looper of the thread that first
++          // created the process AudioManager, which may since have died (JS reload).
++          .setOnAudioFocusChangeListener(this, Handler(Looper.getMainLooper()))
+           .build()
+ 
+       audioManager.get()?.requestAudioFocus(focusRequest!!)
