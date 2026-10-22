@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, View } from 'react-native';
 
@@ -14,7 +14,8 @@ export function LevelMeter({ level }: { level: number }) {
   const theme = useTheme();
   const { t } = useTranslation();
   const clamped = Math.min(1, Math.max(0, level));
-  const fill = useRef(new Animated.Value(clamped)).current;
+  // One Animated.Value for the component's life, created on first render only.
+  const [fill] = useState(() => new Animated.Value(clamped));
 
   useEffect(() => {
     Animated.timing(fill, {

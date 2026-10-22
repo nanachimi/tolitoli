@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, Animated, StyleSheet, View } from 'react-native';
 
@@ -27,7 +27,7 @@ export function Timer({ elapsedMs, state }: { elapsedMs: number; state: TimerSta
   const theme = useTheme();
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
-  const opacity = useRef(new Animated.Value(1)).current;
+  const [opacity] = useState(() => new Animated.Value(1));
   const running = state === 'recording';
   const pulsing = running && !reduceMotion;
 
