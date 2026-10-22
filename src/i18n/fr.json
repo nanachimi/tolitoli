@@ -87,5 +87,19 @@
   "dev": {
     "title": "Diagnostic (développement)",
     "pluralTitle": "Test des pluriels"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_many": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_many": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier"
   }
 }

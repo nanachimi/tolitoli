@@ -85,5 +85,13 @@
   "dev": {
     "title": "诊断（开发）",
     "pluralTitle": "复数测试"
+  },
+  "format": {
+    "seconds_other": "{{count}} 秒",
+    "minutes_other": "{{count}} 分钟",
+    "hours_other": "{{count}} 小时",
+    "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
+    "today": "今天",
+    "yesterday": "昨天"
   }
 }

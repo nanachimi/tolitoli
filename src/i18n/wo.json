@@ -85,5 +85,13 @@
   "dev": {
     "title": "Saytu (defar)",
     "pluralTitle": "Saytu wàll yu bare"
+  },
+  "format": {
+    "seconds_other": "{{count}} s",
+    "minutes_other": "{{count}} min",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "today": "Tey",
+    "yesterday": "Démb"
   }
 }

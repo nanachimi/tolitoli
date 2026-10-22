@@ -88,5 +88,22 @@
   "dev": {
     "title": "Диагностика (разработка)",
     "pluralTitle": "Проверка множественного числа"
+  },
+  "format": {
+    "seconds_one": "{{count}} с",
+    "seconds_few": "{{count}} с",
+    "seconds_many": "{{count}} с",
+    "seconds_other": "{{count}} с",
+    "minutes_one": "{{count}} мин",
+    "minutes_few": "{{count}} мин",
+    "minutes_many": "{{count}} мин",
+    "minutes_other": "{{count}} мин",
+    "hours_one": "{{count}} ч",
+    "hours_few": "{{count}} ч",
+    "hours_many": "{{count}} ч",
+    "hours_other": "{{count}} ч",
+    "hoursMinutes": "{{hours}} ч {{minutes}}",
+    "today": "Сегодня",
+    "yesterday": "Вчера"
   }
 }

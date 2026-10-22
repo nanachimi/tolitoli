@@ -86,5 +86,16 @@
   "dev": {
     "title": "Diagnose (Entwicklung)",
     "pluralTitle": "Pluraltest"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} Min.",
+    "minutes_other": "{{count}} Min.",
+    "hours_one": "{{count}} Std.",
+    "hours_other": "{{count}} Std.",
+    "hoursMinutes": "{{hours}} Std. {{minutes}}",
+    "today": "Heute",
+    "yesterday": "Gestern"
   }
 }

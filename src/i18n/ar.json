@@ -90,5 +90,28 @@
   "dev": {
     "title": "التشخيص (التطوير)",
     "pluralTitle": "اختبار صيغ الجمع"
+  },
+  "format": {
+    "seconds_zero": "{{count}} ث",
+    "seconds_one": "{{count}} ث",
+    "seconds_two": "{{count}} ث",
+    "seconds_few": "{{count}} ث",
+    "seconds_many": "{{count}} ث",
+    "seconds_other": "{{count}} ث",
+    "minutes_zero": "{{count}} د",
+    "minutes_one": "{{count}} د",
+    "minutes_two": "{{count}} د",
+    "minutes_few": "{{count}} د",
+    "minutes_many": "{{count}} د",
+    "minutes_other": "{{count}} د",
+    "hours_zero": "{{count}} س",
+    "hours_one": "{{count}} س",
+    "hours_two": "{{count}} س",
+    "hours_few": "{{count}} س",
+    "hours_many": "{{count}} س",
+    "hours_other": "{{count}} س",
+    "hoursMinutes": "{{hours}} س {{minutes}}",
+    "today": "اليوم",
+    "yesterday": "أمس"
   }
 }

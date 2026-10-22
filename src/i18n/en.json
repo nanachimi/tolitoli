@@ -86,5 +86,16 @@
   "dev": {
     "title": "Diagnostics (development)",
     "pluralTitle": "Plural test"
+  },
+  "format": {
+    "seconds_one": "{{count}} s",
+    "seconds_other": "{{count}} s",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "today": "Today",
+    "yesterday": "Yesterday"
   }
 }
