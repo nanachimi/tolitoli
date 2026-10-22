@@ -95,7 +95,7 @@ docs/                CAHIER_DES_CHARGES.md, DECISIONS.md, plans/step-N.md, captu
 - Accessibilité : chaque élément interactif a un `accessibilityLabel` ; polices dynamiques respectées (libellés de barre d'onglets plafonnés à 1,5×, D-014) ; textes décoratifs masqués aux lecteurs d'écran (D-019).
 - Commits en anglais, impératif, préfixés par l'étape : `step-3: persist transcription queue`.
 - Avant tout commit : `npm run typecheck && npm run lint && npm test` verts.
-- Captures d'écran : enregistrées dans `docs/captures/step-N/` (N = étape en cours), réduites à 720 px de large, nom descriptif en minuscules et sans espace (`d014-apres-police2-reglages-de.png`), commitées avec l'étape et référencées depuis l'entrée de `docs/DECISIONS.md` qu'elles documentent. Jamais de capture d'une autre application ni de données personnelles.
+- Captures d'écran : enregistrées dans `docs/captures/step-N/` (N = étape en cours), réduites à 720 px de large, nom descriptif en minuscules et sans espace (`d014-apres-police2-reglages-de.png`), commitées avec l'étape et référencées depuis l'entrée de `docs/DECISIONS.md` qu'elles documentent. Tout ce qui sert au diagnostic est conservé, y compris les fenêtres système (permissions, notifications, réglages). Sont exclues uniquement les données personnelles d'autrui : identité d'un appelant, contenu d'une conversation, contacts, contenu d'une autre application. Le dépôt est privé ; si le dépôt devient public un jour, `docs/captures/` est passé en revue avant.
 
 ## Contraintes produit non négociables
 
@@ -162,6 +162,9 @@ npx eas-cli@25 update --branch preview
 - Pas de texte juridique (consentement, CGU, confidentialité) écrit de manière définitive : produire un brouillon marqué « À faire relire par un juriste ».
 - Pas de commit direct sur `main`.
 - Pas de `git add -A` ni `git add .` : ajouter nommément les fichiers modifiés par la session.
+- Pas d'action publique ou externe (issue ou PR chez un tiers, publication, message) sans accord explicite, même si elle a été évoquée dans un plan.
+- Pas de nouvelle build EAS d'un profil non prévu au plan sans accord.
+- Pas de suppression de capture sans me demander.
 - Pas de modification des réglages du téléphone par adb (police, thème, accessibilité, veille) sans les remettre à leur valeur initiale à la fin du test, et sans l'avoir dit.
 
 ## Langue
