@@ -378,6 +378,7 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - alerte « le micro semble coupé » (D-023) : vérifier ce que l'iPhone fournit à l'app quand le micro est pris.
     - module `modules/audio-encoder` côté iOS (`AVAudioFile`, D-021) : écrit mais jamais compilé ni exécuté. À vérifier : conversion WAV → `.m4a`, durée contrôlée, libération des WAV ;
     - textes de permission iOS rangés sous la clé `ios` des fichiers `src/i18n/native/*.json` (D-025) : présents dans les 7 `InfoPlist.strings`.
+  - Étape 1c (D-031) : chaque écran (onboarding, Bibliothèque, Détail, Réglages et sous-écrans, Corbeille) en clair, sombre, arabe et police maximale ; VoiceOver sur la carte, le lecteur (`adjustable`) et la feuille d'actions ; routes protégées : aucun lien `tolitoli://` n'ouvre l'app avant le consentement.
   - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
 - **Conséquences** :
   - CLAUDE.md (Méthode de travail) et le cahier des charges (plan de développement, lignes 1, 3 et 5 ; coûts) sont ajustés.
@@ -586,3 +587,49 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
     - pas de chevron sur les cartes (décision 6) ;
     - le bouton d'outils du dev client recouvre le coin des titres, en développement seulement.
   - Les bannières (appel, reprise, micro coupé) ne sont pas capturées : il faudrait un vrai appel. Elles sont couvertes par Jest et par les captures de D-023.
+
+## D-031 — Étape 1c : interface complète, données simulées
+
+- **Date / étape** : 2026-10-23, étape 1c (plan `docs/plans/step-1c.md`, validé par le propriétaire). Branche `step-1c-interface`, partie de `main` après la fusion de 1b. Aucune dépendance native, aucune build : tout tourne sur le dev client `1af57476`.
+- **Livré** :
+  - table des langues `src/services/transcription/languages.ts` (16 langues : 6 « bonne », lingala et malgache « moyenne », swahili, haoussa et yoruba « brouillon », igbo, pidgin, zoulou, luganda et wolof « cloud requis ») ;
+  - dépôt `LibraryRepository` et sa version simulée (`src/services/library`), qui lit les manifestes en lecture seule et ajoute le jeu de démonstration en développement ;
+  - dix composants des guides ajoutés par le propriétaire : SearchField, TextField, EmptyState, ProgressBar, ScreenHeader, Dialog, ActionSheet, OnboardingPage, StorageMeter, Player ;
+  - écrans : onboarding en trois pages, Bibliothèque (recherche, états vides, appui long, volet Détail sur tablette), Détail (`app/recording/[id].tsx`), Réglages complets avec sous-écrans Langue de transcription, Stockage et À propos, Corbeille ;
+  - 399 tests Jest : pseudo-locale, arabe et accessibilité pour chaque écran.
+- **Décisions** :
+  1. **Lecture simulée** : `SimulatedPlaybackEngine` (`src/services/playback`) derrière l'interface `PlaybackEngine`, branchée par `usePlayback`. La vitesse est mémorisée (`player.rate`). **`expo-audio` rejoint la prochaine build native**, quelle que soit l'étape qui la déclenche (2 ou 3) ; seule la fabrique `createEngine` change.
+  2. **Données de démonstration** : neuf enregistrements au lieu des huit prévus. Le neuvième est un enregistrement igbo « hors ligne », pour montrer l'état hors ligne du cahier. Le jeu n'écrit rien (test `MemoryFs.writes`) et son interrupteur n'existe que sous `__DEV__`.
+  3. **Corbeille** : vider la corbeille masque les éléments pour la session, en mémoire. **Aucun fichier n'est supprimé** en 1c ; la vraie purge viendra avec SQLite (étape 2).
+  4. **Renommer** passe par un `Dialog` qui accepte maintenant un enfant (le `TextField`). Le guide Dialog ne prévoit que des confirmations : c'est un écart à valider. Un titre vide reprend le titre par défaut ; au-delà de 120 caractères, une erreur dit de raccourcir.
+  5. **Actions partagées** (`RecordingActions`) entre le bouton `more-horizontal` du Détail et l'appui long sur une carte : Renommer, puis Mettre à la corbeille derrière un `Dialog`. L'export est absent, avec la note « L'export arrivera dans une prochaine version » (guide ActionSheet). L'icône de Renommer est `file-text`, car `ICONS.md` n'a pas de crayon.
+  6. **Onboarding** : toutes les routes sont derrière `Stack.Protected` à la racine. Aucune route, même par un lien `tolitoli://record`, ne s'ouvre avant le consentement. L'acceptation est horodatée pour de bon (`onboarding.consentAcceptedAt`). Si l'app est coupée après le consentement, elle reprend sur la page du modèle. **Le texte de consentement est un brouillon, à faire relire par un juriste** (commentaire dans `src/features/onboarding/onboarding.ts`).
+  7. **Modèle de transcription** : état simulé partagé (`src/features/transcription/model.ts`). « Télécharger plus tard » laisse le modèle absent. La Bibliothèque affiche alors une bannière avec « Télécharger », puis la progression.
+  8. **Qualité** : la puce langue · qualité n'apparaît, sur la carte comme dans le Détail, qu'une fois la transcription faite. Le sélecteur de langue de transcription donne pour chaque langue la qualité sur l'appareil, ou « Aucun moteur sur l'appareil : cloud requis ».
+  9. **Carte en échec** : le guide RecordingCard n'a pas d'état « échec ». La carte garde l'icône audio seule ; l'échec est dit au lecteur d'écran (« transcription en échec ») et dans le Détail (bannière et Réessayer). Écart à trancher par le propriétaire.
+  10. `LibraryRepository` gagne `retryTranscription(id)`. En 1c, l'élément passe simplement « en cours » ; la file réelle viendra à l'étape 3.
+  11. `Banner` accepte une icône propre : `wifi-off` pour l'état hors ligne.
+  12. `StorageMeter` n'a plus de titre propre : il répétait celui de l'écran Stockage.
+  13. La marge basse de la Bibliothèque suit l'échelle de police, car la légende « Enregistrer » grandit avec elle (`listBottomMargin(fontScale)`).
+  14. Les libellés d'accessibilité composés utilisent un séparateur traduit (`format.listSeparator` : « ، » en arabe, « ， » en chinois).
+  15. Ordre des commits : le Détail a précédé le branchement de la Bibliothèque, pour que l'appui sur une carte ait une route typée.
+- **Écarts aux guides** :
+  - StorageMeter : le guide dit « sous 50 Mo, l'enregistrement ne démarrera pas ». Le code garde le seuil de D-021 (10 min dans le format actif, soit environ 19 Mo en WAV 16 kHz) : il est partagé avec l'écran d'enregistrement. L'alerte « presque plein » est bien à 500 Mo. À trancher.
+  - React Native n'a ni rôle `menuitemradio` ni état `invalid` : l'état coché passe par `accessibilityState.checked` sur un `menuitem`, et l'erreur d'un champ par son `accessibilityHint` et une région `polite`.
+  - Les icônes `rotate-ccw` et `rotate-cw` (sauts de 15 s) ne figurent pas dans `ICONS.md`.
+  - Le Détail est une route racine, hors des onglets. Le lecteur est donc en bas de l'écran sans barre d'onglets, alors que le guide Player le place « au-dessus de la barre d'onglets ».
+  - Sur les sous-écrans des Réglages, l'en-tête défile avec le contenu ; il est fixe dans le Détail.
+- **Build preview `272c3221`** (lancée sans attendre en 1b, D-030) : **terminée, le Lint de release passe.** Test de fumée sur l'émulateur : Bibliothèque et Réglages corrects. L'ouverture de l'écran d'enregistrement a figé l'émulateur (erreurs GPU) ; il a été relancé en rendu logiciel et sans audio (`-gpu swiftshader_indirect -no-audio`). L'enregistrement ne se teste pas sur émulateur (CLAUDE.md). C'était la dernière build avant l'étape 3.
+- **Vérifications sur l'émulateur** (`Medium_Phone_API_37.0`, Android 17, dev client `1af57476`, Metro) :
+  - parcours complet : onboarding, Bibliothèque avec le jeu de démo, recherche, appui long, Détail dans chaque état (transcrit, lecture, vitesse, actions, renommer, corbeille, en cours, audio seul, hors ligne, quota épuisé, échec, modèle absent), Réglages et sous-écrans, Corbeille avec restauration ;
+  - variantes : thème sombre, arabe (RTL : chevrons, lecteur et barre de progression en miroir), police 1,5× ;
+  - **trois défauts vus sur les captures et corrigés** (commit `step-1c: fix what the emulator captures showed`) : puce « English · bonne » sur des enregistrements non transcrits, icône d'appel sur la bannière hors ligne, titre « Stockage » en double. Captures avant et après ;
+  - l'émulateur a été remis dans son état initial : thème clair, police 1,0, permissions micro et réseau local sans choix mémorisé.
+- **Observations à suivre** :
+  - **`ACCESS_LOCAL_NETWORK`** (nouvelle permission d'Android 17) est demandée au lancement par le **dev client**, pour joindre Metro (capture `dev-client-permission-reseau-local.png`). La build preview ne l'a pas demandée ; l'app elle-même n'utilise pas le réseau local. À revérifier sur le téléphone avec la prochaine build.
+  - **ANR au premier démarrage à froid** du dev client sur l'émulateur logiciel, deux fois ; le lancement suivant passe. Pas observé sur le Galaxy A05. À surveiller à la prochaine build.
+  - En arabe, les transcriptions en alphabet latin sont alignées à droite, comme le reste de l'interface. **Question au propriétaire** : faut-il aligner chaque segment selon sa propre écriture ?
+  - La puce de qualité d'une carte apparaît comme un nœud distinct dans l'arbre d'accessibilité, alors que le libellé de la carte la contient déjà. À vérifier avec TalkBack sur le téléphone.
+  - Sur cet émulateur, chaque `adb input` prend environ 5 s, et la capture d'écran reste figée tant que la barre flottante du clavier est ouverte. La recherche a été vérifiée par l'arbre de vues, puis capturée clavier fermé.
+- **Non vérifié** : passage TalkBack réel (téléphone) ; volet Détail sur une vraie tablette (couvert par Jest) ; capture de la Corbeille vide (couverte par Jest). Une capture de travail (`c-detail-actions`, qui montrait par erreur le menu du dev client) a été écrasée par la bonne prise ; aucune capture n'a été supprimée.
+- **Captures** (720 px) : `docs/captures/step-1c/`, entre autres `onboarding-*`, `bibliotheque-*`, `recherche-*`, `detail-*`, `reglages-*`, `langue-transcription*`, `stockage-*`, `corbeille.png`, `a-propos.png`, `sombre-*`, `ar-*`, `police-150-*`. Les originaux sont dans `build/captures/step-1c/`.

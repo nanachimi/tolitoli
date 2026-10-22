@@ -82,7 +82,7 @@ Tous ces guides sont désormais fournis.
    - bannières d'état en `Banner` : transcription en échec avec « Réessayer », modèle absent, hors ligne, quota épuisé. Ce sont des états simulés du jeu de démo.
    - **Lecteur** (`Player`, selon le guide) :
      - **`expo-audio` n'est pas dans le dev client `1af57476`** : absent de `package.json` et aucune classe `expo/modules/audio` dans le code natif de l'APK. La lecture réelle n'est donc pas possible sans build.
-     - Le lecteur pilote une **horloge simulée** (`useSimulatedPlayback` : lecture, pause, déplacement, sauts de ±15 s, vitesse) derrière une interface `PlaybackEngine`, que l'étape 2 remplacera par `expo-audio`.
+     - Le lecteur pilote une **horloge simulée** (`SimulatedPlaybackEngine`, branchée par `usePlayback` : lecture, pause, déplacement, sauts de ±15 s, vitesse) derrière une interface `PlaybackEngine`, que la prochaine build native remplacera par `expo-audio`.
      - Sauts de 15 s, et vitesses 0,5×, 0,75×, 1×, 1,25×, 1,5× et 2× choisies par `ActionSheet` et mémorisées. Je ne vois pas de raison de changer ces valeurs : ce sont les valeurs standard des lecteurs de podcast, et 2× reste intelligible pour de la parole.
      - Le segment actif suit la position, et appuyer sur un segment déplace la lecture.
      - **Note du propriétaire** : `expo-audio` est groupé dans la **prochaine build native**, quelle que soit l'étape qui la déclenche (2 ou 3), pour que la lecture réelle arrive avec elle. L'interface `PlaybackEngine` est prévue pour cette bascule. À rappeler dans la PR.
