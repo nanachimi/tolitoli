@@ -30,6 +30,30 @@
       "hint": "La langue de transcription se règle séparément.",
       "restartRtl": "L’application va redémarrer pour changer le sens d’écriture.",
       "optionA11y": "Langue de l’interface : {{language}}"
+    },
+    "transcription": {
+      "title": "Transcription",
+      "language": "Langue de transcription",
+      "hint": "La langue parlée dans vos enregistrements. Elle choisit le moteur ; la détection automatique n’est pas fiable pour ces langues.",
+      "cloudRequired": "cloud requis",
+      "optionA11y": "Langue de transcription : {{language}}",
+      "qualityLocal": "Qualité sur l’appareil : {{quality}}",
+      "cloudRequiredLong": "Aucun moteur sur l’appareil : cloud requis"
+    },
+    "storage": {
+      "used": "{{size}} utilisés",
+      "trash": "Corbeille"
+    },
+    "about": {
+      "title": "À propos",
+      "version": "Version {{version}}",
+      "local": "Vos enregistrements et leurs transcriptions restent sur cet appareil. Rien n’est envoyé sans votre accord.",
+      "legal": "Politique de confidentialité et conditions d’utilisation : disponibles avant la publication."
+    },
+    "dev": {
+      "demo": "Données de démonstration",
+      "demoOn": "Activées. Huit enregistrements fictifs, jamais écrits sur l’appareil.",
+      "demoOff": "Désactivées. Seuls vos vrais enregistrements apparaissent."
     }
   },
   "record": {
@@ -114,7 +138,8 @@
     "withLanguage": "{{language}} · {{quality}}"
   },
   "common": {
-    "back": "Retour"
+    "back": "Retour",
+    "cancel": "Annuler"
   },
   "search": {
     "clear": "Effacer la recherche"
@@ -167,5 +192,14 @@
       "start": "Commencer",
       "later": "Télécharger plus tard"
     }
+  },
+  "trash": {
+    "title": "Corbeille",
+    "emptyTitle": "Corbeille vide",
+    "emptyBody": "Les enregistrements mis à la corbeille y restent 30 jours.",
+    "restore": "Restaurer",
+    "restoreA11y": "Restaurer {{title}}",
+    "confirmEmptyTitle": "Vider la corbeille ?",
+    "confirmEmptyBody": "Les enregistrements de la corbeille seront supprimés définitivement. Cette action est irréversible."
   }
 }

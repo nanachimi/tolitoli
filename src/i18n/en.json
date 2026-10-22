@@ -29,6 +29,30 @@
       "hint": "The transcription language is set separately.",
       "restartRtl": "The app will restart to change the writing direction.",
       "optionA11y": "App language: {{language}}"
+    },
+    "transcription": {
+      "title": "Transcription",
+      "language": "Transcription language",
+      "hint": "The language spoken in your recordings. It picks the engine; automatic detection is not reliable for these languages.",
+      "cloudRequired": "cloud required",
+      "optionA11y": "Transcription language: {{language}}",
+      "qualityLocal": "On-device quality: {{quality}}",
+      "cloudRequiredLong": "No on-device engine: cloud required"
+    },
+    "storage": {
+      "used": "{{size}} used",
+      "trash": "Trash"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version {{version}}",
+      "local": "Your recordings and their transcripts stay on this device. Nothing is sent without your consent.",
+      "legal": "Privacy policy and terms of use: available before release."
+    },
+    "dev": {
+      "demo": "Demo data",
+      "demoOn": "On. Eight fictional recordings, never written to the device.",
+      "demoOff": "Off. Only your real recordings appear."
     }
   },
   "record": {
@@ -110,7 +134,8 @@
     "withLanguage": "{{language}} · {{quality}}"
   },
   "common": {
-    "back": "Back"
+    "back": "Back",
+    "cancel": "Cancel"
   },
   "search": {
     "clear": "Clear search"
@@ -163,5 +188,14 @@
       "start": "Start",
       "later": "Download later"
     }
+  },
+  "trash": {
+    "title": "Trash",
+    "emptyTitle": "Trash is empty",
+    "emptyBody": "Recordings moved to the trash stay there for 30 days.",
+    "restore": "Restore",
+    "restoreA11y": "Restore {{title}}",
+    "confirmEmptyTitle": "Empty the trash?",
+    "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone."
   }
 }

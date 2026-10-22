@@ -29,6 +29,30 @@
       "hint": "Die Transkriptionssprache wird separat eingestellt.",
       "restartRtl": "Die App wird neu gestartet, um die Schreibrichtung zu ändern.",
       "optionA11y": "Sprache der Benutzeroberfläche: {{language}}"
+    },
+    "transcription": {
+      "title": "Transkription",
+      "language": "Transkriptionssprache",
+      "hint": "Die in Ihren Aufnahmen gesprochene Sprache. Sie bestimmt die Engine; die automatische Erkennung ist für diese Sprachen nicht zuverlässig.",
+      "cloudRequired": "Cloud erforderlich",
+      "optionA11y": "Transkriptionssprache: {{language}}",
+      "qualityLocal": "Qualität auf dem Gerät: {{quality}}",
+      "cloudRequiredLong": "Keine Erkennung auf dem Gerät: Cloud erforderlich"
+    },
+    "storage": {
+      "used": "{{size}} belegt",
+      "trash": "Papierkorb"
+    },
+    "about": {
+      "title": "Über",
+      "version": "Version {{version}}",
+      "local": "Ihre Aufnahmen und Transkripte bleiben auf diesem Gerät. Ohne Ihre Zustimmung wird nichts gesendet.",
+      "legal": "Datenschutzerklärung und Nutzungsbedingungen: vor der Veröffentlichung verfügbar."
+    },
+    "dev": {
+      "demo": "Demodaten",
+      "demoOn": "Aktiv. Acht fiktive Aufnahmen, nie auf das Gerät geschrieben.",
+      "demoOff": "Aus. Nur Ihre echten Aufnahmen erscheinen."
     }
   },
   "record": {
@@ -110,7 +134,8 @@
     "withLanguage": "{{language}} · {{quality}}"
   },
   "common": {
-    "back": "Zurück"
+    "back": "Zurück",
+    "cancel": "Abbrechen"
   },
   "search": {
     "clear": "Suche löschen"
@@ -163,5 +188,14 @@
       "start": "Loslegen",
       "later": "Später herunterladen"
     }
+  },
+  "trash": {
+    "title": "Papierkorb",
+    "emptyTitle": "Papierkorb ist leer",
+    "emptyBody": "Aufnahmen im Papierkorb bleiben dort 30 Tage.",
+    "restore": "Wiederherstellen",
+    "restoreA11y": "{{title}} wiederherstellen",
+    "confirmEmptyTitle": "Papierkorb leeren?",
+    "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
   }
 }

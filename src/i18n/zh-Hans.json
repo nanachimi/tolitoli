@@ -28,6 +28,30 @@
       "hint": "转写语言需单独设置。",
       "restartRtl": "应用将重新启动以更改文字方向。",
       "optionA11y": "界面语言：{{language}}"
+    },
+    "transcription": {
+      "title": "转写",
+      "language": "转写语言",
+      "hint": "录音中所说的语言。它决定所用的引擎；对这些语言，自动检测并不可靠。",
+      "cloudRequired": "需要云端",
+      "optionA11y": "转写语言：{{language}}",
+      "qualityLocal": "设备端质量：{{quality}}",
+      "cloudRequiredLong": "设备端无引擎：需要云端"
+    },
+    "storage": {
+      "used": "已用 {{size}}",
+      "trash": "回收站"
+    },
+    "about": {
+      "title": "关于",
+      "version": "版本 {{version}}",
+      "local": "您的录音及其转写保留在本设备上，未经您同意不会发送任何内容。",
+      "legal": "隐私政策和使用条款：将在发布前提供。"
+    },
+    "dev": {
+      "demo": "演示数据",
+      "demoOn": "已开启。八段虚构录音，从不写入设备。",
+      "demoOff": "已关闭。只显示您的真实录音。"
     }
   },
   "record": {
@@ -106,7 +130,8 @@
     "withLanguage": "{{language}} · {{quality}}"
   },
   "common": {
-    "back": "返回"
+    "back": "返回",
+    "cancel": "取消"
   },
   "search": {
     "clear": "清除搜索"
@@ -159,5 +184,14 @@
       "start": "开始",
       "later": "稍后下载"
     }
+  },
+  "trash": {
+    "title": "回收站",
+    "emptyTitle": "回收站为空",
+    "emptyBody": "移入回收站的录音会保留 30 天。",
+    "restore": "恢复",
+    "restoreA11y": "恢复 {{title}}",
+    "confirmEmptyTitle": "清空回收站？",
+    "confirmEmptyBody": "回收站中的录音将被永久删除，此操作无法撤销。"
   }
 }

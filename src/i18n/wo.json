@@ -28,6 +28,30 @@
       "hint": "Làkk bi ñuy bindee baat yi, dañu koy tànn ci beneen bérab.",
       "restartRtl": "Aplikasioŋ bi dina tàmbaliwaat ngir soppi fan lañuy bindee.",
       "optionA11y": "Làkku jumtukaay bi: {{language}}"
+    },
+    "transcription": {
+      "title": "Bind",
+      "language": "Làkku bind",
+      "hint": "Làkk wi ñuy wax ci say dénc. Moo tànn masin bi ; xamal boppam du wóor ci làkk yii.",
+      "cloudRequired": "soxla na cloud",
+      "optionA11y": "Làkku bind : {{language}}",
+      "qualityLocal": "Kalite ci biir jumtukaay bi: {{quality}}",
+      "cloudRequiredLong": "Amul masin ci biir jumtukaay bi: cloud soxla na"
+    },
+    "storage": {
+      "used": "{{size}} lañu jëfandikoo",
+      "trash": "Pañe"
+    },
+    "about": {
+      "title": "Ci mbirum Tolitoli",
+      "version": "Wersiyoŋ {{version}}",
+      "local": "Say dénc ak seeni bind ci jumtukaay bii lay des. Dara du dem te nangoo-wuloo ko.",
+      "legal": "Politigu sutura ak sarti jëfandikoo : dinañu am bala tolitoli di génn."
+    },
+    "dev": {
+      "demo": "Done yu wone",
+      "demoOn": "Taal na. Juróom-ñett dénc yu dul dëgg, du ñu leen bind mukk ci jumtukaay bi.",
+      "demoOff": "Fey na. Say dénc yu dëgg rekk ñoo feeñ."
     }
   },
   "record": {
@@ -106,7 +130,8 @@
     "withLanguage": "{{language}} · {{quality}}"
   },
   "common": {
-    "back": "Dellu"
+    "back": "Dellu",
+    "cancel": "Neenal"
   },
   "search": {
     "clear": "Far seet bi"
@@ -159,5 +184,14 @@
       "start": "Tàmbali",
       "later": "Wàcce ko ginnaaw"
     }
+  },
+  "trash": {
+    "title": "Pañe",
+    "emptyTitle": "Pañe bi amul dara",
+    "emptyBody": "Dénc yi ñu def ci pañe bi dañuy des fa 30 fan.",
+    "restore": "Delloo",
+    "restoreA11y": "Delloo {{title}}",
+    "confirmEmptyTitle": "Setal pañe bi ?",
+    "confirmEmptyBody": "Dénc yi nekk ci pañe bi dinañu leen far ba fàww. Mënuloo ko dellu ginnaaw."
   }
 }
