@@ -102,5 +102,14 @@
     "draft": "bind bu njëkk",
     "busy": "Mi ngi bind…",
     "withLanguage": "{{language}} · {{quality}}"
+  },
+  "common": {
+    "back": "Dellu"
+  },
+  "search": {
+    "clear": "Far seet bi"
+  },
+  "progress": {
+    "done": "Jeex na"
   }
 }

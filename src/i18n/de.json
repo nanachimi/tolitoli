@@ -106,5 +106,14 @@
     "draft": "Entwurf",
     "busy": "Transkription …",
     "withLanguage": "{{language}} · {{quality}}"
+  },
+  "common": {
+    "back": "Zurück"
+  },
+  "search": {
+    "clear": "Suche löschen"
+  },
+  "progress": {
+    "done": "Fertig"
   }
 }

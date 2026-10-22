@@ -122,5 +122,14 @@
     "draft": "مسودة",
     "busy": "جارٍ النسخ…",
     "withLanguage": "{{language}} · {{quality}}"
+  },
+  "common": {
+    "back": "رجوع"
+  },
+  "search": {
+    "clear": "مسح البحث"
+  },
+  "progress": {
+    "done": "اكتمل"
   }
 }

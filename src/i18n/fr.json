@@ -110,5 +110,14 @@
     "draft": "brouillon",
     "busy": "Transcription…",
     "withLanguage": "{{language}} · {{quality}}"
+  },
+  "common": {
+    "back": "Retour"
+  },
+  "search": {
+    "clear": "Effacer la recherche"
+  },
+  "progress": {
+    "done": "Terminé"
   }
 }

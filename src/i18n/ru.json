@@ -114,5 +114,14 @@
     "draft": "черновик",
     "busy": "Расшифровка…",
     "withLanguage": "{{language}} · {{quality}}"
+  },
+  "common": {
+    "back": "Назад"
+  },
+  "search": {
+    "clear": "Очистить поиск"
+  },
+  "progress": {
+    "done": "Готово"
   }
 }

@@ -14,3 +14,8 @@ export { RecordButton } from './components/RecordButton';
 export { RecordingCard, type RecordingCardState } from './components/RecordingCard';
 export { TranscriptSegment, type SegmentState } from './components/TranscriptSegment';
 export { OptionGroup, OptionRow, type OptionRowKind } from './components/OptionRow';
+export { EmptyState } from './components/EmptyState';
+export { ProgressBar } from './components/ProgressBar';
+export { ScreenHeader } from './components/ScreenHeader';
+export { SearchField } from './components/SearchField';
+export { TextField } from './components/TextField';
