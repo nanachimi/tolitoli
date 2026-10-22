@@ -469,4 +469,8 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - couleur `accent` pour l'en-tête.
 
     Les drawables sont copiés par `plugins/withNotificationIcons.js`. Android n'affiche que des silhouettes dans la barre d'état.
+- **Vérifié sur le Galaxy A05** (build de développement n° 5, propriétaire) :
+  - les trois barres apparaissent dans la barre d'état pendant l'enregistrement ;
+  - la notification porte la marque en couleur et un en-tête `#b84a24` ;
+  - l'icône de l'app est le carré terre cuite.
 - **Hors étape 1** : le reste du système de design n'est pas encore appliqué. Cela concerne la transcription typée des tokens dans `src/ui/theme/tokens.ts`, Rubik, Lucide et les composants de `docs/design/components/`. Son intégration sera proposée dans le plan d'une étape suivante.
