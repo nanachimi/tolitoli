@@ -316,6 +316,45 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
   - Bug Android #1299 : perte d'environ 0,1 % au rééchantillonnage 16 kHz. Sans effet sur le fichier ; à traiter à l'étape 3.
   - Cohabitation avec expo-audio sur le même micro : non documentée, évitée par construction.
 
+## D-021 — Stratégie anti-perte : WAV continu, converti en `.m4a` à l'arrêt
+
+- **Date / étape** : 2026-10-22, étape 1, essai sur appareil (environ 1 h, sous la limite d'une demi-journée).
+- **Étape 1 de la procédure, encodeur AAC** : react-native-audio-api ne convertit pas de fichier en fichier. Son rendu hors ligne reste en mémoire, et `concatAudioFiles` ne fait que remuxer. En revanche, un encodeur reste accessible de deux façons :
+  - react-native-compressor 2.0.3, une bibliothèque maintenue (`Audio.compress`) ;
+  - un petit module Expo local : MediaCodec + MediaMuxer sur Android, AVAssetExportSession sur iOS.
+
+  La variante WAV est donc restée en lice.
+
+- **Protocole** :
+  - Galaxy A05 (Android 14), build de développement d'essai, banc `app/dev/spike.tsx`.
+  - Un son continu de 1 kHz, joué par le Mac posé à côté, pendant 150 s, puis `kill -9` du processus.
+  - Les segments sont rapatriés par `adb`, décodés avec `afconvert`, puis analysés par fenêtres de 10 ms : creux d'énergie, continuité de phase du son et clic à chaque jonction.
+  - On analyse aussi le fichier assemblé **par l'app** avec `concatAudioFiles`, qui est le chemin réel de production.
+- **Résultats** :
+
+  | Variante                                      | Perte après kill                                                          | Jonctions (fichier assemblé par l'app)                                     | Taille pendant / après                   |
+  | --------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------- |
+  | M4A, segments de 2 s (44,1 kHz, 64 kbit/s)    | 1,74 s mesurée (segment en cours illisible)                               | **72 trous de 20 à 30 ms**, un toutes les 2 s (1,75 s de silence au total) | 31,7 / 31,7 Mo/h                         |
+  | M4A, segments de 30 s                         | 0,34 s mesurée (kill juste après une rotation) ; **jusqu'à 30 s** au pire | un trou de 20 à 30 ms toutes les 30 s                                      | 29,7 / 29,7 Mo/h                         |
+  | WAV continu 16 kHz (vidage toutes les 200 ms) | **0,12 s** ; en-tête réparé sans erreur                                   | aucune (un seul fichier, 0 creux sur 150 s)                                | 115,2 / environ 29 Mo/h après conversion |
+
+- **Origine des trous** :
+  - Décodés un par un, les segments M4A se suivent sans perte : 0 creux, et un décalage de phase de moins de 0,4 ms à 12 jonctions sur 72.
+  - Le trou vient de l'assemblage. `concatAudioFiles` recopie les 1 024 échantillons d'amorçage AAC de chaque segment, et le fichier joint dure 150,13 s au lieu de 148,39 s.
+  - Corriger cela imposerait de décoder puis de réencoder chaque segment, ce qui demande de toute façon un encodeur natif, et en plus d'un décodeur.
+- **Décision** :
+  - Enregistrement en **WAV continu**, vidé sur disque toutes les 200 ms.
+  - Si l'app est tuée, l'en-tête est réparé au lancement suivant.
+  - Une interruption ferme le fichier en cours et la reprise en ouvre un nouveau. Les WAV se joignent à l'échantillon près, sans amorçage.
+  - Le tout est converti **une seule fois** en `.m4a` (AAC 64 kbit/s) à l'arrêt, ou à la récupération.
+  - Le WAV n'est jamais supprimé tant que le `.m4a` n'est pas écrit et vérifié (durée lue). Une conversion interrompue est relancée au lancement suivant.
+- **Formulation « blocs de 2 s »** : les 2 s restent l'objectif de perte maximale. Le cahier des charges (§ Fiabilité) et CLAUDE.md disent désormais « vidé sur disque au moins toutes les 2 s ».
+- **En attente du propriétaire** :
+  - le choix de l'encodeur (bibliothèque native, CLAUDE.md) ;
+  - la fréquence d'échantillonnage du WAV.
+
+  Une seconde build Android suivra, comme prévu au plan.
+
 ## D-022 — Compte Apple Developer reporté : dette iOS
 
 - **Date / étape** : 2026-10-21, étape 1, choix du propriétaire (raison budgétaire). **Remplace D-003.**

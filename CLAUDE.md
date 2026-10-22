@@ -108,7 +108,7 @@ Dix langues africaines sont supportées dès la première version publiée : swa
 
 ## Synchronisation : règles invariantes (détail dans le cahier des charges, section « Synchronisation intelligente »)
 
-- L'audio est écrit sur disque par blocs toutes les 2 s ; un fichier partiel est finalisé et marqué « récupéré » au lancement suivant, jamais supprimé.
+- L'audio est vidé sur disque au moins toutes les 2 s (WAV continu, converti en `.m4a` à l'arrêt, D-021) ; un fichier partiel est finalisé et marqué « récupéré » au lancement suivant, jamais supprimé.
 - Chaque changement local est inscrit dans la table `outbox` dans la même transaction SQLite que la donnée.
 - Upload résumable par morceaux (TUS, 5 Mo) ; somme de contrôle SHA-256 vérifiée côté serveur avant de marquer `synced`.
 - Recul exponentiel 10 s → 15 min ; politique par défaut : audio sur wifi seulement, texte sur tout réseau.

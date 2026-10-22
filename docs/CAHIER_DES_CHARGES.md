@@ -277,7 +277,7 @@ Principe : rien n'est jamais envoyé au cloud sans avoir d'abord été écrit su
 
 | Garantie | Mécanisme |
 | --- | --- |
-| Aucune perte pendant la capture | Écriture du .m4a par blocs sur le disque toutes les 2 s ; en cas de mort de l'app ou du système, le fichier partiel est finalisé au prochain lancement et marqué « récupéré » |
+| Aucune perte pendant la capture | Audio vidé sur le disque au moins toutes les 2 s (WAV continu vidé toutes les 200 ms, converti en .m4a à l'arrêt, voir D-021) ; en cas de mort de l'app ou du système, le fichier partiel est finalisé au prochain lancement et marqué « récupéré » |
 | Aucune perte avant la synchro | Boîte de sortie persistante (table `outbox`) : chaque changement local (nouvel audio, segment, renommage, suppression) y est inscrit dans la même transaction SQLite que la donnée elle-même |
 | Aucune corruption | Somme de contrôle SHA-256 calculée à la fin de l'enregistrement, vérifiée côté serveur après upload et après téléchargement sur un autre appareil |
 | Reprise après coupure | Upload résumable par morceaux de 5 Mo (TUS via Supabase Storage) ; un morceau envoyé n'est jamais renvoyé |

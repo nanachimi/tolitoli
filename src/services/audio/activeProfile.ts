@@ -5,13 +5,14 @@ import {
   type FormatProfileId,
 } from './formatProfile';
 
-/**
- * Format chosen by D-021. Provisional until the on-device comparison:
- * M4A segments, the fallback the owner set if the trial runs over.
- */
+/** Segment length of the M4A variant measured by D-021 (not the active format). */
 export const M4A_SEGMENT_SECONDS = 2;
 
-export const ACTIVE_PROFILE: FormatProfile = m4aSegmentsProfile(M4A_SEGMENT_SECONDS);
+/**
+ * Format chosen by D-021: continuous WAV, flushed every 200 ms, converted to
+ * `.m4a` once at stop. The M4A segments left gaps at every junction once joined.
+ */
+export const ACTIVE_PROFILE: FormatProfile = wavContinuousProfile();
 
 /** Every format a manifest may reference, for recovering older recordings. */
 export const PROFILES: Record<FormatProfileId, FormatProfile> = {
