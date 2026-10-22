@@ -113,5 +113,12 @@
     "hoursMinutes": "{{hours}} س {{minutes}}",
     "today": "اليوم",
     "yesterday": "أمس"
+  },
+  "quality": {
+    "good": "جيدة",
+    "medium": "متوسطة",
+    "draft": "مسودة",
+    "busy": "جارٍ النسخ…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

@@ -93,5 +93,12 @@
     "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
     "today": "今天",
     "yesterday": "昨天"
+  },
+  "quality": {
+    "good": "良好",
+    "medium": "一般",
+    "draft": "草稿",
+    "busy": "正在转写…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

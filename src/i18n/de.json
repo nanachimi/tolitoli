@@ -97,5 +97,12 @@
     "hoursMinutes": "{{hours}} Std. {{minutes}}",
     "today": "Heute",
     "yesterday": "Gestern"
+  },
+  "quality": {
+    "good": "gut",
+    "medium": "mittel",
+    "draft": "Entwurf",
+    "busy": "Transkription …",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

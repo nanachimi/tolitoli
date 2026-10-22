@@ -105,5 +105,12 @@
     "hoursMinutes": "{{hours}} ч {{minutes}}",
     "today": "Сегодня",
     "yesterday": "Вчера"
+  },
+  "quality": {
+    "good": "хорошее",
+    "medium": "среднее",
+    "draft": "черновик",
+    "busy": "Расшифровка…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

@@ -97,5 +97,12 @@
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Today",
     "yesterday": "Yesterday"
+  },
+  "quality": {
+    "good": "good",
+    "medium": "fair",
+    "draft": "draft",
+    "busy": "Transcribing…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

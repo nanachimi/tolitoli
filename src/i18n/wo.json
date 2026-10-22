@@ -93,5 +93,12 @@
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Tey",
     "yesterday": "Démb"
+  },
+  "quality": {
+    "good": "baax na",
+    "medium": "diggu-diggu",
+    "draft": "bind bu njëkk",
+    "busy": "Mi ngi bind…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }

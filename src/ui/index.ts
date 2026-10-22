@@ -9,3 +9,7 @@ export { Banner, type BannerKind } from './components/Banner';
 export { Button, type ButtonVariant } from './components/Button';
 export { LevelMeter } from './components/LevelMeter';
 export { Timer, type TimerState } from './components/Timer';
+export { QualityChip, type Quality } from './components/QualityChip';
+export { RecordButton } from './components/RecordButton';
+export { RecordingCard, type RecordingCardState } from './components/RecordingCard';
+export { TranscriptSegment, type SegmentState } from './components/TranscriptSegment';

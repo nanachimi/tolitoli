@@ -101,5 +101,12 @@
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Aujourd’hui",
     "yesterday": "Hier"
+  },
+  "quality": {
+    "good": "bonne",
+    "medium": "moyenne",
+    "draft": "brouillon",
+    "busy": "Transcription…",
+    "withLanguage": "{{language}} · {{quality}}"
   }
 }
