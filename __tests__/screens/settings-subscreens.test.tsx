@@ -104,8 +104,7 @@ describe('Transcription language screen', () => {
 describe('Storage screen', () => {
   it('shows the meter and links to the trash', async () => {
     await renderScreen(<StorageScreen />);
-    // The screen title, then the meter's own heading.
-    expect(screen.getAllByRole('header', { name: 'Stockage' })).toHaveLength(2);
+    expect(screen.getByRole('header', { name: 'Stockage' })).toBeOnTheScreen();
     expect(screen.getByRole('image', { name: /libre 8 Go/ })).toBeOnTheScreen();
     // An empty trash has nothing to empty.
     expect(screen.queryByRole('button', { name: 'Vider la corbeille' })).toBeNull();

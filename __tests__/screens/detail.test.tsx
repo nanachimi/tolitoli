@@ -79,6 +79,18 @@ describe('Recording Detail', () => {
     expect(screen.getByText('Quota cloud épuisé')).toBeOnTheScreen();
   });
 
+  it('shows no quality before there is a transcript', async () => {
+    await open('demo-workshop');
+    expect(screen.getByText('Modèle de transcription absent')).toBeOnTheScreen();
+    expect(screen.queryByLabelText('English · bonne')).toBeNull();
+  });
+
+  it('marks the offline state with its own icon', async () => {
+    await open('demo-offline');
+    expect(screen.getByText('Hors ligne')).toBeOnTheScreen();
+    expect(screen.getByTestId('icon-wifi-off', { includeHiddenElements: true })).toBeTruthy();
+  });
+
   it('welcomes an audio-only recording without inventing a transcript', async () => {
     await open('demo-recovered');
     expect(screen.getByLabelText(/Pas encore de transcription/)).toBeOnTheScreen();

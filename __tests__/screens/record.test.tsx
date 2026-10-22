@@ -1,7 +1,7 @@
 import { screen, userEvent } from '@testing-library/react-native';
 import { I18nManager } from 'react-native';
 
-import LibraryScreen, { LIST_BOTTOM_MARGIN } from '../../app/(tabs)/index';
+import LibraryScreen, { LIST_BOTTOM_MARGIN, listBottomMargin } from '../../app/(tabs)/index';
 import RecordScreen from '../../app/record';
 import * as controller from '@/features/recording/recordingController';
 import {
@@ -201,6 +201,8 @@ describe('Library list from the manifests', () => {
   it('leaves room for the Record button so the last card scrolls above it', () => {
     // Button 72 + gap 8 + caption line 18 + space-6 24.
     expect(LIST_BOTTOM_MARGIN).toBe(72 + 8 + 18 + 24);
+    // At 1.5× the caption takes 27 px instead of 18.
+    expect(listBottomMargin(1.5)).toBe(72 + 8 + 27 + 24);
   });
 
   it('has no hard-coded string with recordings (pseudo-locale)', async () => {

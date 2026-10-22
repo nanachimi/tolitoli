@@ -135,15 +135,17 @@ function Loaded({
         <AppText testID="i18n-data" variant="caption" color="ink-muted">
           {t('detail.meta', { date, duration })}
         </AppText>
+        {/* The quality is shown once there is a transcript, as on the Library card. */}
         {item.state === 'transcribing' ? (
           <QualityChip quality="busy" />
-        ) : item.quality && language ? (
+        ) : item.state === 'transcribed' && item.quality && language ? (
           <QualityChip language={language.nativeName} quality={item.quality} />
         ) : null}
 
         {item.issue ? (
           <Banner
             kind={ISSUE_KIND[item.issue]}
+            icon={item.issue === 'offline' ? 'wifi-off' : undefined}
             title={t(`detail.issue.${ISSUE_KEY[item.issue]}.title`)}
             body={t(`detail.issue.${ISSUE_KEY[item.issue]}.body`)}
             action={

@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { SectionList, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { itemTitle } from '@/features/library/display';
 import { useLibrary } from '@/features/library/library';
@@ -46,8 +46,17 @@ import {
  * Bottom margin of the list: the Record button, its caption (with the space-2 gap) and
  * space-6, so the last card scrolls above the button, never under it (guide RecordButton).
  */
-export const LIST_BOTTOM_MARGIN =
-  size['control-lg'] + space['space-2'] + textSpec.caption.lineHeight + space['space-6'];
+export function listBottomMargin(fontScale: number): number {
+  // The caption grows with the system font size; the button does not.
+  return (
+    size['control-lg'] +
+    space['space-2'] +
+    Math.ceil(textSpec.caption.lineHeight * fontScale) +
+    space['space-6']
+  );
+}
+
+export const LIST_BOTTOM_MARGIN = listBottomMargin(1);
 
 /** Search runs as one types, after this pause (guide SearchField). */
 export const SEARCH_DEBOUNCE_MS = 250;
@@ -168,6 +177,7 @@ export default function LibraryScreen() {
   const { t, i18n } = useTranslation();
   const library = useLibrary();
   const split = useLayoutMode() === 'tablet-split';
+  const { fontScale } = useWindowDimensions();
   const [query, setQuery] = useState('');
   const [searched, setSearched] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
@@ -224,7 +234,7 @@ export default function LibraryScreen() {
       // A tall tablet pane shows more than the default ten rows (headers count as rows).
       initialNumToRender={16}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { paddingBottom: listBottomMargin(fontScale) }]}
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
         <View style={styles.header}>
@@ -316,7 +326,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: space['space-4'],
     paddingTop: space['space-8'],
-    paddingBottom: LIST_BOTTOM_MARGIN,
   },
   header: { gap: space['space-4'], marginBottom: space['space-2'] },
   overline: { marginTop: space['space-4'], marginBottom: space['space-2'] },

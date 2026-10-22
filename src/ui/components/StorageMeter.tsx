@@ -74,9 +74,7 @@ export function StorageMeter({
           },
         ]}
       >
-        <AppText variant="heading" accessibilityRole="header">
-          {t('storage.title')}
-        </AppText>
+        {/* No heading of its own: the Storage screen's header names it. */}
         {/* One image for screen readers, its label names the three parts. */}
         <View
           accessible
