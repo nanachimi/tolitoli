@@ -38,7 +38,7 @@ export default function SettingsScreen() {
         <AppText variant="title" accessibilityRole="header">
           {t('settings.language.title')}
         </AppText>
-        <AppText muted>{t('settings.language.hint')}</AppText>
+        <AppText color="ink-muted">{t('settings.language.hint')}</AppText>
 
         <View accessibilityRole="radiogroup" style={styles.group}>
           {OPTIONS.map((option) => {
@@ -84,11 +84,11 @@ export default function SettingsScreen() {
             <AppText variant="title" accessibilityRole="header">
               {t('dev.title')}
             </AppText>
-            <AppText muted>{t('dev.pluralTitle')}</AppText>
+            <AppText color="ink-muted">{t('dev.pluralTitle')}</AppText>
             {PLURAL_SAMPLES.map((count) => (
               <AppText key={count}>{t('library.count', { count })}</AppText>
             ))}
-            <AppText testID="i18n-data" muted>
+            <AppText testID="i18n-data" color="ink-muted">
               {pluralDiagnostic(i18n.language)}
             </AppText>
           </View>

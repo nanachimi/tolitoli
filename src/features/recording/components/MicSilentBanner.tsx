@@ -18,7 +18,7 @@ export function MicSilentBanner() {
       <AppText variant="title" accessibilityRole="header">
         {t('record.micSilent.title')}
       </AppText>
-      <AppText muted>{t('record.micSilent.body')}</AppText>
+      <AppText color="ink-muted">{t('record.micSilent.body')}</AppText>
     </View>
   );
 }

@@ -35,7 +35,7 @@ function RecordingRow({ item }: { item: RecordingManifest }) {
             {t('library.recovered')}
           </AppText>
         ) : null}
-        <AppText testID="i18n-data" muted>
+        <AppText testID="i18n-data" color="ink-muted">
           {duration}
         </AppText>
       </View>
@@ -54,7 +54,7 @@ export default function LibraryScreen() {
         <AppText variant="title" accessibilityRole="header">
           {t('library.empty.title')}
         </AppText>
-        <AppText muted>{t('library.empty.body')}</AppText>
+        <AppText color="ink-muted">{t('library.empty.body')}</AppText>
       </View>
     ) : (
       <FlatList
@@ -90,7 +90,7 @@ export default function LibraryScreen() {
         }
         detail={
           <View style={styles.empty}>
-            <AppText muted>{t('library.detailPlaceholder')}</AppText>
+            <AppText color="ink-muted">{t('library.detailPlaceholder')}</AppText>
           </View>
         }
       />

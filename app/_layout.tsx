@@ -1,5 +1,7 @@
+import { Rubik_500Medium, Rubik_600SemiBold, useFonts } from '@expo-google-fonts/rubik';
 import { NavigationBar } from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
@@ -11,12 +13,15 @@ import { ThemeProvider, useTheme } from '@/ui';
 
 const i18n = initI18n();
 
+// Titles are set in Rubik: the splash stays up until it is loaded (CLAUDE.md, Design).
+void SplashScreen.preventAutoHideAsync();
+
 function ThemedStack() {
   const theme = useTheme();
 
   useEffect(() => {
-    void SystemUI.setBackgroundColorAsync(theme.color['surface']);
-  }, [theme.color['surface']]);
+    void SystemUI.setBackgroundColorAsync(theme.color.surface);
+  }, [theme.color.surface]);
 
   // Recordings left by a killed app are finalised and marked recovered, never deleted.
   useEffect(() => {
@@ -39,6 +44,16 @@ function ThemedStack() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({ Rubik_500Medium, Rubik_600SemiBold });
+  const ready = fontsLoaded || fontError !== null;
+
+  useEffect(() => {
+    // On a font error the app goes on with the system font rather than staying on the splash.
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
+
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider>

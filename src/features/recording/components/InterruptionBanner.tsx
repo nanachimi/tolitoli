@@ -23,7 +23,7 @@ export function InterruptionBanner({ resumeOffered, onResume }: Props) {
       <AppText variant="title" accessibilityRole="header">
         {t('record.interruption.title')}
       </AppText>
-      <AppText muted>
+      <AppText color="ink-muted">
         {resumeOffered ? t('record.interruption.body') : t('record.interruption.waitBody')}
       </AppText>
       {resumeOffered ? (

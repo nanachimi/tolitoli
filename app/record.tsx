@@ -50,7 +50,7 @@ export default function RecordScreen() {
               ? t('record.permission.title')
               : t('record.title')}
           </AppText>
-          <AppText muted>
+          <AppText color="ink-muted">
             {state.notice === 'permission-denied'
               ? t('record.permission.body')
               : t('record.disk.insufficient')}
@@ -88,7 +88,7 @@ export default function RecordScreen() {
         <View style={[styles.reminder, { borderColor: theme.color['hairline'] }]}>
           <AppText>{t('record.consentReminder')}</AppText>
         </View>
-        <AppText muted accessibilityLiveRegion="polite">
+        <AppText color="ink-muted" accessibilityLiveRegion="polite">
           {t(`record.status.${state.status === 'idle' ? 'preparing' : state.status}`)}
         </AppText>
         <RecordingTimer accumulatedMs={state.accumulatedMs} runningSince={state.runningSince} />
@@ -101,10 +101,12 @@ export default function RecordScreen() {
         ) : null}
         {state.status === 'recording' && state.micSilent ? <MicSilentBanner /> : null}
         {state.notice === 'notifications-denied' ? (
-          <AppText muted>{t('record.permission.notificationsDenied')}</AppText>
+          <AppText color="ink-muted">{t('record.permission.notificationsDenied')}</AppText>
         ) : null}
         {state.notice === 'disk-low' && state.diskMinutes !== null ? (
-          <AppText muted>{t('record.disk.low', { minutes: state.diskMinutes })}</AppText>
+          <AppText color="ink-muted">
+            {t('record.disk.low', { minutes: state.diskMinutes })}
+          </AppText>
         ) : null}
         {state.notice === 'error' ? <AppText>{t('record.error')}</AppText> : null}
         {capturing ? (
