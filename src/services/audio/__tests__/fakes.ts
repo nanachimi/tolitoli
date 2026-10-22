@@ -40,6 +40,10 @@ export class MemoryFs implements Fs {
   size(path: string) {
     return this.files.get(path)?.length ?? 0;
   }
+  remove(path: string) {
+    this.deleted.push(path);
+    this.files.delete(path);
+  }
 }
 
 /** Audio stand-in: a file is "readable" unless its content is CORRUPT; duration = length × 1000. */
@@ -57,6 +61,17 @@ export class FakeAudio implements AudioFiles {
   async repair(path: string) {
     this.repaired.push(path);
   }
+  /** Set to make `encode` throw, as a native encoder failure would. */
+  failEncode = false;
+  /** Characters added to the encoded file, to mimic a duration mismatch. */
+  encodeDrift = '';
+  async encode(inputs: string[], output: string) {
+    if (this.failEncode) throw new Error('encoder failed');
+    this.fs.writeText(
+      output,
+      inputs.map((path) => this.fs.readText(path)).join('') + this.encodeDrift,
+    );
+  }
 }
 
 /** Engine writing one segment file per `open`/`close`, or several to mimic rotation. */
@@ -64,6 +79,7 @@ export class FakeEngine implements RecordingEngine {
   readonly calls: string[] = [];
   failNextOpens = 0;
   segmentsPerClose = 1;
+  extension = 'm4a';
   private dir = '';
   private prefix = '';
   constructor(private readonly fs: MemoryFs) {}
@@ -85,7 +101,7 @@ export class FakeEngine implements RecordingEngine {
     this.calls.push('close');
     const names: string[] = [];
     for (let i = 0; i < this.segmentsPerClose; i += 1) {
-      const name = `${this.prefix}${i}.m4a`;
+      const name = `${this.prefix}${i}.${this.extension}`;
       this.fs.writeText(`${this.dir}/${name}`, 'ab');
       names.push(name);
     }

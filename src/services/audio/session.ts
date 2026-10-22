@@ -1,4 +1,4 @@
-import { assembleRecording, type AudioFiles } from './assembly';
+import { assembleRecording, releaseRecordedFiles, type AudioFiles } from './assembly';
 import type { RecordingEngine, SystemInterruption } from './engine';
 import type { FormatProfile } from './formatProfile';
 import type { Fs } from './fs';
@@ -154,8 +154,9 @@ export class RecordingSession {
     try {
       await this.closeSegment();
       const manifest = this.requireManifest();
-      const result = await assembleRecording(fs, root, manifest, profile, audio);
+      const { encoded, ...result } = await assembleRecording(fs, root, manifest, profile, audio);
       this.manifest = finalizeRecording(fs, root, manifest, { ...result, recovered: false }, now());
+      releaseRecordedFiles(fs, root, this.manifest, encoded);
     } catch (error) {
       this.apply('FAILED');
       throw error;

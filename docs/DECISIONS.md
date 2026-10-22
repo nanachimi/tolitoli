@@ -399,7 +399,7 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
      - l'écouteur reçoit `Handler(Looper.getMainLooper())` ;
      - une perte passagère est transmise comme `began` avec `shouldResume: true`, une perte définitive avec `false`.
 
-     Le patch est signalé aux mainteneurs et retiré dès qu'un correctif officiel paraît.
+     Le patch est signalé aux mainteneurs ([issue #1358](https://github.com/software-mansion/react-native-audio-api/issues/1358)) et retiré dès qu'un correctif officiel paraît.
 
   2. **Pas de READ_PHONE_STATE.** Le focus audio détecte l'appel classique et WhatsApp en 20 ms. Une seconde source ne verrait que la téléphonie, au prix d'une permission sensible et d'une déclaration Play Console. Il reste **en réserve** si un autre modèle de téléphone ne remonte pas le focus. Dans ce cas, il **complète** le focus audio sans le remplacer, pour que les appels VoIP restent détectés.
   3. **« Reprendre » masqué pendant une perte passagère** :

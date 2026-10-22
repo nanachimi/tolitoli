@@ -1,6 +1,8 @@
 import { File, FileMode } from 'expo-file-system';
 import { concatAudioFiles, getAudioDuration } from 'react-native-audio-api';
 
+import { AudioEncoder } from '../../../modules/audio-encoder';
+
 import type { AudioFiles } from '@/services/audio/assembly';
 import { wavHeaderPatches } from '@/services/audio/wavHeader';
 
@@ -40,6 +42,9 @@ export const nativeAudioFiles: AudioFiles = {
       return;
     }
     await concatAudioFiles(inputs.map(toPlainPath), toPlainPath(output));
+  },
+  async encode(inputs, output, bitRate) {
+    await AudioEncoder.encodeToM4a(inputs.map(toPlainPath), toPlainPath(output), bitRate);
   },
   async repair(uri) {
     if (uri.endsWith('.wav')) repairWav(uri);

@@ -9,7 +9,7 @@ export function recordingsRoot(): string {
   return joinPath(Paths.document.uri, RECORDINGS_DIR_NAME);
 }
 
-/** expo-file-system behind the pure `Fs` port; there is deliberately no delete. */
+/** expo-file-system behind the pure `Fs` port. */
 export const expoFs: Fs = {
   exists: (path) => new File(path).exists || new Directory(path).exists,
   readText: (path) => new File(path).textSync(),
@@ -25,6 +25,10 @@ export const expoFs: Fs = {
   },
   makeDir: (path) => new Directory(path).create({ intermediates: true, idempotent: true }),
   size: (path) => new File(path).size,
+  remove: (path) => {
+    const file = new File(path);
+    if (file.exists) file.delete();
+  },
 };
 
 export function availableDiskSpace(): number {

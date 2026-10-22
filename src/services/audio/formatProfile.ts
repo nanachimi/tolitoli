@@ -8,6 +8,10 @@ export type FormatProfile = {
   id: FormatProfileId;
   /** Extension of the files written while recording. */
   extension: 'm4a' | 'wav';
+  /** Extension of the final file kept after the recording. */
+  finalExtension: 'm4a';
+  /** AAC bitrate the recorded files are encoded to at the end; null when they are kept as is. */
+  encodeBitRate: number | null;
   sampleRate: number;
   channels: 1;
   /** AAC bitrate; null for uncompressed PCM. */
@@ -41,6 +45,8 @@ export function m4aSegmentsProfile(segmentSeconds: number): FormatProfile {
   return {
     id: 'm4a-segments',
     extension: 'm4a',
+    finalExtension: 'm4a',
+    encodeBitRate: null,
     sampleRate: 44_100,
     channels: 1,
     bitRate: AAC_BIT_RATE,
@@ -54,6 +60,8 @@ export function wavContinuousProfile(): FormatProfile {
   return {
     id: 'wav-continuous',
     extension: 'wav',
+    finalExtension: 'm4a',
+    encodeBitRate: AAC_BIT_RATE,
     sampleRate: 16_000,
     channels: 1,
     bitRate: null,
