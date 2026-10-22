@@ -19,6 +19,11 @@ export type RecordingState = {
   micBusy: boolean;
   /** Digital silence for a while during recording: the microphone seems cut. */
   micSilent: boolean;
+  /**
+   * What took the microphone last: a call or ringtone (transient focus loss) or
+   * another app keeping it for good. Sets the banner title once resuming is offered.
+   */
+  interruptionCause: 'call' | 'taken' | null;
   notice: RecordingNotice | null;
   diskMinutes: number | null;
   recordings: RecordingManifest[];
@@ -32,6 +37,7 @@ export const initialRecordingState: RecordingState = {
   resumeOffered: false,
   micBusy: false,
   micSilent: false,
+  interruptionCause: null,
   notice: null,
   diskMinutes: null,
   recordings: [],

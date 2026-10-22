@@ -15,12 +15,11 @@
     "count_other": "{{count}} 条录音",
     "detailPlaceholder": "选择一条录音以在此处显示。",
     "record": "录音",
-    "recordA11y": "开始录音",
-    "listTitle": "录音",
     "recovered": "已恢复",
     "itemA11y": "{{date}} 的录音，时长 {{duration}}",
     "itemRecoveredA11y": "{{date}} 的录音，时长 {{duration}}，中断后已恢复",
-    "durationUnknown": "未知"
+    "durationUnknown": "未知",
+    "cardTitle": "{{date}} 的录音"
   },
   "settings": {
     "title": "设置",
@@ -50,9 +49,11 @@
     },
     "interruption": {
       "title": "录音已中断",
-      "body": "来电或其他应用占用了麦克风。此前的内容均已保存。",
       "resume": "继续录音",
-      "waitBody": "来电或其他应用正在使用麦克风。此前的内容均已保存。通话结束后即可继续。"
+      "waitBody": "通话结束后即可继续。",
+      "callEndedTitle": "通话已结束",
+      "callEndedBody": "通话之前的内容均已保存。",
+      "takenBody": "另一个应用占用了麦克风。此前的内容均已保存。"
     },
     "levelA11y": "音量：{{percent}}%",
     "timerA11y": "时长：{{duration}}",
@@ -79,8 +80,9 @@
     "close": "关闭",
     "micSilent": {
       "title": "麦克风似乎已断开",
-      "body": "一段时间以来没有收到任何声音。可能有通话或其他应用正在使用麦克风。"
-    }
+      "body": "可能有其他应用正在使用麦克风。"
+    },
+    "stopA11y": "停止录音"
   },
   "dev": {
     "title": "诊断（开发）",

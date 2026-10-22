@@ -110,7 +110,11 @@ function listen(active: RecordingSession): void {
     AudioManager.addSystemEventListener('interruption', (event) => {
       log('interruption', JSON.stringify(event), Date.now());
       // Only the Android patch reports whether a focus loss is transient (D-023).
-      void active.handleSystemEvent(fromInterruptionEvent(event, Platform.OS === 'android'));
+      const interruption = fromInterruptionEvent(event, Platform.OS === 'android');
+      if (interruption.kind === 'interruption-began') {
+        setState({ interruptionCause: interruption.transient ? 'call' : 'taken' });
+      }
+      void active.handleSystemEvent(interruption);
     }),
     AudioManager.addSystemEventListener('routeChange', (event) => {
       log('routeChange', JSON.stringify(event));

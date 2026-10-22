@@ -1,9 +1,18 @@
-/** React Navigation's uikit tab bar height, without the bottom safe-area inset. */
-export const TAB_BAR_BASE_HEIGHT = 49;
+import { size, space, textSpec } from '../theme/tokens';
 
-/** Label size and line height matching React Navigation's label below the icon. */
-export const TAB_LABEL_FONT_SIZE = 10;
-export const TAB_LABEL_LINE_HEIGHT = 13;
+/** Label in the `caption` style under an `icon-md` icon (TabBar guide and preview). */
+export const TAB_LABEL_FONT_SIZE = textSpec.caption.fontSize;
+export const TAB_LABEL_LINE_HEIGHT = textSpec.caption.lineHeight;
+export const TAB_BAR_PADDING_TOP = space['space-2'];
+export const TAB_BAR_PADDING_BOTTOM = space['space-3'];
+
+/** Bar height without the bottom safe-area inset: padding, icon, space-1, label. */
+export const TAB_BAR_BASE_HEIGHT =
+  TAB_BAR_PADDING_TOP +
+  size['icon-md'] +
+  space['space-1'] +
+  TAB_LABEL_LINE_HEIGHT +
+  TAB_BAR_PADDING_BOTTOM;
 
 /**
  * Tab labels follow the system font size up to 1.5× (iOS does not scale them

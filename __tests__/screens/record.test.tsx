@@ -69,7 +69,7 @@ describe('Record screen', () => {
     expect(
       screen.getByText('Informez les personnes présentes que vous enregistrez.'),
     ).toBeOnTheScreen();
-    expect(screen.getByLabelText('Durée : 1:05')).toBeOnTheScreen();
+    expect(screen.getByText('Durée : 1 min')).toBeOnTheScreen();
     expect(screen.getByLabelText('Niveau sonore : 50 %')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Pause' })).toBeOnTheScreen();
     expect(controller.startRecording).not.toHaveBeenCalled();
@@ -86,18 +86,27 @@ describe('Record screen', () => {
     await user.press(await screen.findByRole('button', { name: 'Reprendre' }));
     expect(controller.resumeRecording).toHaveBeenCalled();
 
-    await user.press(screen.getByRole('button', { name: 'Arrêter' }));
+    await user.press(screen.getByRole('button', { name: 'Arrêter l’enregistrement' }));
     expect(controller.stopRecording).toHaveBeenCalled();
   });
 
-  it('offers to resume after an interruption, keeping stop available', async () => {
+  it('offers to resume once a call has ended, keeping stop available', async () => {
     const user = userEvent.setup();
-    setRecording({ status: 'interrupted', resumeOffered: true });
+    setRecording({ status: 'interrupted', resumeOffered: true, interruptionCause: 'call' });
     await renderScreen(<RecordScreen />);
-    expect(screen.getByText('Enregistrement interrompu')).toBeOnTheScreen();
+    expect(screen.getByText('Appel terminé')).toBeOnTheScreen();
+    expect(screen.getByText('Ce qui précède l’appel est conservé.')).toBeOnTheScreen();
     await user.press(screen.getByRole('button', { name: 'Reprendre l’enregistrement' }));
     expect(controller.resumeRecording).toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Arrêter l’enregistrement' })).toBeOnTheScreen();
+  });
+
+  it('says another app took the microphone when it kept it for good', async () => {
+    setRecording({ status: 'interrupted', resumeOffered: true, interruptionCause: 'taken' });
+    await renderScreen(<RecordScreen />);
+    expect(screen.getByText('Enregistrement interrompu')).toBeOnTheScreen();
+    expect(screen.getByText(/Une autre application a pris le micro/)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Reprendre l’enregistrement' })).toBeOnTheScreen();
   });
 
   it('offers no resume while a call still holds the microphone', async () => {
@@ -105,14 +114,14 @@ describe('Record screen', () => {
     await renderScreen(<RecordScreen />);
     expect(screen.getByText(/Vous pourrez reprendre à la fin de l’appel/)).toBeOnTheScreen();
     expect(screen.queryByRole('button', { name: 'Reprendre l’enregistrement' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Arrêter l’enregistrement' })).toBeOnTheScreen();
   });
 
   it('hides resume on a user pause while a call holds the microphone', async () => {
     setRecording({ status: 'paused', micBusy: true });
     await renderScreen(<RecordScreen />);
     expect(screen.queryByRole('button', { name: 'Reprendre' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Arrêter' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Arrêter l’enregistrement' })).toBeOnTheScreen();
   });
 
   it('warns when the microphone seems cut, without stopping anything', async () => {
@@ -154,11 +163,18 @@ describe('Record screen', () => {
     setRecording({ status: 'interrupted' });
     await renderScreen(<RecordScreen />);
     expect(screen.getByText('توقف التسجيل')).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'إيقاف' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'إيقاف التسجيل' })).toBeOnTheScreen();
   });
 });
 
 describe('Library list (provisional)', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({ now: new Date(2026, 9, 22, 12), doNotFake: ['setImmediate', 'nextTick'] });
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('lists recordings with an accessible summary and a recovered badge', async () => {
     setRecording({
       recordings: [manifest({ id: 'a', recovered: true }), manifest({ id: 'b', durationMs: null })],
@@ -166,13 +182,14 @@ describe('Library list (provisional)', () => {
     await renderScreen(<LibraryScreen />);
     expect(
       screen.getByLabelText(
-        'Enregistrement du 2026-10-21 09:05, durée 1:05, récupéré après une interruption',
+        'Enregistrement du 21 oct. 09:05, durée 1 min, récupéré après une interruption',
       ),
     ).toBeOnTheScreen();
     expect(
-      screen.getByLabelText('Enregistrement du 2026-10-21 09:05, durée inconnue'),
+      screen.getByLabelText('Enregistrement du 21 oct. 09:05, durée inconnue'),
     ).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Démarrer un enregistrement' })).toBeOnTheScreen();
+    expect(screen.getByText('Hier')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeOnTheScreen();
   });
 
   it('has no hard-coded string with recordings (pseudo-locale)', async () => {

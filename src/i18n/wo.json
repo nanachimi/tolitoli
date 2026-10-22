@@ -15,12 +15,11 @@
     "count_other": "{{count}} baat yu ñu dénc",
     "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii.",
     "record": "Dénc",
-    "recordA11y": "Tàmbali benn dénc",
-    "listTitle": "Baat yu ñu dénc",
     "recovered": "Dellu nañu ko",
     "itemA11y": "Dénc bu {{date}}, diir {{duration}}",
     "itemRecoveredA11y": "Dénc bu {{date}}, diir {{duration}}, dellu nañu ko ginnaaw benn dog",
-    "durationUnknown": "xamuñu ko"
+    "durationUnknown": "xamuñu ko",
+    "cardTitle": "Dénc bu {{date}}"
   },
   "settings": {
     "title": "Tànneef yi",
@@ -50,9 +49,11 @@
     },
     "interruption": {
       "title": "Dénc bi dog na",
-      "body": "Woote walla beneen aplikasioŋ jël na mikro bi. Li jiitu lépp denc nañu ko.",
       "resume": "Kontine dénc bi",
-      "waitBody": "Woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi. Li jiitu lépp denc nañu ko. Mën nga kontine bu woote bi jeexee."
+      "waitBody": "Mën nga kontine bu woote bi jeexee.",
+      "callEndedTitle": "Woote bi jeex na",
+      "callEndedBody": "Li jiitu woote bi lépp denc nañu ko.",
+      "takenBody": "Beneen aplikasioŋ jël na mikro bi. Li jiitu lépp denc nañu ko."
     },
     "levelA11y": "Kawteg baat bi: {{percent}} %",
     "timerA11y": "Diir: {{duration}}",
@@ -79,8 +80,9 @@
     "close": "Tëj",
     "micSilent": {
       "title": "Mikro bi dafa mel ni dafa dagg",
-      "body": "Ay saa yii dara agsiwul. Xéy-na woote walla beneen aplikasioŋ mi ngi jëfandikoo mikro bi."
-    }
+      "body": "Xéy-na beneen aplikasioŋ mi ngi jëfandikoo mikro bi."
+    },
+    "stopA11y": "Taxawal dénc bi"
   },
   "dev": {
     "title": "Saytu (defar)",
