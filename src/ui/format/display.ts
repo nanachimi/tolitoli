@@ -3,8 +3,9 @@
  * reads `00:42:17`, durations `42 min` / `1 h 12`, dates follow the locale.
  * Pure TypeScript; the translation function is passed in.
  */
+import type { TFunction } from 'i18next';
 
-export type Translate = (key: string, options?: Record<string, unknown>) => string;
+export type Translate = TFunction;
 
 /**
  * Locale data used for dates when the interface language has none in the

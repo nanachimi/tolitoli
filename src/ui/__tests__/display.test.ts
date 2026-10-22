@@ -10,7 +10,7 @@ import {
 } from '@/ui/format/display';
 
 initI18n();
-const t = i18next.t.bind(i18next) as (key: string, options?: Record<string, unknown>) => string;
+const t = i18next.t;
 
 describe('display formats (brand book)', () => {
   afterEach(async () => {
