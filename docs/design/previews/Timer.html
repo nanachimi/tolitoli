@@ -1,0 +1,16 @@
+<!-- @dsCard group="Enregistrement" height=120 subtitle="chrono et point d'enregistrement" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+.t{display:flex;align-items:center;gap:var(--space-3)}
+.dot{width:12px;height:12px;border-radius:var(--radius-pill);background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4}}@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.num{font-variant-numeric:tabular-nums}
+.paused .dot{animation:none;background:var(--ink-muted)}.paused .num{color:var(--ink-muted)}
+</style></head><body>
+<div class="t"><span class="dot"></span><span class="timer num">00:42:17</span></div>
+<div class="t paused"><span class="dot"></span><span class="timer num">00:42:17</span></div>
+</body></html>

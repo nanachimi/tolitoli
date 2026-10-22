@@ -1,0 +1,20 @@
+<!-- @dsCard group="Actions" height=96 subtitle="principal, secondaire, discret, danger" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+.btn{display:inline-flex;align-items:center;gap:var(--space-1);min-height:var(--control-md);padding:0 var(--space-4);border-radius:var(--radius-md);border:1px solid transparent;cursor:pointer;font:inherit}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.secondary{background:var(--surface-raised);color:var(--ink);border-color:var(--hairline)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.danger{background:transparent;color:var(--danger);border-color:var(--hairline)}
+.btn:disabled{color:var(--ink-faint);background:var(--surface-sunken);border-color:transparent}
+</style></head><body>
+<button class="btn primary body-strong"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg> Enregistrer</button>
+<button class="btn secondary body-strong">Exporter</button>
+<button class="btn ghost body-strong">Reprendre l'enregistrement</button>
+<button class="btn danger body-strong">Supprimer</button>
+<button class="btn primary body-strong" disabled>Enregistrer</button>
+</body></html>

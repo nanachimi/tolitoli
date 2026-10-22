@@ -1,0 +1,17 @@
+<!-- @dsCard group="Navigation" height=96 subtitle="Bibliothèque, Réglages" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style><style>
+body{padding:0;align-items:stretch}
+.bar{display:flex;width:390px;background:var(--surface-raised);border-top:1px solid var(--hairline);padding:var(--space-2) 0 var(--space-3)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-muted);background:none;border:0;font:inherit;cursor:pointer;min-height:var(--control-md)}
+.tab[aria-selected=true]{color:var(--accent)}
+</style></head><body>
+<div class="bar" role="tablist">
+<button class="tab" role="tab" aria-selected="true"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg><span class="caption">Bibliothèque</span></button>
+<button class="tab" role="tab" aria-selected="false"><svg class="ico" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="caption">Réglages</span></button>
+</div>
+</body></html>
