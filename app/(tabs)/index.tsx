@@ -23,9 +23,12 @@ import {
   formatTime,
 } from '@/ui/format/display';
 
-/** Room left under the list for the floating Record button and its caption. */
-const RECORD_AREA =
-  size['control-lg'] + space['space-2'] + textSpec.caption.lineHeight + 2 * space['space-6'];
+/**
+ * Bottom margin of the list: the Record button, its caption (with the space-2 gap) and
+ * space-6, so the last card scrolls above the button, never under it (guide RecordButton).
+ */
+export const LIST_BOTTOM_MARGIN =
+  size['control-lg'] + space['space-2'] + textSpec.caption.lineHeight + space['space-6'];
 
 type Section = { key: number; title: string; data: RecordingManifest[] };
 
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: space['space-4'],
     paddingTop: space['space-8'],
-    paddingBottom: RECORD_AREA,
+    paddingBottom: LIST_BOTTOM_MARGIN,
   },
   title: { marginBottom: space['space-6'] },
   overline: { marginTop: space['space-4'], marginBottom: space['space-2'] },

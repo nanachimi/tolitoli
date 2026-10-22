@@ -1,7 +1,7 @@
 import { screen, userEvent } from '@testing-library/react-native';
 import { I18nManager } from 'react-native';
 
-import LibraryScreen from '../../app/(tabs)/index';
+import LibraryScreen, { LIST_BOTTOM_MARGIN } from '../../app/(tabs)/index';
 import RecordScreen from '../../app/record';
 import * as controller from '@/features/recording/recordingController';
 import {
@@ -190,6 +190,11 @@ describe('Library list (provisional)', () => {
     ).toBeOnTheScreen();
     expect(screen.getByText('Hier')).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeOnTheScreen();
+  });
+
+  it('leaves room for the Record button so the last card scrolls above it', () => {
+    // Button 72 + gap 8 + caption line 18 + space-6 24.
+    expect(LIST_BOTTOM_MARGIN).toBe(72 + 8 + 18 + 24);
   });
 
   it('has no hard-coded string with recordings (pseudo-locale)', async () => {

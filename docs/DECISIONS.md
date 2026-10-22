@@ -582,7 +582,7 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **Comparaison avec les aperçus** (`docs/design/previews/`, rendus avec un `tokens.css` tiré de `tokens.json`, dans `build/`) :
   - **Conformes** : couleurs des deux thèmes, Rubik sur les titres, carte (`surface-raised`, `hairline`, icône d'état, méta `caption`, badge « Récupéré »), groupe de dates en `overline`, `OptionRow` (coche `accent`, séparateurs `hairline`), Timer (point et chiffres), bouton Arrêter rond avec le carré `accent`, Pause en bouton secondaire, onglets (actif `accent`).
   - **Écarts** :
-    - la légende « Enregistrer » sous le bouton flottant chevauche le texte des cartes quand la liste défile dessous. L'aperçu ne montre pas ce cas : il faudra trancher dans le système de design (fond derrière le bouton ou marge) ;
+    - la légende « Enregistrer » sous le bouton flottant chevauchait le texte des cartes. **Décision du propriétaire** : la liste reçoit une marge basse égale à la hauteur du bouton, plus sa légende (écart `space-2` compris) et `space-6`, soit 122 px, pour que la dernière carte défile au-dessus du bouton, jamais dessous (`LIST_BOTTOM_MARGIN`, testé). Le guide RecordButton sera mis à jour dans ce sens par le propriétaire ;
     - pas de chevron sur les cartes (décision 6) ;
     - le bouton d'outils du dev client recouvre le coin des titres, en développement seulement.
   - Les bannières (appel, reprise, micro coupé) ne sont pas capturées : il faudrait un vrai appel. Elles sont couvertes par Jest et par les captures de D-023.
