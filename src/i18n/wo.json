@@ -62,7 +62,8 @@
       "text": "Bësal ngir dellu ci dénc bi",
       "pause": "Taxawal",
       "resume": "Kontine",
-      "stop": "Jeexal"
+      "stop": "Jeexal",
+      "channelName": "Dénc baat"
     },
     "permission": {
       "title": "Mikro bi tere nañu ko",

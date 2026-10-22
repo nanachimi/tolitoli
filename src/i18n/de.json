@@ -63,7 +63,8 @@
       "text": "Tippen, um zur Aufnahme zurückzukehren",
       "pause": "Pause",
       "resume": "Fortsetzen",
-      "stop": "Beenden"
+      "stop": "Beenden",
+      "channelName": "Audioaufnahme"
     },
     "permission": {
       "title": "Mikrofonzugriff verweigert",

@@ -62,7 +62,8 @@
       "text": "点按返回录音",
       "pause": "暂停",
       "resume": "继续",
-      "stop": "停止"
+      "stop": "停止",
+      "channelName": "录音"
     },
     "permission": {
       "title": "麦克风访问被拒绝",

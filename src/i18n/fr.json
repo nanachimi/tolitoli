@@ -64,7 +64,8 @@
       "text": "Touchez pour revenir à l’enregistrement",
       "pause": "Pause",
       "resume": "Reprendre",
-      "stop": "Arrêter"
+      "stop": "Arrêter",
+      "channelName": "Enregistrement audio"
     },
     "permission": {
       "title": "Accès au micro refusé",

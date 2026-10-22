@@ -441,4 +441,8 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
 - **Notification peu visible** :
   - react-native-audio-api crée son canal en dur, nommé « Recording Audio » (en anglais, non traduisible) avec l'importance `LOW`.
   - Sur le Galaxy A05, la notification est donc rangée parmi les notifications silencieuses, avec une simple icône de micro dans la barre d'état, et le propriétaire ne l'a pas vue.
-  - Décision à prendre (voir l'étape suivante).
+  - **Décision (propriétaire)** : le patch est étendu.
+    - Nouveau canal `recording_visible`, en importance `DEFAULT`, **sans son ni vibration** : la notification s'affiche parmi les notifications normales. Un canal existant garde son importance, d'où un nouvel identifiant.
+    - L'ancien canal `audio_recording4` est supprimé.
+    - Le nom du canal est passé par l'app (`channelName`, clé `record.notification.channelName` dans les 7 langues).
+    - Quatrième build Android.

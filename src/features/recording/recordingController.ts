@@ -66,23 +66,30 @@ function onFrame(frame: AudioFrame): void {
   setState({ level: frame.level, micSilent });
 }
 
+/** `channelName` is read by our react-native-audio-api patch (D-023), not by its typings. */
+type RecordingNotificationOptions = Parameters<typeof RecordingNotificationManager.show>[0] & {
+  channelName: string;
+};
+
 async function updateNotification(status: RecorderStatus): Promise<void> {
   if (Platform.OS !== 'android') return;
   if (status !== 'recording' && status !== 'paused' && status !== 'interrupted') return;
   const paused = status !== 'recording';
+  const options: RecordingNotificationOptions = {
+    channelName: i18next.t('record.notification.channelName'),
+    title: i18next.t(paused ? 'record.notification.pausedTitle' : 'record.notification.title'),
+    contentText: i18next.t('record.notification.text'),
+    pauseActionTitle: i18next.t('record.notification.pause'),
+    resumeActionTitle: i18next.t('record.notification.resume'),
+    stopActionTitle: i18next.t('record.notification.stop'),
+    paused,
+    usesChronometer: !paused,
+    showStopAction: true,
+    dismissible: false,
+    deepLinkUri: 'tolitoli://record',
+  };
   try {
-    await RecordingNotificationManager.show({
-      title: i18next.t(paused ? 'record.notification.pausedTitle' : 'record.notification.title'),
-      contentText: i18next.t('record.notification.text'),
-      pauseActionTitle: i18next.t('record.notification.pause'),
-      resumeActionTitle: i18next.t('record.notification.resume'),
-      stopActionTitle: i18next.t('record.notification.stop'),
-      paused,
-      usesChronometer: !paused,
-      showStopAction: true,
-      dismissible: false,
-      deepLinkUri: 'tolitoli://record',
-    });
+    await RecordingNotificationManager.show(options);
   } catch (error) {
     log('notification error', String(error));
   }

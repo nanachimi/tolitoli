@@ -63,7 +63,8 @@
       "text": "Tap to return to the recording",
       "pause": "Pause",
       "resume": "Resume",
-      "stop": "Stop"
+      "stop": "Stop",
+      "channelName": "Audio recording"
     },
     "permission": {
       "title": "Microphone access denied",
