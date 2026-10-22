@@ -13,3 +13,4 @@ export { QualityChip, type Quality } from './components/QualityChip';
 export { RecordButton } from './components/RecordButton';
 export { RecordingCard, type RecordingCardState } from './components/RecordingCard';
 export { TranscriptSegment, type SegmentState } from './components/TranscriptSegment';
+export { OptionGroup, OptionRow, type OptionRowKind } from './components/OptionRow';

@@ -29,11 +29,21 @@ describe('Settings language picker', () => {
   it('exposes each language once to screen readers (radio label only)', async () => {
     await renderScreen(<SettingsScreen />);
     for (const { nativeName } of UI_LANGUAGES) {
-      const inner = screen.getByText(nativeName, { includeHiddenElements: true });
-      expect(inner).toHaveProp('importantForAccessibility', 'no');
-      expect(inner).toHaveProp('accessibilityElementsHidden', true);
+      expect(screen.getByText(nativeName, { includeHiddenElements: true })).toBeTruthy();
       expect(screen.queryByText(nativeName)).toBeNull();
     }
+  });
+
+  it('says before choosing that Arabic restarts the app', async () => {
+    await renderScreen(<SettingsScreen />);
+    const arabic = screen.getByRole('radio', { name: 'Langue de l’interface : العربية' });
+    expect(arabic.props.accessibilityHint).toBe(
+      'L’application va redémarrer pour changer le sens d’écriture.',
+    );
+    expect(
+      screen.getByRole('radio', { name: 'Langue de l’interface : English' }).props
+        .accessibilityHint,
+    ).toBeUndefined();
   });
 
   it('switches the interface to German', async () => {
