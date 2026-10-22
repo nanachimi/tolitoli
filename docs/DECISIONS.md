@@ -446,3 +446,20 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - L'ancien canal `audio_recording4` est supprimé.
     - Le nom du canal est passé par l'app (`channelName`, clé `record.notification.channelName` dans les 7 langues).
     - Quatrième build Android.
+
+## D-024 — Marque Tolitoli dans l'app : icônes et notification
+
+- **Date / étape** : 2026-10-22, étape 1, à la demande du propriétaire. La notification d'enregistrement affichait un micro générique et l'app portait encore l'icône du modèle Expo.
+- **Source** : le système de design exporté par le propriétaire dans `docs/design/`. Ce dossier n'est jamais modifié ici (`docs/design/INDEX.md`) et il est exclu de Prettier.
+- **Décision** :
+  - `scripts/render-brand-assets.mjs` rastérise les marques SVG de `docs/design/logo/` en PNG, sans dépendance. Les PNG sont versionnés et régénérés par ce script quand la marque change.
+  - Icône d'app (`assets/icon.png`) : carré plein terre cuite avec les trois barres. Il n'y a pas de transparence, car iOS la refuse et applique son propre masque.
+  - Icône adaptative Android : fond `accent` (lu dans `tokens.json`) et barres réduites à 80 % pour rester dans le cercle de sécurité. La silhouette monochrome sert aux icônes à thème. Android n'a pas d'icône adaptative propre au thème sombre : `tolitoli-mark-dark.svg` ne sert qu'à l'écran de démarrage sombre.
+  - Écran de démarrage : la marque sur `surface`, en clair comme en sombre.
+  - Notification d'enregistrement :
+    - **petite icône** = silhouette des trois barres (`ic_stat_tolitoli`, 5 densités), pour la barre d'état et l'en-tête ;
+    - **grande icône** = la marque en couleur ;
+    - couleur `accent` pour l'en-tête.
+
+    Les drawables sont copiés par `plugins/withNotificationIcons.js`. Android n'affiche que des silhouettes dans la barre d'état.
+- **Hors étape 1** : le reste du système de design n'est pas encore appliqué. Cela concerne la transcription typée des tokens dans `src/ui/theme/tokens.ts`, Rubik, Lucide et les composants de `docs/design/components/`. Son intégration sera proposée dans le plan d'une étape suivante.

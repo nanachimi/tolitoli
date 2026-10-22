@@ -1,5 +1,5 @@
 import { randomUUID } from 'expo-crypto';
-import { Platform } from 'react-native';
+import { Platform, processColor } from 'react-native';
 import { AudioManager, RecordingNotificationManager } from 'react-native-audio-api';
 
 import { i18next } from '@/i18n';
@@ -66,6 +66,12 @@ function onFrame(frame: AudioFrame): void {
   setState({ level: frame.level, micSilent });
 }
 
+/** Drawables added by plugins/withNotificationIcons.js (brand mark, D-023). */
+const NOTIFICATION_SMALL_ICON = 'ic_stat_tolitoli';
+const NOTIFICATION_LARGE_ICON = 'tolitoli_notification_large';
+/** `accent` of docs/design/tokens.json: tints the silhouette and app name in the header. */
+const NOTIFICATION_COLOR = processColor('#b84a24');
+
 /** `channelName` is read by our react-native-audio-api patch (D-023), not by its typings. */
 type RecordingNotificationOptions = Parameters<typeof RecordingNotificationManager.show>[0] & {
   channelName: string;
@@ -77,6 +83,9 @@ async function updateNotification(status: RecorderStatus): Promise<void> {
   const paused = status !== 'recording';
   const options: RecordingNotificationOptions = {
     channelName: i18next.t('record.notification.channelName'),
+    smallIconResourceName: NOTIFICATION_SMALL_ICON,
+    largeIconResourceName: NOTIFICATION_LARGE_ICON,
+    ...(typeof NOTIFICATION_COLOR === 'number' ? { color: NOTIFICATION_COLOR } : {}),
     title: i18next.t(paused ? 'record.notification.pausedTitle' : 'record.notification.title'),
     contentText: i18next.t('record.notification.text'),
     pauseActionTitle: i18next.t('record.notification.pause'),

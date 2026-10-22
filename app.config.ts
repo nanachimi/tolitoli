@@ -1,5 +1,6 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
+import tokens from './docs/design/tokens.json';
 import fr from './src/i18n/fr.json';
 
 type Variant = 'development' | 'preview' | 'production';
@@ -23,6 +24,13 @@ const NAME_SUFFIX: Record<Variant, string> = {
 // Public identifier from `eas init` (@tolitoli/tolitoli); not a secret (D-011).
 const EAS_PROJECT_ID = '705d0724-afde-4df4-83eb-6ad4db7b2cdf';
 
+/** A colour token of the design system (docs/design/tokens.json) for one theme. */
+function color(name: string, theme: 'light' | 'dark'): string {
+  const token = tokens.color.tokens.find((t) => t.name === name);
+  if (!token) throw new Error(`Unknown colour token: ${name}`);
+  return token.value[theme];
+}
+
 // Native strings (iOS permission prompts) per UI language; drafts per D-007.
 const NATIVE_LOCALES = ['fr', 'en', 'de', 'ru', 'ar', 'wo', 'zh-Hans'] as const;
 
@@ -45,10 +53,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: `${BASE_ID}${ID_SUFFIX[VARIANT]}`,
+    // Brand mark (docs/design/logo), rendered by scripts/render-brand-assets.mjs.
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      backgroundColor: color('accent', 'light'),
       foregroundImage: './assets/android-icon-foreground.png',
-      backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
@@ -79,13 +87,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     // Android navigation bar follows the theme (D-015); background colour APIs were removed in v56.
     ['expo-navigation-bar', { enforceContrast: false }],
+    // Recording notification shows the Tolitoli mark, not a generic microphone (D-023).
+    './plugins/withNotificationIcons',
     [
       'expo-splash-screen',
       {
         image: './assets/splash-icon.png',
         imageWidth: 200,
-        backgroundColor: '#FFFFFF',
-        dark: { backgroundColor: '#121212' },
+        backgroundColor: color('surface', 'light'),
+        dark: { image: './assets/splash-icon-dark.png', backgroundColor: color('surface', 'dark') },
       },
     ],
   ],
