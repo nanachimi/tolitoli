@@ -261,7 +261,7 @@
     "title": "Soppi turu bind bi",
     "body": "Tur bi dina la dimbali nga gis bind bi ci bibliotek bi ak ci seet bi.",
     "label": "Tur",
-    "hint": "Bàyyil ko neen ngir delloo turu bu jëkk ba.",
+    "hint": "{{max}} araf rekk.",
     "tooLong": "{{max}} araf rekk : gàttal tur bi.",
     "confirm": "Soppi tur"
   }

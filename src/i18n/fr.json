@@ -269,7 +269,7 @@
     "title": "Renommer l’enregistrement",
     "body": "Le titre aide à retrouver l’enregistrement dans la bibliothèque et la recherche.",
     "label": "Titre",
-    "hint": "Laissez vide pour reprendre le titre par défaut.",
+    "hint": "{{max}} caractères au plus.",
     "tooLong": "{{max}} caractères au plus : raccourcissez le titre.",
     "confirm": "Renommer"
   }

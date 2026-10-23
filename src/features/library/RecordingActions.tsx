@@ -43,7 +43,11 @@ export function RecordingActions({
     onClose();
   };
 
+  // Nothing to send while the title is empty or unchanged (guide Dialog).
+  const renameReady = draft.trim() !== '' && draft.trim() !== (item.title ?? '');
+
   const rename = () => {
+    if (!renameReady) return;
     if (draft.trim().length > MAX_TITLE_LENGTH) {
       setError(t('rename.tooLong', { max: MAX_TITLE_LENGTH }));
       return;
@@ -82,6 +86,7 @@ export function RecordingActions({
         body={t('rename.body')}
         confirmLabel={t('rename.confirm')}
         cancelLabel={t('common.cancel')}
+        confirmDisabled={!renameReady}
         onConfirm={rename}
         onCancel={close}
       >
@@ -93,7 +98,7 @@ export function RecordingActions({
             setError(undefined);
           }}
           placeholder={itemTitle({ ...item, title: null }, new Date(), i18n.language, t)}
-          hint={t('rename.hint')}
+          hint={t('rename.hint', { max: MAX_TITLE_LENGTH })}
           error={error}
           autoFocus
           onSubmitEditing={rename}

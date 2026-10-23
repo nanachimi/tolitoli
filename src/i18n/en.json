@@ -265,7 +265,7 @@
     "title": "Rename the recording",
     "body": "The title helps you find the recording in the library and in search.",
     "label": "Title",
-    "hint": "Leave empty to go back to the default title.",
+    "hint": "{{max}} characters at most.",
     "tooLong": "{{max}} characters at most: shorten the title.",
     "confirm": "Rename"
   }

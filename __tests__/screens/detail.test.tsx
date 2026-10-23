@@ -126,7 +126,10 @@ describe('Recording actions', () => {
     expect(screen.getByText('L’export arrivera dans une prochaine version.')).toBeOnTheScreen();
     await user.press(screen.getByRole('menuitem', { name: 'Renommer' }));
     const field = screen.getByLabelText('Titre');
+    // Unchanged, then empty: nothing to send yet (guide Dialog).
+    expect(screen.getByRole('button', { name: 'Renommer' })).toBeDisabled();
     await user.clear(field);
+    expect(screen.getByRole('button', { name: 'Renommer' })).toBeDisabled();
     await user.type(field, 'x'.repeat(MAX_TITLE_LENGTH + 1));
     await user.press(screen.getByRole('button', { name: 'Renommer' }));
     expect(

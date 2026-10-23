@@ -17,6 +17,8 @@ export type DialogProps = {
   onConfirm: () => void;
   onCancel: () => void;
   destructive?: boolean;
+  /** With a field: off until the value is valid to send (empty or unchanged, guide Dialog). */
+  confirmDisabled?: boolean;
   /** A field between the explanation and the buttons (the rename dialog's TextField). */
   children?: ReactNode;
 };
@@ -31,6 +33,7 @@ export function Dialog({
   onConfirm,
   onCancel,
   destructive = false,
+  confirmDisabled = false,
   children,
 }: DialogProps) {
   const theme = useTheme();
@@ -80,6 +83,7 @@ export function Dialog({
             <Button
               label={confirmLabel}
               variant={destructive ? 'destructive' : 'primary'}
+              disabled={confirmDisabled}
               onPress={onConfirm}
             />
           </View>

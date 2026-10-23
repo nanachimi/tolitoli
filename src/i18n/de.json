@@ -265,7 +265,7 @@
     "title": "Aufnahme umbenennen",
     "body": "Der Titel hilft, die Aufnahme in der Bibliothek und in der Suche zu finden.",
     "label": "Titel",
-    "hint": "Leer lassen, um den Standardtitel zu verwenden.",
+    "hint": "Höchstens {{max}} Zeichen.",
     "tooLong": "Höchstens {{max}} Zeichen: Kürzen Sie den Titel.",
     "confirm": "Umbenennen"
   }
