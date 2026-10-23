@@ -68,6 +68,17 @@ describe('Recording Detail', () => {
     expect(screen.getByRole('button', { name: /bei ya usafiri/ })).toBeSelected();
   });
 
+  it('aligns each segment of a mixed transcript on its own script', async () => {
+    await open('demo-tunis');
+    const direction = (text: RegExp) =>
+      StyleSheet.flatten(screen.getByText(text, { includeHiddenElements: true }).props.style)
+        .direction;
+    expect(direction(/^صباح الخير/)).toBe('rtl');
+    expect(direction(/^Oui, on commence/)).toBe('ltr');
+    expect(direction(/^الميزانية جاهزة/)).toBe('rtl');
+    expect(direction(/^Parfait, merci/)).toBe('ltr');
+  });
+
   it('offers to retry a failed transcription', async () => {
     await open('demo-failed');
     expect(screen.getByText('La transcription a échoué')).toBeOnTheScreen();

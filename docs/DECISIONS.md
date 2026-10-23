@@ -633,3 +633,14 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - Sur cet émulateur, chaque `adb input` prend environ 5 s, et la capture d'écran reste figée tant que la barre flottante du clavier est ouverte. La recherche a été vérifiée par l'arbre de vues, puis capturée clavier fermé.
 - **Non vérifié** : passage TalkBack réel (téléphone) ; volet Détail sur une vraie tablette (couvert par Jest) ; capture de la Corbeille vide (couverte par Jest). Une capture de travail (`c-detail-actions`, qui montrait par erreur le menu du dev client) a été écrasée par la bonne prise ; aucune capture n'a été supprimée.
 - **Captures** (720 px) : `docs/captures/step-1c/`, entre autres `onboarding-*`, `bibliotheque-*`, `recherche-*`, `detail-*`, `reglages-*`, `langue-transcription*`, `stockage-*`, `corbeille.png`, `a-propos.png`, `sombre-*`, `ar-*`, `police-150-*`. Les originaux sont dans `build/captures/step-1c/`.
+
+## D-032 — Chaque segment de transcription s'aligne sur sa propre écriture
+
+- **Date / étape** : 2026-10-23, étape 1c, demande du propriétaire après D-031 (question « transcriptions latines alignées à droite en arabe »).
+- **Constat** : tous les segments s'alignaient sur la direction de l'interface. Or le mélange de langues dans une même conversation est le cas normal pour Tolitoli (arabe et français, wolof et français, pidgin et anglais).
+- **Décision** : le texte d'un segment s'aligne sur sa propre écriture, détectée à son **premier caractère fort** (`src/ui/format/direction.ts`, `scriptDirection`). L'horodatage, le nom du locuteur et les marges restent dans la direction de l'interface. Le guide `TranscriptSegment.md` le dit désormais.
+- **Mise en œuvre** : `textAlign: 'auto'` ne suffit pas sur Android. React Native y aligne le texte sur la direction de paragraphe du nœud texte, c'est-à-dire sa direction de mise en page, et ignore `writingDirection`, qui ne sert qu'à iOS (`TextLayoutManager.getTextAlignment`, RN 0.88). Le texte du segment reçoit donc `direction` et `writingDirection` égaux à l'écriture détectée, avec `textAlign: 'auto'`. Un texte sans caractère fort (chiffres, ponctuation) garde la direction de l'interface.
+- **Vérifié** :
+  - Jest : détection sur des phrases arabes, françaises, hébraïques, chinoises, cyrilliques et wolof, et sur des textes neutres ; segment arabe en interface française ; segment français en interface arabe, la rangée restant RTL ; transcript mélangé dans le Détail.
+  - Émulateur : un enregistrement de démonstration arabe-français (`demo-tunis`, ajouté au jeu de démonstration) en interface française et arabe, et un transcript swahili-anglais en interface arabe. Captures `docs/captures/step-1c/d032-segments-melanges-fr.png`, `d032-segments-melanges-ar.png` et `d032-segments-latins-ar.png`.
+- **Dette iOS** : vérifier sur iPhone que `writingDirection` donne le même alignement.

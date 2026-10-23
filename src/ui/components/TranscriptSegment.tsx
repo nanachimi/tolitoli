@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, type TextStyle } from 'react-native';
 
+import { scriptDirection } from '../format/direction';
 import { useTheme } from '../theme';
 import { AppText } from './AppText';
 
@@ -18,6 +19,17 @@ export type TranscriptSegmentProps = {
   /** "Aller à 12:04", read with the text. */
   accessibilityHint?: string;
 };
+
+/**
+ * `direction` sets the paragraph direction of the text node: Android aligns `auto` text on
+ * it, and ignores `writingDirection`, which iOS reads.
+ */
+function textDirectionStyle(text: string): TextStyle {
+  const direction = scriptDirection(text);
+  return direction
+    ? { direction, writingDirection: direction, textAlign: 'auto' }
+    : { writingDirection: 'auto', textAlign: 'auto' };
+}
 
 /** One transcript segment of the Detail screen (guide TranscriptSegment). */
 export function TranscriptSegment({
@@ -58,7 +70,12 @@ export function TranscriptSegment({
             {speaker}
           </AppText>
         ) : null}
-        <AppText testID="i18n-data" color={upcoming ? 'ink-muted' : 'ink'}>
+        {/* Aligned on its own script, while timestamp and speaker follow the interface (D-032). */}
+        <AppText
+          testID="i18n-data"
+          color={upcoming ? 'ink-muted' : 'ink'}
+          style={textDirectionStyle(text)}
+        >
           {text}
         </AppText>
       </View>

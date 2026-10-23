@@ -161,6 +161,48 @@ describe('RecordingCard', () => {
 });
 
 describe('TranscriptSegment', () => {
+  function textStyle(text: string) {
+    return flat(screen.getByText(text, { includeHiddenElements: true }));
+  }
+
+  it('aligns an Arabic segment on its script in a French interface', async () => {
+    await renderScreen(
+      <TranscriptSegment
+        timestamp="0:14"
+        text="الميزانية جاهزة، je vous envoie le fichier ce soir."
+        state="past"
+        onPress={jest.fn()}
+      />,
+    );
+    expect(textStyle('الميزانية جاهزة، je vous envoie le fichier ce soir.')).toMatchObject({
+      direction: 'rtl',
+      writingDirection: 'rtl',
+      textAlign: 'auto',
+    });
+  });
+
+  it('aligns a French segment on its script in an Arabic interface, the row staying RTL', async () => {
+    jest.replaceProperty(I18nManager, 'isRTL', true);
+    await i18next.changeLanguage('ar');
+    await renderScreen(
+      <TranscriptSegment
+        timestamp="0:06"
+        speaker="المتحدث 2"
+        text="Oui, on commence. عندي سؤال على الميزانية."
+        state="past"
+        onPress={jest.fn()}
+      />,
+    );
+    expect(textStyle('Oui, on commence. عندي سؤال على الميزانية.')).toMatchObject({
+      direction: 'ltr',
+      writingDirection: 'ltr',
+    });
+    // Timestamp and speaker keep the interface direction: no direction of their own.
+    expect(textStyle('0:06').direction).toBeUndefined();
+    expect(textStyle('المتحدث 2').direction).toBeUndefined();
+    expect(flat(screen.getByRole('button')).flexDirection).toBe('row');
+  });
+
   it.each([
     ['past', 'transparent', light.ink],
     ['active', light['accent-soft'], light.ink],

@@ -97,6 +97,16 @@ export function demoItems(now: Date): LibraryItem[] {
     },
     {
       ...base,
+      id: 'demo-tunis',
+      title: 'Point budget à Tunis',
+      createdAt: at(now, 3, 11, 0),
+      durationMs: 14 * MINUTE,
+      state: 'transcribed',
+      language: 'ar',
+      quality: 'good',
+    },
+    {
+      ...base,
       id: 'demo-offline',
       title: 'Assemblée de quartier',
       createdAt: at(now, 2, 18, 30),
@@ -137,6 +147,13 @@ const LINES: Record<string, Line[]> = {
     [2, 24, 'Et pour vingt et un, c’est la même forme que pour un ?'],
     [1, 31, 'Exactement : vingt et un se comporte comme un, vingt-deux comme deux.'],
     [1, 45, 'Le wolof, lui, ne marque presque jamais le pluriel sur le nom.'],
+  ],
+  // Arabic and French in one conversation: each segment is aligned on its own script.
+  'demo-tunis': [
+    [1, 0, 'صباح الخير، on commence la séance ?'],
+    [2, 6, 'Oui, on commence. عندي سؤال على الميزانية.'],
+    [1, 14, 'الميزانية جاهزة، je vous envoie le fichier ce soir.'],
+    [2, 22, 'Parfait, merci. نتلاقاو غدوة.'],
   ],
   'demo-kinshasa': [
     [1, 0, 'Mbote na bino, tokobanda na likambo ya liboso.'],
