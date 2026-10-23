@@ -1,4 +1,4 @@
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import { create } from 'zustand';
 
 /** Order of size of a Whisper model; step 3 picks the real one and downloads it. */

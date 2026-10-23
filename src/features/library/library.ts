@@ -1,4 +1,4 @@
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import { create } from 'zustand';
 
 import { SimulatedLibraryRepository } from '@/services/library';

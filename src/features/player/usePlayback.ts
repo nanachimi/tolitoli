@@ -1,4 +1,4 @@
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { SimulatedPlaybackEngine, type PlaybackEngine } from '@/services/playback';

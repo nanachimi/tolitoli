@@ -1,12 +1,31 @@
-// In-memory stand-in for expo-sqlite's synchronous key-value store.
+// In-memory stand-in for expo-sqlite's synchronous key-value store, one map per file.
 jest.mock('expo-sqlite/kv-store', () => {
-  const store = new Map<string, string>();
-  const Storage = {
-    getItemSync: (key: string) => store.get(key) ?? null,
-    setItemSync: (key: string, value: string) => void store.set(key, value),
-    clearSync: () => store.clear(),
-  };
-  return { __esModule: true, default: Storage, Storage };
+  const files = new Map<string, Map<string, string>>();
+  class SQLiteStorage {
+    private readonly store: Map<string, string>;
+    constructor(name: string) {
+      this.store = files.get(name) ?? new Map();
+      files.set(name, this.store);
+    }
+    getItemSync(key: string) {
+      return this.store.get(key) ?? null;
+    }
+    setItemSync(key: string, value: string) {
+      this.store.set(key, value);
+    }
+    removeItemSync(key: string) {
+      return this.store.delete(key);
+    }
+    getAllKeysSync() {
+      return [...this.store.keys()];
+    }
+    clearSync() {
+      this.store.clear();
+      return true;
+    }
+  }
+  const Storage = new SQLiteStorage('ExpoSQLiteStorage');
+  return { __esModule: true, default: Storage, Storage, SQLiteStorage };
 });
 
 jest.mock('expo-localization', () => ({

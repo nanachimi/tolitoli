@@ -2,7 +2,7 @@
 import './intlPolyfills';
 
 import { getLocales } from 'expo-localization';
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import * as Updates from 'expo-updates';
 import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
