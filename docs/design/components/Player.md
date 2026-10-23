@@ -1,4 +1,4 @@
-Lecteur audio de l'écran Détail : carte `surface-raised` cerclée d'une `hairline`, `radius-md`, posée **en bas de l'écran**, au-dessus de la barre d'onglets, pendant que la transcription défile au-dessus. Il ne disparaît jamais au défilement.
+Lecteur audio de l'écran Détail : carte `surface-raised` cerclée d'une `hairline`, `radius-md`, posée **en bas de l'écran**, pendant que la transcription défile au-dessus. Il ne disparaît jamais au défilement. Le Détail n'est pas un onglet : le lecteur s'appuie donc sur la marge sûre du bas, sans barre d'onglets sous lui. Là où une barre d'onglets existe, il se place au-dessus d'elle.
 
 Contenu, de haut en bas : la barre de progression (piste `surface-sunken` de 4 px, remplissage `accent`, poignée de 16 px cerclée de `surface-raised`), les deux temps en `caption` `ink-muted` à chiffres tabulaires (écoulé au début, total à la fin), puis la rangée de contrôles : reculer de 15 s, lire/pause (`control-md`, rond `accent`, icône `on-accent`), avancer de 15 s, et à la fin le sélecteur de vitesse (`radius-pill`, `surface-sunken`).
 
