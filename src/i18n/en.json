@@ -99,7 +99,8 @@
         "tiny10": "tiny, first 10 minutes",
         "base10": "base, first 10 minutes",
         "tinyFull": "tiny, whole file",
-        "running": "Measuring…"
+        "running": "Measuring…",
+        "import": "Import the bench file and transcribe it"
       }
     }
   },

@@ -100,7 +100,8 @@
         "tiny10": "tiny, 10 premières minutes",
         "base10": "base, 10 premières minutes",
         "tinyFull": "tiny, fichier entier",
-        "running": "Mesure en cours…"
+        "running": "Mesure en cours…",
+        "import": "Importer le fichier de banc et le transcrire"
       }
     }
   },

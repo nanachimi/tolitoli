@@ -160,6 +160,7 @@ const BENCHES: { kind: BenchKind; minutes?: number; label: string }[] = [
   { kind: 'tiny', minutes: 10, label: 'settings.dev.bench.tiny10' },
   { kind: 'base', minutes: 10, label: 'settings.dev.bench.base10' },
   { kind: 'tiny', label: 'settings.dev.bench.tinyFull' },
+  { kind: 'import', label: 'settings.dev.bench.import' },
 ];
 
 /** Step 3 measurements on the longest recording; nothing written to the library. */

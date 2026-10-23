@@ -99,7 +99,8 @@
         "tiny10": "tiny, erste 10 Minuten",
         "base10": "base, erste 10 Minuten",
         "tinyFull": "tiny, ganze Datei",
-        "running": "Messung läuft …"
+        "running": "Messung läuft …",
+        "import": "Prüfdatei importieren und transkribieren"
       }
     }
   },

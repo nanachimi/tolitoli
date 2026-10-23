@@ -98,7 +98,8 @@
         "tiny10": "tiny，前 10 分钟",
         "base10": "base，前 10 分钟",
         "tinyFull": "tiny，整个文件",
-        "running": "正在测量…"
+        "running": "正在测量…",
+        "import": "导入测试文件并转写"
       }
     }
   },

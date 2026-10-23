@@ -12,8 +12,13 @@ import { planWindow, WINDOW_MS } from '@/services/transcription/segmenter';
 import { ModelDownloader, type ModelPaths } from '@/services/whisper/download';
 import { isLocalModelId, type LocalModelId } from '@/services/whisper/models';
 
+import { randomUUID } from 'expo-crypto';
+
+import { nativeAudioFiles } from '@/features/recording/nativeAudioFiles';
+
 import { FsmnDetector, fetchModelFiles, WhisperLocal } from './executorch';
 import { readyModel } from './model';
+import { transcribeRecording } from './transcription';
 
 /**
  * Development and preview-trace only (docs/plans/step-3.md, « Banc »): the uncertain points of
@@ -21,7 +26,7 @@ import { readyModel } from './model';
  * to the library; transcripts are counted, never logged (they are someone's conversation).
  */
 
-export type BenchKind = 'decode' | 'vad' | 'tiny' | 'base';
+export type BenchKind = 'decode' | 'vad' | 'tiny' | 'base' | 'import';
 
 const log = (...args: unknown[]) => console.log('[bench]', ...args);
 
@@ -95,8 +100,41 @@ async function modelPaths(model: LocalModelId): Promise<ModelPaths> {
   return paths;
 }
 
+/**
+ * The bench file pushed by adb next to the model files (`…/files/bench.m4a`, the app's external
+ * files directory, writable by adb even for a release build), copied into the library as a
+ * recording and queued in French: the real queue then transcribes it, foreground service and
+ * screen off included. No microphone involved (D-036).
+ */
+async function importBenchRecording(): Promise<string> {
+  const ready = readyModel();
+  if (!ready) throw new Error('No model: the bench file sits next to it');
+  const filesDir = ready.paths.whisper.replace(/\/react-native-executorch\/[^/]+$/, '');
+  const source = new File(`file://${filesDir}/bench.m4a`);
+  if (!source.exists) throw new Error(`No bench file at ${source.uri}`);
+  const id = randomUUID();
+  const audioPath = `${id}.m4a`;
+  const target = new File(joinPath(recordingsRoot(), audioPath));
+  source.copy(target);
+  const durationMs = await nativeAudioFiles.probeDurationMs(target.uri);
+  library.createRecording({ id, createdAt: new Date().toISOString() });
+  library.finalizeRecording(id, {
+    audioPath,
+    audioSize: target.size,
+    audioFormat: 'm4a',
+    durationMs,
+    recovered: false,
+  });
+  library.rename(id, 'Banc : Les Misérables (synthèse vocale)');
+  transcribeRecording(id, 'fr');
+  const report = `imported ${id}, ${minutes(durationMs ?? 0)} min, queued in French`;
+  log(report);
+  return report;
+}
+
 /** Runs one measurement; the report is shown on screen and logged for logcat. */
 export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<string> {
+  if (kind === 'import') return importBenchRecording();
   const job = target();
   const endMs = limitMinutes ? Math.min(job.durationMs, limitMinutes * 60_000) : job.durationMs;
   log('start', kind, job.id, `${minutes(endMs)} of ${minutes(job.durationMs)} min`, job.language);

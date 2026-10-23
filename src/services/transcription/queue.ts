@@ -161,6 +161,8 @@ export class TranscriptionQueue {
     // Found "transcribing" at launch: the cut left it running; it goes on from its cursor.
     if (state === 'queued') store.startTranscription(id);
     let cursorMs = store.transcriptionCheckpoint(id).cursorMs;
+    const startedAt = Date.now();
+    this.deps.log?.('start', id, language, model, 'from', cursorMs, 'of', job.durationMs);
     const progress = (ms: number) => {
       if (job.durationMs) store.reportTranscriptionProgress(id, ms / job.durationMs);
     };
@@ -195,6 +197,7 @@ export class TranscriptionQueue {
       if (last) break;
     }
     store.completeTranscription(id, { quality: this.deps.qualityFor(language, model) });
+    this.deps.log?.('done', id, 'in', Date.now() - startedAt, 'ms for', job.durationMs, 'ms');
   }
 
   private checkSuspended(): void {
