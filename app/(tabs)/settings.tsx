@@ -6,7 +6,9 @@ import { ScrollView, StyleSheet, View, type HostInstance } from 'react-native';
 
 import { isDemoDataEnabled, setDemoDataEnabled, useLibrary } from '@/features/library/library';
 import { totalBytes } from '@/features/library/storage';
+import { PLAYBACK_TRACE } from '@/features/player/playbackTrace';
 import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
+import type { BenchKind } from '@/features/transcription/bench';
 import { useReturnFocus } from '@/features/settings/useReturnFocus';
 import { LOCAL_MODEL } from '@/features/transcription/model';
 import { findTranscriptionLanguage, localQualityFor } from '@/services/transcription/languages';
@@ -121,6 +123,8 @@ export default function SettingsScreen() {
             <FtsDiagnostic />
           </View>
         ) : null}
+        {/* Release measurements too (preview-trace build, docs/plans/step-3.md). */}
+        {__DEV__ || PLAYBACK_TRACE ? <TranscriptionBench /> : null}
       </ScrollView>
     </Screen>
   );
@@ -141,6 +145,47 @@ function FtsDiagnostic() {
   return (
     <View style={styles.diagnostic}>
       <Button variant="secondary" label={t('settings.dev.ftsRun')} onPress={() => void run()} />
+      {result ? (
+        <AppText testID="i18n-data" variant="timestamp" color="ink-muted">
+          {result}
+        </AppText>
+      ) : null}
+    </View>
+  );
+}
+
+const BENCHES: { kind: BenchKind; minutes?: number; label: string }[] = [
+  { kind: 'decode', label: 'settings.dev.bench.decode' },
+  { kind: 'vad', label: 'settings.dev.bench.vad' },
+  { kind: 'tiny', minutes: 10, label: 'settings.dev.bench.tiny10' },
+  { kind: 'base', minutes: 10, label: 'settings.dev.bench.base10' },
+  { kind: 'tiny', label: 'settings.dev.bench.tinyFull' },
+];
+
+/** Step 3 measurements on the longest recording; nothing written to the library. */
+function TranscriptionBench() {
+  const { t } = useTranslation();
+  const [result, setResult] = useState<string | null>(null);
+  const run = async (kind: BenchKind, minutes?: number) => {
+    setResult(t('settings.dev.bench.running'));
+    try {
+      const { runBench } = await import('@/features/transcription/bench');
+      setResult(await runBench(kind, minutes));
+    } catch (error) {
+      setResult(`Bench failed: ${String(error)}`);
+    }
+  };
+  return (
+    <View style={styles.diagnostic}>
+      <AppText color="ink-muted">{t('settings.dev.bench.title')}</AppText>
+      {BENCHES.map((bench) => (
+        <Button
+          key={bench.label}
+          variant="secondary"
+          label={t(bench.label as 'settings.dev.bench.decode')}
+          onPress={() => void run(bench.kind, bench.minutes)}
+        />
+      ))}
       {result ? (
         <AppText testID="i18n-data" variant="timestamp" color="ink-muted">
           {result}

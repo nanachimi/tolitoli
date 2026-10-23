@@ -90,7 +90,16 @@
       "demo": "Done yu wone",
       "demoOn": "Bàaasu wone bi mi ngi dox (tolitoli-demo.db). Bàaasu dëgg bi du ñu ko laal.",
       "demoOff": "Bàaasu dëgg bi mi ngi dox (tolitoli.db) : say bind yu dëgg.",
-      "ftsRun": "Tàmbali saytu seet bi"
+      "ftsRun": "Tàmbali saytu seet bi",
+      "bench": {
+        "title": "Natt bind bi",
+        "decode": "Firi, dosi bi yépp",
+        "vad": "Seet baat, dosi bi yépp",
+        "tiny10": "tiny, 10 simili yu njëkk",
+        "base10": "base, 10 simili yu njëkk",
+        "tinyFull": "tiny, dosi bi yépp",
+        "running": "Mi ngi natt…"
+      }
     }
   },
   "record": {

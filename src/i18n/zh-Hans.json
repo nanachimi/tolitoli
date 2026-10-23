@@ -90,7 +90,16 @@
       "demo": "演示数据",
       "demoOn": "演示数据库已启用（tolitoli-demo.db）。真实数据库不受影响。",
       "demoOff": "真实数据库已启用（tolitoli.db）：您的真实录音。",
-      "ftsRun": "运行搜索诊断"
+      "ftsRun": "运行搜索诊断",
+      "bench": {
+        "title": "转写测试台",
+        "decode": "解码，整个文件",
+        "vad": "语音检测，整个文件",
+        "tiny10": "tiny，前 10 分钟",
+        "base10": "base，前 10 分钟",
+        "tinyFull": "tiny，整个文件",
+        "running": "正在测量…"
+      }
     }
   },
   "record": {

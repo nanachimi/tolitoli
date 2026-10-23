@@ -92,7 +92,16 @@
       "demo": "Données de démonstration",
       "demoOn": "Base de démonstration active (tolitoli-demo.db). La base réelle n’est pas touchée.",
       "demoOff": "Base réelle active (tolitoli.db) : vos vrais enregistrements.",
-      "ftsRun": "Lancer le diagnostic de recherche"
+      "ftsRun": "Lancer le diagnostic de recherche",
+      "bench": {
+        "title": "Banc de transcription",
+        "decode": "Décodage, fichier entier",
+        "vad": "Détection de voix, fichier entier",
+        "tiny10": "tiny, 10 premières minutes",
+        "base10": "base, 10 premières minutes",
+        "tinyFull": "tiny, fichier entier",
+        "running": "Mesure en cours…"
+      }
     }
   },
   "record": {

@@ -91,7 +91,16 @@
       "demo": "Demodaten",
       "demoOn": "Demo-Datenbank aktiv (tolitoli-demo.db). Die echte Datenbank bleibt unberührt.",
       "demoOff": "Echte Datenbank aktiv (tolitoli.db): Ihre echten Aufnahmen.",
-      "ftsRun": "Suchdiagnose starten"
+      "ftsRun": "Suchdiagnose starten",
+      "bench": {
+        "title": "Transkriptions-Prüfstand",
+        "decode": "Dekodierung, ganze Datei",
+        "vad": "Spracherkennung, ganze Datei",
+        "tiny10": "tiny, erste 10 Minuten",
+        "base10": "base, erste 10 Minuten",
+        "tinyFull": "tiny, ganze Datei",
+        "running": "Messung läuft …"
+      }
     }
   },
   "record": {

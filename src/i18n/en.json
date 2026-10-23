@@ -91,7 +91,16 @@
       "demo": "Demo data",
       "demoOn": "Demo database active (tolitoli-demo.db). The real database is not touched.",
       "demoOff": "Real database active (tolitoli.db): your real recordings.",
-      "ftsRun": "Run the search diagnostic"
+      "ftsRun": "Run the search diagnostic",
+      "bench": {
+        "title": "Transcription bench",
+        "decode": "Decoding, whole file",
+        "vad": "Voice detection, whole file",
+        "tiny10": "tiny, first 10 minutes",
+        "base10": "base, first 10 minutes",
+        "tinyFull": "tiny, whole file",
+        "running": "Measuring…"
+      }
     }
   },
   "record": {
