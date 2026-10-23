@@ -169,3 +169,22 @@ Le téléphone est demandé une fois, pour les points 2 à 5. Chaque test se fai
 - **Retour des octets par le module Expo** : `ByteArray` doit arriver en `Uint8Array` sans copie coûteuse. Vérifié en premier, sur une fenêtre de 60 s.
 - **Type `dataSync`** : il demande une déclaration Play, et Android 15 le limite à 6 h par 24 h. `mediaProcessing` n'existe qu'à partir d'Android 15, et l'A05 est en Android 14.
 - **iOS** : pas de service de premier plan, donc la transcription n'avance qu'avec l'app ouverte, et le décodeur n'y est pas testé. Les deux vont à la dette iOS.
+
+## Reprise (pause du 24 octobre 2026, 00:50)
+
+Le texte de référence est la section « Reprise » de D-037. En bref :
+
+- **Où nous en sommes** : 18 commits poussés, tests verts. La chaîne complète fonctionne sur l'A05, mais **tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio**, en release, écran éteint, sur batterie. La mesure était inachevée à 77,6 min de calcul pour 70,6 min d'audio. Le cahier vise moins de 15.
+- **Mesuré** :
+  - téléchargement de tiny en environ 1 à 2 min en wifi ;
+  - décodage à 13 fois le temps réel (environ 4,6 min par heure), avant la correction `16f7f37`, pas encore mesurée ;
+  - VAD : 21 s pour 29 min ;
+  - batterie −11 points en 78 min ; température de la batterie de 33,9 à 36,5 °C ; processeur à 59 °C ; pas de bridage ;
+  - pic de mémoire de tiny : 785 Mo de PSS, et 161 Mo en swap.
+- **Pas mesuré** : débit exact, base et small, décodeur corrigé, mesure c, reprise après fermeture forcée, enregistrement prioritaire, règle des 35 % de mémoire, WER réel.
+- **STOP** sur le choix du modèle et sur « base par défaut » (`41d821a`) : on ne construit plus au-dessus avant d'avoir tranché le moteur.
+- **Première action de demain** : l'expérience whisper.cpp quantifié (q5 et q8, NEON) contre executorch fp32, sur l'A05, même fichier, tiny puis base. Elle est bornée à une journée, et ses suites sont décrites dans D-037 :
+  - un facteur 3 ou plus : proposition de remplacement de bibliothèque, le propriétaire tranche ;
+  - un écart faible : le local devient la voie des mémos courts, le cloud celle des réunions.
+- **À redemander** : la fin de la consigne du 24 octobre, tronquée à « Dans les deux c… ».
+- **Attention au premier lancement de la preview** : la transcription de l'enregistrement de banc `f6adae63` reprendra d'elle-même.

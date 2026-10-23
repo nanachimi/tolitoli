@@ -380,7 +380,7 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - textes de permission iOS rangés sous la clé `ios` des fichiers `src/i18n/native/*.json` (D-025) : présents dans les 7 `InfoPlist.strings`.
   - Étape 2 (D-036) : lecture expo-audio (arrêt au démontage et en arrière-plan), FTS5 et repliement de recherche, kv-store dans `tolitoli.db`, recherche par date en arabe.
   - Étape 1c (D-031) : chaque écran (onboarding, Bibliothèque, Détail, Réglages et sous-écrans, Corbeille) en clair, sombre, arabe et police maximale ; VoiceOver sur la carte, le lecteur (`adjustable`) et la feuille d'actions ; routes protégées : aucun lien `tolitoli://` n'ouvre l'app avant le consentement.
-  - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
+  - Étape 3 (D-037) : décodeur `AVAudioFile` et `probeDurationMs` (écrits, jamais compilés) ; transcription en arrière-plan impossible sans service de premier plan ; mémoire de l'appareil inconnue (pas de `/proc/meminfo`) ; débit sur iPhone 13.
 - **Conséquences** :
   - CLAUDE.md (Méthode de travail) et le cahier des charges (plan de développement, lignes 1, 3 et 5 ; coûts) sont ajustés.
   - Le coût Apple (99 $/an) passe d'« avant TestFlight » à « avant l'ouverture de l'étape 5 ».
@@ -768,3 +768,64 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - un commit (`b73c38c`, étape 1c) avait été fait avec des tests rouges : CLAUDE.md impose depuis les codes de sortie.
 - **Point ouvert** : le cahier prévoit une base chiffrée au repos (SQLCipher, possible dans expo-sqlite avec `useSQLCipher`), absent du plan de l'étape 2. Les brouillons de `docs/store/` ne le promettent pas. À décider avant la soumission.
 - **Dette iOS** (D-022) : expo-audio, FTS5 et le kv-store dans `tolitoli.db`, `writingDirection` des segments, recherche par date en arabe sur iPhone.
+
+## D-037 — Étape 3 : transcription locale, mesures sur l'A05 et mise en pause
+
+- **Date / étape** : 2026-10-23 et 24, étape 3 (plan `docs/plans/step-3.md`, validé par le propriétaire avec ses réponses A à D et trois ajouts). Branche `step-3-transcription`.
+- **Décidé avec le propriétaire** :
+  - service de premier plan `dataSync` dans `modules/audio-encoder/` ; `expo-network` ; brouillon de la seconde déclaration Play (`docs/store/service-premier-plan-transcription.md`, limite Android 15 de 6 h par 24 h) ;
+  - migration `0003` : `transcript_drafts` et `transcription_cursor_ms`. L'ancien texte survit à une retranscription qui échoue ;
+  - hébergeur : Hugging Face Inc. (États-Unis), CDN AWS, **fichiers figés au commit** (plus sûr qu'un tag) et SHA-256 vérifié dans l'app. **L'hébergement en propre se repose avant la production** : 233 Mo (tiny), 399 Mo (base) ou 1,13 Go (small) de bande passante par installation ;
+  - Dialog cloud à deux boutons (« Fermer », « Choisir une autre langue »), conforme au guide Dialog ; aucun réglage cloud factice ;
+  - horodatage au segment (VAD), pas au mot : le cahier est corrigé ;
+  - **langues** : swahili, haoussa et yoruba passent en cloud requis (environ 100 % de WER en local, FLEURS) ; lingala et malgache restent affichés « pas encore disponible », avec leur raison ; la fiche Play ne promet rien pour eux en 1.0 ;
+  - **qualité** par couple langue–modèle, seuils bonne < 15 %, moyenne ≤ 30 %, brouillon au-delà. Chaque valeur porte sa source : « FLEURS, parole lue, chiffre éditeur OpenAI, non mesuré par nous ». Aucun seuil ne se fixe sur de la parole de synthèse ;
+  - phrase corrigée dans le cahier et CLAUDE.md : « Whisper embarqué donne, en tiny et en base, une qualité de brouillon à moyenne même sur les grandes langues ; la qualité annoncée dépend du couple langue–modèle, et un texte vraiment lisible demande small ou le cloud. » Les « environ 34 % » du swahili sont marqués comme un chiffre de grand modèle ;
+  - seconde build native acceptée par le propriétaire : décodeur corrigé et `probeDurationMs`, en deux profils (`development` `cd4d1048`, terminée ; `preview-trace` `37f64774`, en cours à la pause).
+- **Vérifié sur les APK** :
+  - `a2a4e5d6` (development) et `b86e3037` (preview-trace) : `BIND_GET_INSTALL_REFERRER_SERVICE` absente, aucune classe `com.android.installreferrer` dans le dex ; `cd4d1048` : permission absente aussi ;
+  - **liste complète des permissions de `b86e3037`** (pour D-036 et le formulaire « sécurité des données ») : `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MICROPHONE`, `FOREGROUND_SERVICE_DATA_SYNC`, `INTERNET`, `MODIFY_AUDIO_SETTINGS`, `POST_NOTIFICATIONS`, `READ_EXTERNAL_STORAGE`, `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW`, `VIBRATE`, `WRITE_EXTERNAL_STORAGE`, `WAKE_LOCK`, `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`, `DOWNLOAD_WITHOUT_NOTIFICATION`, et la permission interne `app.tolitoli.mobile.preview.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. Le dev client ajoute `CHANGE_WIFI_MULTICAST_STATE` et `ACCESS_LOCAL_NETWORK` ;
+  - service `TranscriptionService` déclaré `dataSync` (`0x1`), `exported=false`, `stopWithTask=true`.
+- **Mesuré sur l'A05** (Galaxy A05, Android 14, 4 Go) :
+  - **téléchargement du modèle tiny** en wifi : 236,9 Mo en environ 1 min 50 s (dev client), 1 min 06 s (preview) ; empreintes vérifiées ; télémétrie d'executorch coupée (test Jest) ;
+  - **décodage** (ancien décodeur, dev client) : 28,9 min en 135,5 s, **13 fois le temps réel, environ 4,6 min par heure d'audio**. Nombre d'échantillons juste à 0,19 s près. Correction dans `16f7f37`, **pas encore mesurée** ;
+  - **VAD** : 21 s pour 28,9 min ;
+  - les enregistrements de l'étape 1 sur l'A05 sont des essais silencieux (−70 dBFS) : inutilisables pour mesurer Whisper ;
+  - **banc de vitesse** : 70,6 min des _Misérables_ (domaine public) lus par la voix de synthèse « Jacques » du Mac, AAC-LC 16 kHz mono 48 kbit/s, importé dans la preview par adb dans le dossier externe de l'app. **Parole lue synthétique : chiffres de vitesse seulement, optimistes pour une conversation, jamais de qualité** ;
+  - **débit tiny, release (`b86e3037`, JS par EAS Update `67e4f6b1`), écran éteint, sur batterie** (AC, USB et sans-fil à `false`, statut « en décharge ») : démarré à 23:28:27, **toujours pas fini à 00:46, après 77,6 min**, pour 70,6 min d'audio. **Plus de 66 min de calcul par heure d'audio**, contre moins de 15 au cahier. Mesure abandonnée à la pause : la valeur exacte reste inconnue. Ancien décodeur (environ 4,6 min par heure sur ce total) ;
+  - **batterie et chaleur**, même course, sur 77,6 min : batterie de 100 à 89 % (environ 8,5 % par heure), température de la batterie de 33,9 à 36,5 °C ; à la fin, processeur à 59,4 °C, surface à 44,1 °C, état thermique 0 (aucun bridage signalé) ;
+  - **mémoire, tiny** : PSS de 590 à 785 Mo (pic 785 Mo), jusqu'à 161 Mo en swap. Second axe d'exclusion : un téléphone arm64 à 2 Go risque d'être tué en pleine transcription. La reprise après fermeture forcée devient un scénario courant, pas un cas limite ;
+  - service de premier plan actif pendant toute la course, verrou de veille `tolitoli:transcription` tenu, processeur autour de 210 %.
+- **Non mesuré à la pause** : débit exact de tiny, base et small ; pic mémoire de base et small ; décodeur corrigé ; mesure c en release avec segments ; reprise après `am force-stop` ; enregistrement prioritaire sur l'A05 (le propriétaire lance l'enregistrement) ; règle « 35 % de la mémoire » de `capability.ts` (hypothèse à vérifier sur un émulateur à 2 Go) ; WER réel du français sur 30 min de conversation.
+- **Incidents** :
+  - **émulateur, 22:04–22:05** : un enregistrement de 14 s (`5743275a`) a démarré, la permission micro a été accordée, puis l'enregistrement a été mis en pause et arrêté, sans appui de mes scripts sur ces contrôles. Le propriétaire utilisait probablement l'émulateur en même temps. J'ai arrêté l'app de force. La capture `smoke-a2a4e5d6-reglages.png` montre en fait cet écran d'enregistrement (micro actif) : gardée comme pièce, nom trompeur ;
+  - mon outil d'appui pouvait relire un ancien arbre d'écran et ne vérifiait pas l'app au premier plan : corrigé (arbre frais obligatoire, paquet au premier plan vérifié, libellés d'enregistrement refusés). Un appui « Back » a ainsi eu lieu dans l'app preview au lieu du dev client, sans conséquence ;
+  - j'ai supprimé sans demander une capture que je venais de prendre (`smoke-a2a4e5d6-a05-accueil.png`, qui montrait par erreur l'app preview) ;
+  - les captures de l'étape 3 font 720 px de **haut**, pas de large : à refaire au bon format.
+- **Dette iOS** (D-022) : décodeur `AVAudioFile` et `probeDurationMs` (écrits, jamais compilés) ; aucune transcription en arrière-plan sur iOS (pas de service de premier plan) ; mémoire de l'appareil inconnue sur iOS (pas de `/proc/meminfo`) ; débit sur iPhone 13.
+
+### Reprise
+
+**Où nous en sommes.** 18 commits sur `step-3-transcription`, tous poussés, tests verts. La transcription locale fonctionne de bout en bout sur l'A05 : téléchargement vérifié, décodage, VAD, Whisper, segments en base, service de premier plan écran éteint. **Mais tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio sur l'A05** (moins de 15 au cahier). Base serait deux à trois fois pire. Sur l'appareil type de nos utilisateurs, la transcription locale telle qu'elle est n'existe pas.
+
+**STOP du propriétaire** sur l'écran de choix du modèle (`41d821a`) et sur « base par défaut » : décision caduque, prise sur la qualité sans le chiffre de débit. Les commits restent ; rien ne se construit au-dessus avant d'avoir tranché le moteur.
+
+**Première action de demain : une expérience bornée à une journée.**
+
+- **Hypothèse** : la lenteur vient de XNNPACK fp32 (executorch n'a pas d'export multilingue quantifié).
+- **Banc** : whisper.cpp quantifié (q5 et q8, NEON), via whisper.rn ou l'équivalent le mieux maintenu, sur l'A05, même fichier de banc, tiny puis base.
+- **À relever** : débit en minutes par heure d'audio, pic de mémoire, et un extrait de texte pour voir si la quantification dégrade la qualité.
+- **À comparer** à executorch fp32 : plus de 66 min/h mesurées, mesure inachevée.
+- **Si l'écart est d'un facteur 3 ou plus** : c'est un changement de bibliothèque native imposée par CLAUDE.md. Je propose le remplacement avec les chiffres, et le propriétaire tranche.
+- **Si l'écart est faible** : le problème est Whisper lui-même sur ce matériel. La transcription locale devient une fonction pour les mémos courts, et le cloud le chemin normal pour une réunion d'une heure.
+- La consigne du propriétaire s'arrête sur « Dans les deux c… » (message tronqué) : la fin est à lui redemander à la reprise.
+
+**État laissé** :
+
+- la build `preview-trace` `37f64774` (décodeur corrigé) était encore en cours sur EAS : à vérifier, sans l'installer avant l'expérience ;
+- sur l'A05 :
+  - dev client `a2a4e5d6` et preview-trace `b86e3037` installés, avec tiny téléchargé dans les deux ;
+  - le fichier de banc est dans `/sdcard/Android/data/app.tolitoli.mobile.preview/files/bench.m4a` ;
+  - l'enregistrement de banc `f6adae63` de la preview est resté « en cours » : **au prochain lancement de la preview, la transcription reprendra d'elle-même** (c'est aussi le test de reprise après fermeture forcée) ;
+- l'émulateur a le dev client `a2a4e5d6` installé, avec tiny téléchargé ;
+- rien ne tourne : ni Metro, ni boucle de surveillance. Le téléphone est revenu en adb USB, sans verrou de veille ni service actif. Ni le volume ni la veille n'ont été touchés.
