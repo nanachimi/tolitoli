@@ -339,6 +339,48 @@ export class SqliteLibraryRepository implements LibraryRepository {
     this.moveTranscription(id, 'start', { transcriptionProgress: 0 });
   }
 
+  /** Back in the queue, drafts and cursor kept: it resumes where it stopped (step 3). */
+  suspendTranscription(id: string): void {
+    this.moveTranscription(id, 'suspend', {});
+  }
+
+  /**
+   * Transcriptions to run, oldest recording first: queued or found running (after a cut),
+   * outside the trash. What the queue picks up at launch.
+   */
+  pendingTranscriptions(): { id: string; state: 'queued' | 'transcribing' }[] {
+    return this.db
+      .select({ id: recordings.id, state: recordings.transcriptionState })
+      .from(recordings)
+      .where(
+        and(
+          inArray(recordings.transcriptionState, ['queued', 'transcribing']),
+          isNull(recordings.deletedAt),
+          isNull(recordings.purgedAt),
+        ),
+      )
+      .orderBy(asc(recordings.createdAt))
+      .all() as { id: string; state: 'queued' | 'transcribing' }[];
+  }
+
+  /** The job of a pending transcription, as queued. */
+  transcriptionJob(id: string): {
+    language: string | null;
+    engine: 'local' | 'cloud' | null;
+    model: string | null;
+    audioPath: string | null;
+    durationMs: number | null;
+  } {
+    const row = this.requireRow(id);
+    return {
+      language: row.language,
+      engine: row.engine,
+      model: row.model,
+      audioPath: row.audioPath,
+      durationMs: row.durationMs,
+    };
+  }
+
   /** Progress only: no transition, no outbox entry (nothing to synchronise). */
   reportTranscriptionProgress(id: string, progress: number): void {
     this.db

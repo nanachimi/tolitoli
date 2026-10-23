@@ -23,7 +23,13 @@ const RECORDING_EVENTS: RecordingEvent[] = [
   'retry',
 ];
 const TRANSCRIPTION_STATES = Object.keys(TRANSCRIPTION_TRANSITION_TABLE) as TranscriptionState[];
-const TRANSCRIPTION_EVENTS: TranscriptionEvent[] = ['queue', 'start', 'complete', 'fail'];
+const TRANSCRIPTION_EVENTS: TranscriptionEvent[] = [
+  'queue',
+  'start',
+  'complete',
+  'fail',
+  'suspend',
+];
 
 /** The lifecycle of CLAUDE.md, written out arrow by arrow. */
 const EXPECTED_RECORDING: [RecordingState, RecordingEvent, RecordingState][] = [
@@ -44,6 +50,7 @@ const EXPECTED_TRANSCRIPTION: [TranscriptionState, TranscriptionEvent, Transcrip
   ['transcribing', 'complete', 'done'],
   ['queued', 'fail', 'failed'],
   ['transcribing', 'fail', 'failed'],
+  ['transcribing', 'suspend', 'queued'],
   ['failed', 'queue', 'queued'],
   ['done', 'queue', 'queued'],
 ];

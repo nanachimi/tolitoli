@@ -41,7 +41,7 @@ export function recordingTransition(state: RecordingState, event: RecordingEvent
 
 export type TranscriptionState = 'none' | 'queued' | 'transcribing' | 'done' | 'failed';
 
-export type TranscriptionEvent = 'queue' | 'start' | 'complete' | 'fail';
+export type TranscriptionEvent = 'queue' | 'start' | 'complete' | 'fail' | 'suspend';
 
 const TRANSCRIPTION_TRANSITIONS: Record<
   TranscriptionState,
@@ -49,7 +49,9 @@ const TRANSCRIPTION_TRANSITIONS: Record<
 > = {
   none: { queue: 'queued' },
   queued: { start: 'transcribing', fail: 'failed' },
-  transcribing: { complete: 'done', fail: 'failed' },
+  // Suspended by a recording that starts, or found running at launch after a cut: back in the
+  // queue, its drafts and cursor kept, to resume where it stopped (step 3).
+  transcribing: { complete: 'done', fail: 'failed', suspend: 'queued' },
   // A finished transcript may be redone (another language, the cloud engine later).
   done: { queue: 'queued' },
   failed: { queue: 'queued' },

@@ -322,6 +322,27 @@ describe('SqliteLibraryRepository: transcript drafts (step 3)', () => {
     expect(repository.transcriptionCheckpoint('rec')).toEqual({ cursorMs: 0, drafts: [] });
   });
 
+  it('suspends a transcription with its drafts, and lists it to resume', () => {
+    const context = transcribing();
+    const { repository } = context;
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Un' }, 3000);
+    repository.suspendTranscription('rec');
+    expect(repository.pendingTranscriptions()).toEqual([{ id: 'rec', state: 'queued' }]);
+    expect(repository.transcriptionCheckpoint('rec').cursorMs).toBe(3000);
+    repository.startTranscription('rec');
+    expect(repository.transcriptionCheckpoint('rec').drafts).toHaveLength(1);
+    // A cut while running: the next launch finds it still "transcribing".
+    expect(context.relaunch().pendingTranscriptions()).toEqual([
+      { id: 'rec', state: 'transcribing' },
+    ]);
+  });
+
+  it('leaves trashed recordings out of the pending transcriptions', () => {
+    const { repository } = transcribing();
+    repository.trash('rec');
+    expect(repository.pendingTranscriptions()).toEqual([]);
+  });
+
   it('refuses a draft outside a transcription under way', () => {
     const { repository } = setup();
     repository.createRecording({ id: 'rec', createdAt: new Date(T0).toISOString() });
