@@ -54,6 +54,8 @@ export type TranscriptionQueueDeps = {
   readyModel(): string | null;
   /** Absolute path of a recording's final file. */
   resolveAudio(audioPath: string): string;
+  /** Length the file declares, in ms, when the library has none; null if it declares none. */
+  probeDurationMs?(path: string): Promise<number | null>;
   /** Expected quality of the language with the model that transcribed it (languages.ts). */
   qualityFor(language: TranscriptionLanguageCode, model: string): Quality | null;
   /** Running or not: the foreground service follows it. */
@@ -166,8 +168,16 @@ export class TranscriptionQueue {
     let cursorMs = store.transcriptionCheckpoint(id).cursorMs;
     const startedAt = Date.now();
     this.deps.log?.('start', id, language, model, 'from', cursorMs, 'of', job.durationMs);
-    // Without a known length, no percentage: the decoder tells the real one at the end.
-    const totalMs = job.durationMs && job.durationMs > 0 ? job.durationMs : null;
+    // Without a known length, ask the file; failing that, no percentage, and the decoder tells
+    // the real length at the end.
+    let totalMs = job.durationMs && job.durationMs > 0 ? job.durationMs : null;
+    if (!totalMs && this.deps.probeDurationMs) {
+      const probed = await this.deps.probeDurationMs(path).catch(() => null);
+      if (probed && probed > 0) {
+        totalMs = Math.round(probed);
+        store.recordDuration(id, totalMs);
+      }
+    }
     const progress = (ms: number) => {
       if (totalMs) store.reportTranscriptionProgress(id, ms / totalMs);
     };

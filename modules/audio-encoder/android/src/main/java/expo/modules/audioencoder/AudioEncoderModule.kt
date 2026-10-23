@@ -38,6 +38,10 @@ class AudioEncoderModule : Module() {
       withContext(Dispatchers.IO) { PcmDecoder.decode(path, startMs, durationMs) }
     }
 
+    AsyncFunction("probeDurationMs") Coroutine { path: String ->
+      withContext(Dispatchers.IO) { PcmDecoder.durationMs(path) }
+    }
+
     AsyncFunction("startTranscriptionService") { title: String, body: String, channelName: String, color: Int? ->
       try {
         TranscriptionService.start(context, title, body, channelName, color)

@@ -116,7 +116,10 @@ async function importBenchRecording(): Promise<string> {
   const audioPath = `${id}.m4a`;
   const target = new File(joinPath(recordingsRoot(), audioPath));
   source.copy(target);
-  const durationMs = await nativeAudioFiles.probeDurationMs(target.uri);
+  const durationMs =
+    typeof AudioEncoder.probeDurationMs === 'function'
+      ? await AudioEncoder.probeDurationMs(plainPath(target.uri))
+      : await nativeAudioFiles.probeDurationMs(target.uri);
   library.createRecording({ id, createdAt: new Date().toISOString() });
   library.finalizeRecording(id, {
     audioPath,

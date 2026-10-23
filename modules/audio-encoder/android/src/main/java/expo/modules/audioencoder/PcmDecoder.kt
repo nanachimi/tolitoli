@@ -28,6 +28,33 @@ internal object PcmDecoder {
     return window.bytes()
   }
 
+  /** Length declared by the container, in ms; null when it declares none. */
+  fun durationMs(path: String): Double? {
+    if (path.endsWith(".wav", ignoreCase = true)) {
+      val source = WavSource(path)
+      try {
+        return source.dataSize * 1000.0 / (2L * source.channels * source.sampleRate)
+      } finally {
+        source.file.close()
+      }
+    }
+    val extractor = MediaExtractor()
+    try {
+      extractor.setDataSource(path)
+      for (i in 0 until extractor.trackCount) {
+        val format = extractor.getTrackFormat(i)
+        if (format.getString(MediaFormat.KEY_MIME)?.startsWith("audio/") == true &&
+          format.containsKey(MediaFormat.KEY_DURATION)
+        ) {
+          return format.getLong(MediaFormat.KEY_DURATION) / 1000.0
+        }
+      }
+      return null
+    } finally {
+      extractor.release()
+    }
+  }
+
   /** The WAV kept when encoding failed (D-021): PCM read in place. */
   private fun decodeWav(path: String, window: Window) {
     val source = WavSource(path)
@@ -71,24 +98,27 @@ internal object PcmDecoder {
       val info = MediaCodec.BufferInfo()
       var inputDone = false
       while (!window.full) {
-        if (!inputDone) {
-          val inIndex = decoder.dequeueInputBuffer(TIMEOUT_US)
-          if (inIndex >= 0) {
-            val buffer = decoder.getInputBuffer(inIndex) ?: error("No input buffer")
-            val size = extractor.readSampleData(buffer, 0)
-            if (size < 0) {
-              decoder.queueInputBuffer(inIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
-              inputDone = true
-            } else {
-              decoder.queueInputBuffer(inIndex, 0, size, extractor.sampleTime, 0)
-              extractor.advance()
-            }
+        // Every input buffer free now: one frame per pass, with a wait, made decoding ~13x real
+        // time on the A05, as it once did encoding (D-021).
+        var fed = false
+        while (!inputDone) {
+          val inIndex = decoder.dequeueInputBuffer(0L)
+          if (inIndex < 0) break
+          val buffer = decoder.getInputBuffer(inIndex) ?: error("No input buffer")
+          val size = extractor.readSampleData(buffer, 0)
+          if (size < 0) {
+            decoder.queueInputBuffer(inIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+            inputDone = true
+          } else {
+            decoder.queueInputBuffer(inIndex, 0, size, extractor.sampleTime, 0)
+            extractor.advance()
           }
+          fed = true
         }
-        // Drain every frame ready now, as the encoder does (D-021).
+        // Drain every frame ready now; wait only when nothing could be fed.
         var ended = false
         while (!window.full) {
-          val outIndex = decoder.dequeueOutputBuffer(info, if (inputDone) TIMEOUT_US else 0L)
+          val outIndex = decoder.dequeueOutputBuffer(info, if (fed) 0L else TIMEOUT_US)
           if (outIndex == MediaCodec.INFO_TRY_AGAIN_LATER) break
           if (outIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
             channels = decoder.outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)

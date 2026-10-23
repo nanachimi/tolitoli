@@ -185,6 +185,10 @@ export const transcriptionQueue = new TranscriptionQueue({
   },
   readyModel: () => readyModel()?.id ?? null,
   resolveAudio: (audioPath) => plainPath(joinPath(recordingsRoot(), audioPath)),
+  // Native since the second build of step 3: an older dev client lacks it.
+  ...(typeof AudioEncoder.probeDurationMs === 'function'
+    ? { probeDurationMs: (path: string) => AudioEncoder.probeDurationMs(path) }
+    : {}),
   qualityFor: (language, model) =>
     isLocalModelId(model) ? localQualityFor(language, model) : null,
   onActivity: (activity) => void (activity === 'running' ? startService() : stopService()),

@@ -8,6 +8,8 @@ type AudioEncoderNativeModule = {
    * or WAV file (step 3); shorter at the end of the file.
    */
   decodePcm(path: string, startMs: number, durationMs: number): Promise<Uint8Array>;
+  /** Length declared by the container (MediaExtractor, AVAudioFile), in ms; null if none. */
+  probeDurationMs(path: string): Promise<number | null>;
   /** Android `dataSync` foreground service with a partial wake lock; rejects with
    * `ERR_BACKGROUND_START` when the app is in the background. No-op on iOS. */
   startTranscriptionService(

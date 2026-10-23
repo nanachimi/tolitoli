@@ -2,7 +2,7 @@ import { testDatabase } from '../../../db/__tests__/testDatabase';
 import { MemoryFs } from '../../audio/__tests__/fakes';
 import { SqliteLibraryRepository } from '../../library/sqlite';
 import { msToSamples, PCM_SAMPLE_RATE, type SpeechSpan } from '../engine';
-import { TranscriptionQueue, type QueueActivity } from '../queue';
+import { TranscriptionQueue, type QueueActivity, type TranscriptionQueueDeps } from '../queue';
 
 const T0 = new Date(2026, 9, 23, 10, 0).getTime();
 
@@ -92,41 +92,41 @@ function setup(options: {
   const engine = new FakeEngine();
   const recorder = new FakeRecorder();
   const activity: QueueActivity[] = [];
-  const queue = (repository = store) =>
-    new TranscriptionQueue({
-      store: repository,
-      pcm: {
-        read: async (_path, startMs, durationMs) => {
-          reads.push(startMs);
-          const from = msToSamples(startMs);
-          return audio.slice(from, Math.min(audio.length, from + msToSamples(durationMs)));
-        },
+  const deps = (repository = store): TranscriptionQueueDeps => ({
+    store: repository,
+    pcm: {
+      read: async (_path, startMs, durationMs) => {
+        reads.push(startMs);
+        const from = msToSamples(startMs);
+        return audio.slice(from, Math.min(audio.length, from + msToSamples(durationMs)));
       },
-      detector: {
-        detect: async (pcm) => {
-          const spans: SpeechSpan[] = [];
-          let start = -1;
-          for (let i = 0; i <= pcm.length; i++) {
-            const speaking = i < pcm.length && pcm[i] !== 0;
-            if (speaking && start < 0) start = i;
-            if (!speaking && start >= 0) {
-              spans.push({
-                startMs: (start * 1000) / PCM_SAMPLE_RATE,
-                endMs: (i * 1000) / PCM_SAMPLE_RATE,
-              });
-              start = -1;
-            }
+    },
+    detector: {
+      detect: async (pcm) => {
+        const spans: SpeechSpan[] = [];
+        let start = -1;
+        for (let i = 0; i <= pcm.length; i++) {
+          const speaking = i < pcm.length && pcm[i] !== 0;
+          if (speaking && start < 0) start = i;
+          if (!speaking && start >= 0) {
+            spans.push({
+              startMs: (start * 1000) / PCM_SAMPLE_RATE,
+              endMs: (i * 1000) / PCM_SAMPLE_RATE,
+            });
+            start = -1;
           }
-          return spans;
-        },
+        }
+        return spans;
       },
-      engine,
-      recorder,
-      readyModel: () => (options.model === undefined ? 'tiny' : options.model),
-      resolveAudio: (path) => `/abs/${path}`,
-      qualityFor: (language, model) => (language === 'fr' && model === 'tiny' ? 'draft' : 'good'),
-      onActivity: (state) => activity.push(state),
-    });
+    },
+    engine,
+    recorder,
+    readyModel: () => (options.model === undefined ? 'tiny' : options.model),
+    resolveAudio: (path) => `/abs/${path}`,
+    qualityFor: (language, model) => (language === 'fr' && model === 'tiny' ? 'draft' : 'good'),
+    onActivity: (state) => activity.push(state),
+  });
+  const queue = (repository = store) => new TranscriptionQueue(deps(repository));
 
   const add = (id: string, createdAt = T0) => {
     store.createRecording({ id, createdAt: new Date(createdAt).toISOString() });
@@ -140,7 +140,7 @@ function setup(options: {
     });
     store.queueTranscription(id, { language: 'fr', engine: 'local', model: 'tiny' });
   };
-  return { store, make, queue, engine, recorder, reads, activity, add };
+  return { store, make, queue, deps, engine, recorder, reads, activity, add };
 }
 
 const texts = (store: SqliteLibraryRepository, id: string) =>
@@ -302,6 +302,30 @@ describe('TranscriptionQueue', () => {
     expect(progress).toEqual([null]);
     expect(texts(store, 'rec')).toEqual(['w1', 'w2']);
     expect(store.get('rec')).toMatchObject({ state: 'transcribed', durationMs: 130_000 });
+  });
+
+  it('asks the file for its length when the library has none', async () => {
+    const context = setup({
+      durationMs: 70_000,
+      speech: [{ startMs: 2000, endMs: 6000 }],
+      knownDurationMs: null,
+    });
+    context.add('rec');
+    const progress: (number | null)[] = [];
+    const report = context.store.reportTranscriptionProgress.bind(context.store);
+    context.store.reportTranscriptionProgress = (id, value) => {
+      progress.push(value);
+      report(id, value);
+    };
+    const q = new TranscriptionQueue({
+      ...context.deps(),
+      probeDurationMs: async () => 70_000,
+    });
+    q.start();
+    await q.idle();
+    expect(progress).not.toContain(null);
+    expect(progress[progress.length - 1]).toBe(1);
+    expect(context.store.get('rec')?.durationMs).toBe(70_000);
   });
 
   it('shows an indeterminate transcription, never 0 %, while the length is unknown', () => {

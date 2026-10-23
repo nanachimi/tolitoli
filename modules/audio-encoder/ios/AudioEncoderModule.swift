@@ -17,6 +17,11 @@ public class AudioEncoderModule: Module {
       try decodePcm(path: path, startMs: startMs, durationMs: durationMs)
     }
 
+    AsyncFunction("probeDurationMs") { (path: String) throws -> Double? in
+      let file = try AVAudioFile(forReading: URL(fileURLWithPath: path))
+      return Double(file.length) * 1000 / file.fileFormat.sampleRate
+    }
+
     // No foreground service on iOS: a transcription advances while the app is open (D-022).
     AsyncFunction("startTranscriptionService") { (_: String, _: String, _: String, _: Int?) in }
     AsyncFunction("updateTranscriptionService") { (_: String, _: String, _: String, _: Int?) in }
