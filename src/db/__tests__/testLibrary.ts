@@ -1,3 +1,4 @@
+import { describeForSearch } from '../../features/library/display';
 import { MemoryFs } from '../../services/audio/__tests__/fakes';
 import { demoItems, demoSegments } from '../../services/library/demo';
 import { SqliteLibraryRepository } from '../../services/library/sqlite';
@@ -17,6 +18,7 @@ export function openTestLibrary(choice: 'real' | 'demo', fs = new MemoryFs()) {
     root: TEST_RECORDINGS_ROOT,
     now: () => new Date(),
     demo: choice === 'demo',
+    describeForSearch,
   });
   if (choice === 'demo') repository.seedDemo(demoItems(new Date()), demoSegments);
   return repository;

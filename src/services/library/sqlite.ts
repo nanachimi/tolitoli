@@ -46,7 +46,14 @@ export type SqliteLibraryOptions = {
   now: () => Date;
   /** The development demo database (docs/plans/step-2.md): items are marked as such. */
   demo?: boolean;
+  /**
+   * What the title index holds for a recording: the app gives the displayed title and the
+   * date words in the interface language; by default, the typed title only.
+   */
+  describeForSearch?: (entry: TitleIndexEntry) => string;
 };
+
+export type TitleIndexEntry = { title: string | null; createdAt: number };
 
 export type FinalizeInput = {
   audioPath: string | null;
@@ -149,6 +156,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
           state: 'recording',
         })
         .run();
+      this.indexTitle(tx, manifest.id, { title: null, createdAt: Date.parse(manifest.createdAt) });
       this.log(tx, 'recording', manifest.id, 'create', { state: 'recording' });
     });
   }
@@ -198,6 +206,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
           recovered: manifest.recovered,
         };
         tx.insert(recordings).values(values).run();
+        this.indexTitle(tx, manifest.id, { title: null, createdAt: values.createdAt });
         this.log(tx, 'recording', manifest.id, 'create', values);
       }
     });
@@ -252,7 +261,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
         .set({ title: next, updatedAt: this.nowMs() })
         .where(eq(recordings.id, id))
         .run();
-      this.indexTitle(tx, row.id, next);
+      this.indexTitle(tx, row.id, { title: next, createdAt: row.createdAt });
       this.log(tx, 'recording', id, 'update', { title: next });
     });
   }
@@ -468,7 +477,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
             recovered: item.recovered,
           })
           .run();
-        this.indexTitle(tx, item.id, item.title);
+        this.indexTitle(tx, item.id, { title: item.title, createdAt: Date.parse(item.createdAt) });
         segmentsOf(item.id).forEach((segment) => {
           tx.insert(segments)
             .values({
@@ -536,15 +545,38 @@ export class SqliteLibraryRepository implements LibraryRepository {
     });
   }
 
-  /** recordings_fts has no external content: its row follows the recording by rowid. */
-  private indexTitle(tx: Tx, id: string, title: string | null): void {
+  /**
+   * recordings_fts has no external content: its row follows the recording by rowid. Null
+   * removes it (the recording is going away).
+   */
+  private indexTitle(tx: Tx, id: string, entry: TitleIndexEntry | null): void {
     const rowid = sql`(select rowid from ${recordings} where ${recordings.id} = ${id})`;
     tx.run(sql`delete from recordings_fts where rowid = ${rowid}`);
-    if (title) {
-      tx.run(
-        sql`insert into recordings_fts (rowid, title_search) values (${rowid}, ${foldForSearch(title)})`,
-      );
+    if (!entry) return;
+    const text = foldForSearch(this.describe(entry)).trim();
+    if (text) {
+      tx.run(sql`insert into recordings_fts (rowid, title_search) values (${rowid}, ${text})`);
     }
+  }
+
+  private describe(entry: TitleIndexEntry): string {
+    return this.options.describeForSearch?.(entry) ?? entry.title ?? '';
+  }
+
+  /**
+   * Rebuilds the title index, one row per recording, in one transaction: the date words
+   * depend on the interface language (called when it changes, and at launch if needed).
+   */
+  reindexTitles(): void {
+    const rows = this.db
+      .select({ id: recordings.id, title: recordings.title, createdAt: recordings.createdAt })
+      .from(recordings)
+      .where(isNull(recordings.purgedAt))
+      .all();
+    this.db.transaction((tx) => {
+      for (const row of rows) this.indexTitle(tx, row.id, row);
+    });
+    this.emit();
   }
 
   private ftsMatches(folded: string): string[] {

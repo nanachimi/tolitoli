@@ -4,6 +4,7 @@ import { SqliteLibraryRepository } from '@/services/library';
 import { demoItems, demoSegments } from '@/services/library/demo';
 
 import { expoFs, recordingsRoot } from '../recording/expoFs';
+import { describeForSearch } from './display';
 
 /** The demo set's own file: switching to it never writes to tolitoli.db (owner, step 2). */
 export const DEMO_DATABASE_NAME = 'tolitoli-demo.db';
@@ -22,6 +23,7 @@ export async function openLibraryDatabase(
     root: recordingsRoot(),
     now: () => new Date(),
     demo,
+    describeForSearch,
   });
   if (demo) repository.seedDemo(demoItems(new Date()), demoSegments);
   return repository;

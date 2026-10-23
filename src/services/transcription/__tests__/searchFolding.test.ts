@@ -13,6 +13,9 @@ describe('foldForSearch', () => {
     ['Kiswahili: habari za asubuhi', 'kiswahili: habari za asubuhi'],
     ['Привет, Ёжик', 'привет, ежик'],
     ['今天我们开会讨论预算', '今天我们开会讨论预算'],
+    // Arabic-Indic and Eastern Arabic-Indic (Persian) digits become Latin ones.
+    ['٢٣/١٠/٢٠٢٦', '23/10/2026'],
+    ['۲۳ ۱۰', '23 10'],
   ])('%s → %s', (text, folded) => {
     expect(foldForSearch(text)).toBe(folded);
   });

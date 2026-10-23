@@ -18,6 +18,13 @@ export const SEARCH_FOLDS: Readonly<Record<string, string>> = {
   // Apostrophes: "l’éléphant" and "l'elephant" are the same word.
   '’': "'",
   ʼ: "'",
+  // Arabic-Indic and Eastern Arabic-Indic digits: "٢٣" and "23" find each other.
+  ...Object.fromEntries(
+    [...'٠١٢٣٤٥٦٧٨٩'].flatMap((digit, value) => [
+      [digit, String(value)],
+      [String.fromCharCode(0x06f0 + value), String(value)],
+    ]),
+  ),
 };
 
 const FOLD_PATTERN = new RegExp(`[${Object.keys(SEARCH_FOLDS).join('')}]`, 'g');
