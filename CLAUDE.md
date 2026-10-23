@@ -46,6 +46,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 - Une build native par étape au plus, décidée dans le plan de l’étape et lancée à son premier commit. Tout ajout de module natif est groupé avec elle. Ce qui est purement JavaScript ne demande aucune build : Metro et le dev client suffisent.
 - Une build se lance en arrière-plan, jamais en attente. Continuer le travail pendant qu’elle tourne ; l’installer et faire le test de fumée à la pause suivante. Ne jamais bloquer une session sur une build.
 - `npx expo install --fix` est exécuté à l'ouverture de chaque étape et avant chaque build EAS, et le résultat est commité séparément.
+- **Une vérification se juge sur le code de sortie de chaque commande, jamais sur le texte qu'elle affiche.** Le commit est enchaîné aux vérifications par `&&` et rien d'autre : `npm run typecheck && npm run lint && npm test && git commit …`. Aucune commande de cette chaîne ne passe dans un tube (`|`) ; pour lire sa sortie, on la redirige vers un fichier (`npm test > fichier.log 2>&1`) et on lit le fichier après. Si une sortie doit malgré tout être filtrée, la commande commence par `set -o pipefail`, pour que l'échec de la commande filtrée reste l'échec de l'ensemble.
 - Machine de développement : Mac Intel sans Homebrew. Les outils système (`gh`, `adb`, `ffmpeg`…) s'installent par installeur ou binaire officiel, jamais via `brew`.
 
 ## Stack imposée
