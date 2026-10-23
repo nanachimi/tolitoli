@@ -11,7 +11,11 @@ import { useTranscriptionLanguage } from '@/features/settings/transcriptionLangu
 import type { BenchKind } from '@/features/transcription/bench';
 import { useReturnFocus } from '@/features/settings/useReturnFocus';
 import { LOCAL_MODEL } from '@/features/transcription/model';
-import { findTranscriptionLanguage, localQualityFor } from '@/services/transcription/languages';
+import {
+  findTranscriptionLanguage,
+  isNotYetAvailable,
+  localQualityFor,
+} from '@/services/transcription/languages';
 import { AppText, Button, OptionGroup, OptionRow, Screen, space, TAB_SCREEN_EDGES } from '@/ui';
 import { formatBytes, type Translate } from '@/ui/format/display';
 
@@ -30,7 +34,11 @@ export function transcriptionLanguageSummary(code: string, t: Translate): string
   if (!language) return '';
   // The quality of the model the app downloads: it depends on the model, not only the language.
   const local = localQualityFor(language.code, LOCAL_MODEL);
-  const quality = local ? t(`quality.${local}`) : t('settings.transcription.cloudRequired');
+  const quality = local
+    ? t(`quality.${local}`)
+    : isNotYetAvailable(language.code)
+      ? t('settings.transcription.notYetAvailable')
+      : t('settings.transcription.cloudRequired');
   return t('quality.withLanguage', { language: language.nativeName, quality });
 }
 

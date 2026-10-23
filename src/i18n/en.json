@@ -75,6 +75,12 @@
       "forRecording": {
         "title": "Language of this recording",
         "hint": "The transcript will be redone in the chosen language. The old one stays visible until the new one is ready."
+      },
+      "notYetAvailable": "not available yet",
+      "notYetAvailableLong": "Not available yet: no engine transcribes it usably yet",
+      "notYetBanner": {
+        "title": "This language is not available yet",
+        "body": "No engine, on the device or in the cloud, transcribes this language ({{language}}) usably yet. Your recordings are kept, without a transcript."
       }
     },
     "storage": {
@@ -293,7 +299,10 @@
     "queued": "Waiting to be transcribed",
     "queuedDetail": "Recordings are transcribed one at a time, oldest first.",
     "paused": "Transcription paused",
-    "pausedDetail": "Recording comes first. The transcription will resume where it stopped as soon as the recording ends."
+    "pausedDetail": "Recording comes first. The transcription will resume where it stopped as soon as the recording ends.",
+    "notYetAvailable": {
+      "title": "Language not available yet"
+    }
   },
   "actions": {
     "rename": "Rename",

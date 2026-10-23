@@ -197,16 +197,17 @@ export const transcriptionQueue = new TranscriptionQueue({
 
 /**
  * Transcription of a finished recording, in the chosen language (never a detected one).
- * A language with no engine on the device is not queued: the Detail says it needs the cloud.
+ * A language with no engine on the device is not queued: the Detail says it needs the cloud,
+ * or that it is not available yet.
  */
 export function transcribeRecording(
   id: string,
   language: TranscriptionLanguageCode = useTranscriptionLanguage.getState().code,
-): 'queued' | 'cloud-required' {
+): 'queued' | 'cloud-required' | 'not-yet-available' {
   const route = routeTranscription({ language, cloudEnabled: false, online: true });
-  if (route.kind === 'cloud-required') {
+  if (route.kind !== 'local') {
     library.assignTranscriptionLanguage(id, language);
-    return 'cloud-required';
+    return route.kind;
   }
   library.queueTranscription(id, { language, engine: 'local', model: LOCAL_MODEL });
   transcriptionQueue.kick();

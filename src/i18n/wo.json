@@ -74,6 +74,12 @@
       "forRecording": {
         "title": "Làkku yëgle bii",
         "hint": "Dinañu defaat bind bi ci làkk wi nga tànn. Bu yàgg bi dina des ba bu bees bi pare."
+      },
+      "notYetAvailable": "amagul ba leegi",
+      "notYetAvailableLong": "Amagul ba leegi: amul masin buy bind làkk wii bu baax",
+      "notYetBanner": {
+        "title": "Làkk wii amagul ba leegi",
+        "body": "Amul masin, ci jumtukaay bi walla ci cloud, buy bind làkk wii ({{language}}) bu baax ba leegi. Say yëgle dañuy des, te bindagul leen."
       }
     },
     "storage": {
@@ -288,7 +294,10 @@
     "queued": "Mi ngi xaar ñu bind ko",
     "queuedDetail": "Yëgle yi ñu ngi leen di bind benn-benn, bu yàgg bi jëkk.",
     "paused": "Bind bi dafa taxaw ab diir",
-    "pausedDetail": "Yëgle bi moo jëkk. Bind bi dina dellu fa mu taxawoon su yëgle bi jeexee."
+    "pausedDetail": "Yëgle bi moo jëkk. Bind bi dina dellu fa mu taxawoon su yëgle bi jeexee.",
+    "notYetAvailable": {
+      "title": "Làkk bi amagul ba leegi"
+    }
   },
   "actions": {
     "rename": "Soppi tur",

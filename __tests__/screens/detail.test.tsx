@@ -5,11 +5,7 @@ import { I18nManager, StyleSheet } from 'react-native';
 import RecordingScreen from '../../app/recording/[id]';
 import { library, setDemoDataEnabled } from '@/features/library/library';
 import { LOCAL_MODEL } from '@/features/transcription/model';
-import {
-  localQualityFor,
-  requiresCloud,
-  TRANSCRIPTION_LANGUAGES,
-} from '@/services/transcription/languages';
+import { localQualityFor, TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
 import { MAX_TITLE_LENGTH } from '@/features/library/RecordingActions';
 import { i18next } from '@/i18n';
 
@@ -212,7 +208,7 @@ describe('Recording Detail, transcription (step 3)', () => {
     'never shows a transcribed language without its quality, in %s',
     async (language) => {
       await i18next.changeLanguage(language);
-      for (const entry of TRANSCRIPTION_LANGUAGES.filter((l) => !requiresCloud(l.code))) {
+      for (const entry of TRANSCRIPTION_LANGUAGES.filter((l) => l.local !== null)) {
         await realRecording(entry.code);
         library.queueTranscription(entry.code, {
           language: entry.code,
@@ -244,6 +240,32 @@ describe('Recording Detail, transcription (step 3)', () => {
     expect(library.get('rec')).toMatchObject({ language: 'fr', issue: 'model-missing' });
     expect(screen.getByText('Modèle de transcription absent')).toBeOnTheScreen();
   });
+});
+
+describe('Recording Detail, languages not available yet', () => {
+  it.each([
+    ['fr', 'Langue pas encore disponible'],
+    ['ar', 'اللغة غير متاحة بعد'],
+  ])(
+    'says in %s why Lingala has no transcript, and offers another language',
+    async (lang, title) => {
+      await i18next.changeLanguage(lang);
+      await realRecording('rec');
+      library.assignTranscriptionLanguage('rec', 'ln');
+      await open('rec');
+      expect(screen.getByText(title)).toBeOnTheScreen();
+      expect(screen.queryByText(i18next.t('detail.noTranscriptTitle'))).toBeNull();
+      await userEvent
+        .setup()
+        .press(
+          screen.getByRole('button', { name: i18next.t('transcription.cloudDialog.confirm') }),
+        );
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/settings/transcription-language',
+        params: { recording: 'rec' },
+      });
+    },
+  );
 });
 
 describe('Recording Detail in Arabic and pseudo-locale', () => {

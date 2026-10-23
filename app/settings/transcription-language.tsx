@@ -13,6 +13,7 @@ import { LOCAL_MODEL } from '@/features/transcription/model';
 import { transcribeRecording } from '@/features/transcription/transcription';
 import {
   findTranscriptionLanguage,
+  isNotYetAvailable,
   localQualityFor,
   requiresCloud,
   TRANSCRIPTION_LANGUAGES,
@@ -36,6 +37,7 @@ export default function TranscriptionLanguageScreen() {
   const [dialog, setDialog] = useState(false);
   const current = recording ? chosen : setting;
   const cloudOnly = requiresCloud(current);
+  const notYet = isNotYetAvailable(current);
   const currentName = findTranscriptionLanguage(current)?.nativeName ?? '';
 
   const choose = (code: TranscriptionLanguageCode) => {
@@ -46,7 +48,7 @@ export default function TranscriptionLanguageScreen() {
     setChosen(code);
     // Same language as the transcript already there: nothing to redo.
     if (code === item?.language && item.state !== 'audio') return;
-    // A language with no engine on the device stays here, with the banner that says so.
+    // A language with no engine on the device stays here, with the banner that says why.
     if (transcribeRecording(recording, code) === 'queued') router.back();
   };
 
@@ -66,6 +68,13 @@ export default function TranscriptionLanguageScreen() {
             recording ? 'settings.transcription.forRecording.hint' : 'settings.transcription.hint',
           )}
         </AppText>
+        {notYet ? (
+          <Banner
+            kind="alert"
+            title={t('settings.transcription.notYetBanner.title')}
+            body={t('settings.transcription.notYetBanner.body', { language: currentName })}
+          />
+        ) : null}
         {cloudOnly ? (
           <Banner
             kind="alert"
@@ -87,7 +96,9 @@ export default function TranscriptionLanguageScreen() {
                 description={
                   quality
                     ? t('settings.transcription.qualityLocal', { quality: t(`quality.${quality}`) })
-                    : t('settings.transcription.cloudRequiredLong')
+                    : isNotYetAvailable(language.code)
+                      ? t('settings.transcription.notYetAvailableLong')
+                      : t('settings.transcription.cloudRequiredLong')
                 }
                 checked={language.code === current}
                 accessibilityLabel={t('settings.transcription.optionA11y', {

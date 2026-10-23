@@ -1,4 +1,5 @@
 import {
+  isNotYetAvailable,
   isTranscriptionLanguageCode,
   localQualityFor,
   QUALITY_THRESHOLDS,
@@ -22,8 +23,18 @@ describe('transcription languages (CLAUDE.md, Langues de transcription)', () => 
   });
 
   it('never calls a figure nobody measured better than draft', () => {
-    expect(localQualityFor('mg', 'tiny')).toBe('draft');
     expect(qualityFromWer(null)).toBe('draft');
+  });
+
+  it('shows no local quality where the device gives noise (owner, step 3)', () => {
+    for (const code of ['sw', 'ha', 'yo', 'ln', 'mg'] as const) {
+      expect(localQualityFor(code, 'small')).toBeNull();
+    }
+  });
+
+  it('announces Lingala and Malagasy as not available yet, never hides them', () => {
+    const notYet = TRANSCRIPTION_LANGUAGES.filter((language) => isNotYetAvailable(language.code));
+    expect(notYet.map((language) => language.code)).toEqual(['ln', 'mg']);
   });
 
   it('cuts at the thresholds', () => {
@@ -41,10 +52,10 @@ describe('transcription languages (CLAUDE.md, Langues de transcription)', () => 
     }
   });
 
-  it('requires the cloud for exactly igbo, pidgin, zulu, luganda and wolof', () => {
+  it('requires the cloud for the eight African languages Intron covers', () => {
     const cloudOnly = TRANSCRIPTION_LANGUAGES.filter((language) => requiresCloud(language.code));
     expect(cloudOnly.map((language) => language.code).sort()).toEqual(
-      ['ig', 'lg', 'pcm', 'wo', 'zu'].sort(),
+      ['ha', 'ig', 'lg', 'pcm', 'sw', 'wo', 'yo', 'zu'].sort(),
     );
   });
 

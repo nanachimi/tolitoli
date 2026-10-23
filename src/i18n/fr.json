@@ -76,6 +76,12 @@
       "forRecording": {
         "title": "Langue de cet enregistrement",
         "hint": "La transcription sera refaite dans la langue choisie. L’ancienne reste visible jusqu’à ce que la nouvelle soit prête."
+      },
+      "notYetAvailable": "pas encore disponible",
+      "notYetAvailableLong": "Pas encore disponible : aucun moteur ne la transcrit encore de façon utilisable",
+      "notYetBanner": {
+        "title": "Cette langue n’est pas encore disponible",
+        "body": "Aucun moteur, sur l’appareil ou dans le cloud, ne transcrit encore cette langue ({{language}}) de façon utilisable. Vos enregistrements sont conservés, sans transcription."
       }
     },
     "storage": {
@@ -298,7 +304,10 @@
     "queued": "En attente de transcription",
     "queuedDetail": "Les enregistrements sont transcrits un par un, du plus ancien au plus récent.",
     "paused": "Transcription en pause",
-    "pausedDetail": "L’enregistrement passe en premier. La transcription reprendra où elle s’était arrêtée dès qu’il sera terminé."
+    "pausedDetail": "L’enregistrement passe en premier. La transcription reprendra où elle s’était arrêtée dès qu’il sera terminé.",
+    "notYetAvailable": {
+      "title": "Langue pas encore disponible"
+    }
   },
   "actions": {
     "rename": "Renommer",

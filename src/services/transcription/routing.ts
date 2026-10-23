@@ -1,4 +1,4 @@
-import { requiresCloud, type TranscriptionLanguageCode } from './languages';
+import { isNotYetAvailable, requiresCloud, type TranscriptionLanguageCode } from './languages';
 
 /**
  * Routing of a transcription (CLAUDE.md, « Routage », rules 1 and 5). Rules 2 to 4 (cloud
@@ -9,7 +9,9 @@ export type TranscriptionRoute =
   /** Whisper on the device. */
   | { kind: 'local' }
   /** No engine on the device for this language and no cloud: say so, offer the cloud. */
-  | { kind: 'cloud-required' };
+  | { kind: 'cloud-required' }
+  /** No engine anywhere transcribes it usably yet (Lingala, Malagasy): say so. */
+  | { kind: 'not-yet-available' };
 
 export type RoutingInput = {
   language: TranscriptionLanguageCode;
@@ -19,6 +21,7 @@ export type RoutingInput = {
 };
 
 export function routeTranscription(input: RoutingInput): TranscriptionRoute {
+  if (isNotYetAvailable(input.language)) return { kind: 'not-yet-available' };
   if (requiresCloud(input.language)) return { kind: 'cloud-required' };
   // Rule 1, cloud disabled, and rule 5, offline: Whisper on the device.
   return { kind: 'local' };

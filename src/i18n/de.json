@@ -75,6 +75,12 @@
       "forRecording": {
         "title": "Sprache dieser Aufnahme",
         "hint": "Das Transkript wird in der gewählten Sprache neu erstellt. Das alte bleibt sichtbar, bis das neue fertig ist."
+      },
+      "notYetAvailable": "noch nicht verfügbar",
+      "notYetAvailableLong": "Noch nicht verfügbar: Keine Engine transkribiert sie bisher brauchbar",
+      "notYetBanner": {
+        "title": "Diese Sprache ist noch nicht verfügbar",
+        "body": "Keine Engine, weder auf dem Gerät noch in der Cloud, transkribiert diese Sprache ({{language}}) bisher brauchbar. Ihre Aufnahmen bleiben erhalten, ohne Transkript."
       }
     },
     "storage": {
@@ -293,7 +299,10 @@
     "queued": "Wartet auf Transkription",
     "queuedDetail": "Aufnahmen werden nacheinander transkribiert, die älteste zuerst.",
     "paused": "Transkription pausiert",
-    "pausedDetail": "Die Aufnahme hat Vorrang. Die Transkription läuft dort weiter, wo sie stand, sobald die Aufnahme endet."
+    "pausedDetail": "Die Aufnahme hat Vorrang. Die Transkription läuft dort weiter, wo sie stand, sobald die Aufnahme endet.",
+    "notYetAvailable": {
+      "title": "Sprache noch nicht verfügbar"
+    }
   },
   "actions": {
     "rename": "Umbenennen",

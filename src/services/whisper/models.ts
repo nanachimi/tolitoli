@@ -4,12 +4,13 @@
  * by AWS. Each URL is pinned to a commit of its repository, not to a movable tag, and each file
  * is checked against its size and SHA-256 before use: nobody can swap a model under our feet.
  * Sizes and digests read on 23 October 2026 (HEAD `x-linked-*`, and SHA-256 recomputed on the
- * downloaded files).
+ * downloaded files for tiny and base; small's from its `x-linked-etag`, the same field that
+ * matched the recomputed digests of the other two).
  */
 
-export type LocalModelId = 'tiny' | 'base';
+export type LocalModelId = 'tiny' | 'base' | 'small';
 
-export const LOCAL_MODEL_IDS: readonly LocalModelId[] = ['tiny', 'base'];
+export const LOCAL_MODEL_IDS: readonly LocalModelId[] = ['tiny', 'base', 'small'];
 
 export type ModelFile = { url: string; bytes: number; sha256: string };
 
@@ -24,6 +25,7 @@ export type LocalModel = {
 const HF = 'https://huggingface.co/software-mansion/react-native-executorch';
 const TINY_COMMIT = '4b12c1e9d4e0404743ca820e6414e903402ab113';
 const BASE_COMMIT = '8804dc6eb60448c91161513b47d0cf5da4955430';
+const SMALL_COMMIT = '6173e6b4646c73192f2d031535c2a61ca947c205';
 const VAD_COMMIT = '5c31b30fe998c798adde26e8cb8ce0a28fa839e3';
 
 const TOKENIZER = {
@@ -56,6 +58,16 @@ export const LOCAL_MODELS: Record<LocalModelId, LocalModel> = {
       sha256: 'e74f8407a3a411ccac5f9dffd7b3199149028e1ea6b05567e346ed1d77237b42',
     },
     tokenizer: { url: `${HF}-whisper-base/resolve/${BASE_COMMIT}/tokenizer.json`, ...TOKENIZER },
+    vad: VAD,
+  },
+  small: {
+    id: 'small',
+    whisper: {
+      url: `${HF}-whisper-small/resolve/${SMALL_COMMIT}/xnnpack/whisper_small_xnnpack_fp32.pte`,
+      bytes: 1_128_717_824,
+      sha256: 'f069b9ba7868c636404da12b6fdf1422ec9de689bd53afc5ef94a123c503690f',
+    },
+    tokenizer: { url: `${HF}-whisper-small/resolve/${SMALL_COMMIT}/tokenizer.json`, ...TOKENIZER },
     vad: VAD,
   },
 };

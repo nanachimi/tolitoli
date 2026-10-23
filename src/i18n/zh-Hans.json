@@ -74,6 +74,12 @@
       "forRecording": {
         "title": "此录音的语言",
         "hint": "将用所选语言重新转写。新转写完成前，旧的转写仍会显示。"
+      },
+      "notYetAvailable": "暂不可用",
+      "notYetAvailableLong": "暂不可用：目前还没有引擎能可用地转写这种语言",
+      "notYetBanner": {
+        "title": "这种语言暂不可用",
+        "body": "目前设备上和云端都还没有引擎能可用地转写这种语言（{{language}}）。您的录音会被保留，但没有转写文本。"
       }
     },
     "storage": {
@@ -288,7 +294,10 @@
     "queued": "等待转写",
     "queuedDetail": "录音按时间先后逐条转写，最早的优先。",
     "paused": "转写已暂停",
-    "pausedDetail": "录音优先。录音结束后，转写会从中断处继续。"
+    "pausedDetail": "录音优先。录音结束后，转写会从中断处继续。",
+    "notYetAvailable": {
+      "title": "语言暂不可用"
+    }
   },
   "actions": {
     "rename": "重命名",

@@ -121,7 +121,7 @@ describe('Transcription language screen', () => {
     },
   );
 
-  it.each(['ig', 'pcm', 'zu', 'lg', 'wo'])(
+  it.each(['ig', 'pcm', 'zu', 'lg', 'wo', 'sw', 'ha', 'yo'])(
     'shows the cloud banner for %s, never a quality',
     async (code) => {
       setTranscriptionLanguage(code as 'wo');
@@ -129,6 +129,23 @@ describe('Transcription language screen', () => {
       expect(screen.getByText('Cette langue demande la transcription cloud')).toBeOnTheScreen();
     },
   );
+
+  it.each([
+    ['fr', 'Cette langue n’est pas encore disponible', 'Lingála'],
+    ['ar', 'هذه اللغة غير متاحة بعد', 'Malagasy'],
+  ])('announces in %s a language not available yet, with its reason', async (lang, title, name) => {
+    await i18next.changeLanguage(lang);
+    await renderScreen(<TranscriptionLanguageScreen />);
+    const radio = screen.getByRole('radio', { name: new RegExp(name) });
+    expect(radio.props.accessibilityHint).toBe(
+      i18next.t('settings.transcription.notYetAvailableLong'),
+    );
+    await userEvent.setup().press(radio);
+    expect(screen.getByText(title)).toBeOnTheScreen();
+    expect(
+      screen.getByText(i18next.t('settings.transcription.notYetBanner.body', { language: name })),
+    ).toBeOnTheScreen();
+  });
 
   it('redoes one recording in another language, and goes back', async () => {
     await setDemoDataEnabled(false);

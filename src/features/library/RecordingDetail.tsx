@@ -6,7 +6,11 @@ import { PLAYBACK_TRACE, traceRender } from '@/features/player/playbackTrace';
 import { usePlayback } from '@/features/player/usePlayback';
 import { joinPath } from '@/services/audio/fs';
 import type { LibraryItem, Segment, TranscriptionIssue } from '@/services/library';
-import { findTranscriptionLanguage, requiresCloud } from '@/services/transcription/languages';
+import {
+  findTranscriptionLanguage,
+  isNotYetAvailable,
+  requiresCloud,
+} from '@/services/transcription/languages';
 import {
   AppText,
   Banner,
@@ -147,6 +151,7 @@ function Loaded({
       : formatDurationShort(item.durationMs, t);
   const language = item.language ? findTranscriptionLanguage(item.language) : undefined;
   const cloudOnly = item.language !== null && requiresCloud(item.language);
+  const notYet = item.language !== null && isNotYetAvailable(item.language);
 
   return (
     <View style={styles.fill}>
@@ -188,6 +193,16 @@ function Loaded({
                   }
                 : undefined
             }
+          />
+        ) : notYet && item.state === 'audio' && language ? (
+          <Banner
+            kind="alert"
+            title={t('detail.notYetAvailable.title')}
+            body={t('settings.transcription.notYetBanner.body', { language: language.nativeName })}
+            action={{
+              label: t('transcription.cloudDialog.confirm'),
+              onPress: () => openLanguagePicker(item.id),
+            }}
           />
         ) : cloudOnly && item.state === 'audio' && language ? (
           <Banner
@@ -254,7 +269,7 @@ function Loaded({
               );
             })}
           </View>
-        ) : item.state === 'audio' && !item.issue && !cloudOnly ? (
+        ) : item.state === 'audio' && !item.issue && !cloudOnly && !notYet ? (
           <View style={styles.empty}>
             <EmptyState
               icon="file-text"
@@ -266,6 +281,7 @@ function Loaded({
                   ? {
                       label: t('detail.transcribe'),
                       onPress: () => {
+                        // Not yet available: the banner above appears, with its reason.
                         if (transcribeRecording(item.id) === 'cloud-required') setCloudDialog(true);
                       },
                     }

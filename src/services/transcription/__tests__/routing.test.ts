@@ -1,10 +1,10 @@
-import { TRANSCRIPTION_LANGUAGES, requiresCloud } from '../languages';
+import { TRANSCRIPTION_LANGUAGES } from '../languages';
 import { routeTranscription } from '../routing';
 
-const NO_LOCAL_ENGINE = ['wo', 'ig', 'pcm', 'zu', 'lg'];
+const NO_LOCAL_ENGINE = ['wo', 'ig', 'pcm', 'zu', 'lg', 'sw', 'ha', 'yo'];
 
 describe('routeTranscription (rules 1 and 5; 2 to 4 at step 8)', () => {
-  it.each(TRANSCRIPTION_LANGUAGES.filter((language) => !requiresCloud(language.code)))(
+  it.each(TRANSCRIPTION_LANGUAGES.filter((language) => language.local !== null))(
     'rule 1: cloud disabled, $code goes to Whisper on the device',
     ({ code }) => {
       expect(routeTranscription({ language: code, cloudEnabled: false, online: true })).toEqual({
@@ -25,6 +25,12 @@ describe('routeTranscription (rules 1 and 5; 2 to 4 at step 8)', () => {
       ).toEqual({ kind: 'cloud-required' });
     },
   );
+
+  it.each(['ln', 'mg'])('%s: no engine anywhere yet, said so, never local', (code) => {
+    expect(
+      routeTranscription({ language: code as 'ln', cloudEnabled: false, online: true }),
+    ).toEqual({ kind: 'not-yet-available' });
+  });
 
   it('rule 5: offline, Whisper on the device', () => {
     expect(routeTranscription({ language: 'fr', cloudEnabled: true, online: false })).toEqual({
