@@ -32,7 +32,7 @@ Recommandation : **Expo (React Native)**. C'est le meilleur compromis entre une 
 | Enregistrement en arrière-plan | Supporté (mode audio background iOS, service de premier plan Android) ; nécessite un dev client, pas Expo Go | Supporté ; même configuration native à faire | Supporté, le plus fiable |
 | Transcription locale moteur natif (Apple Speech / Google) | expo-speech-transcriber, react-native-speech-recognition-kit | speech\_to\_text | SFSpeechRecognizer / SpeechRecognizer directement |
 | Transcription locale Whisper (whisper.cpp) | react-native-executorch (hook useSpeechToText), Cactus SDK | whisper\_wrapper, whisper\_edge, whisper\_ggml\_plus : écosystème le plus riche | whisper.cpp en C via bridge, ou WhisperKit (iOS) |
-| Horodatage par mot, langue française | Oui via react-native-executorch (format verbose\_json) | Oui via whisper\_\* | Oui |
+| Horodatage par mot, langue française | Non : l'API principale de react-native-executorch 0.10 rend un texte sans horodatage ; Tolitoli horodate au segment, découpé par le VAD (étape 3, D-037) | Oui via whisper\_\* | Oui |
 | Base locale + recherche plein-texte | expo-sqlite (FTS5), op-sqlite | drift, sqflite (FTS5) | Core Data / Room |
 | Cloud : Supabase / Firebase | SDK officiels, très utilisés | SDK officiels (FlutterFire, supabase\_flutter) | SDK officiels |
 | iCloud Drive / Google Drive | Modules communautaires, parfois à compléter | Modules communautaires, parfois à compléter | API natives complètes |
@@ -57,7 +57,7 @@ Le MVP doit être utilisable au quotidien par vous-même avant d'ajouter le clou
 | --- | --- | --- | --- |
 | Enregistrement | Démarrer/pause/arrêter ; écran éteint et arrière-plan ; indicateur de niveau sonore ; reprise après interruption (appel entrant) | Marqueurs pendant l'enregistrement (« moment important ») | Enregistrement depuis un micro Bluetooth, importation de fichiers audio existants |
 | Transcription | Locale, Whisper embarqué (français + 20 langues), choix du modèle tiny/base/small, horodatage par segment, traitement en arrière-plan avec progression | Cloud en option : meilleure précision, séparation des locuteurs, ponctuation ; file d'attente avec reprise | Résumé et points d'action par IA, traduction |
-| Lecture | Lecteur audio synchronisé avec le texte (clic sur un mot = saut audio), vitesse 0,5× à 2× | Édition du texte, renommage des locuteurs | Surlignage et notes |
+| Lecture | Lecteur audio synchronisé avec le texte (appui sur un segment = saut audio), vitesse 0,5× à 2× | Édition du texte, renommage des locuteurs | Surlignage et notes |
 | Organisation | Liste chronologique, titre automatique (date + heure), renommage, dossiers, recherche plein-texte | Tags, favoris, tri | Dossiers partagés (lecture seule) |
 | Stockage | Local : audio + texte sur l'appareil, suppression, corbeille 30 jours | Sauvegarde cloud au choix : iCloud Drive / Google Drive (gratuit pour vous) ou compte in-app (Supabase) ; synchronisation multi-appareils | Chiffrement de bout en bout du compte in-app |
 | Export et partage | Texte (.txt, .md), audio (.m4a), feuille de partage système | PDF avec horodatages, .srt | Lien de partage web |
@@ -308,7 +308,7 @@ Cinq écrans suffisent au MVP. Sur tablette en paysage, la liste et le détail s
 | --- | --- | --- | --- |
 | Bibliothèque | `app/(tabs)/index.tsx` | Liste des enregistrements groupés par jour, barre de recherche plein-texte, dossiers, bouton flottant « Enregistrer » | Panneau gauche (360 pt), persistant |
 | Enregistrement | `app/record.tsx` (modal plein écran) | Chrono, niveau sonore, pause / reprise / stop, transcription en direct en option, bouton marqueur (V1) | Même modal, centré |
-| Détail | `app/recording/[id].tsx` | Lecteur audio, texte synchronisé (le segment en cours se surligne, appui sur un mot = saut), statut de transcription, actions : renommer, déplacer, exporter, retranscrire en cloud | Panneau droit, remplit l'espace restant |
+| Détail | `app/recording/[id].tsx` | Lecteur audio, texte synchronisé (le segment en cours se surligne, appui sur un segment = saut), statut de transcription, actions : renommer, déplacer, exporter, retranscrire en cloud | Panneau droit, remplit l'espace restant |
 | Réglages | `app/(tabs)/settings.tsx` | Langue, modèle Whisper (taille et précision affichées), qualité audio, conservation, cloud on/off, destination de sauvegarde, compte et abonnement | Formulaire en colonne centrée (max 640 pt) |
 | Premier lancement | `app/onboarding.tsx` | 3 écrans : promesse, consentement légal à l'enregistrement, téléchargement du modèle Whisper (barre de progression, choix wifi uniquement) | Identique |
 
@@ -439,7 +439,7 @@ Dix étapes, chacune livrant quelque chose de testable sur un vrai téléphone. 
 | 1 | Enregistrement audio | Service `audio` : start / pause / resume / stop, fichier .m4a, niveau sonore, arrière-plan iOS et service de premier plan Android, gestion des interruptions | Enregistrement de 60 min écran verrouillé, sans perte, sur Android ; appel entrant géré ; vérification iPhone inscrite à la dette iOS (D-022) |
 | 2 | Base locale et bibliothèque | Schéma drizzle, migrations, FTS5, écran Bibliothèque, écran Détail minimal (lecteur audio) | Créer, renommer, supprimer, rechercher ; corbeille 30 jours ; tests unitaires du dépôt de données |
 | 3 | Transcription locale | Service `whisper` avec react-native-executorch, téléchargement des modèles, file d'attente persistante, transcription par segments avec progression, reprise après kill | 1 h d'audio français transcrite en moins de 15 min sur un Android milieu de gamme ; reprise après fermeture forcée ; vérification iPhone 13 inscrite à la dette iOS (D-022) |
-| 4 | Détail et lecture synchronisée | Texte synchronisé avec l'audio, appui sur un mot, vitesse, export .txt/.md/.m4a, feuille de partage | Décalage texte/audio inférieur à 300 ms ; export ouvert dans une autre app |
+| 4 | Détail et lecture synchronisée | Texte synchronisé avec l'audio, appui sur un segment, vitesse, export .txt/.md/.m4a, feuille de partage | Décalage texte/audio inférieur à 300 ms ; export ouvert dans une autre app |
 | 5 | Tablette, accessibilité, finition MVP | Vue à deux panneaux, VoiceOver/TalkBack, polices dynamiques, onboarding avec consentement, réglages | Prérequis à l'ouverture : dette iOS des étapes 1 et 3 soldée (D-022). Audit accessibilité passé ; revue UX sur iPad et tablette Android ; build TestFlight et test interne Play |
 | 6 | Sauvegarde cloud utilisateur | iCloud Drive (iOS) et Google Drive (Android) : export automatique audio + JSON, restauration | Perte simulée de l'appareil : restauration complète sur un nouvel appareil de la même plateforme |
 | 7 | Backend Supabase et compte | Auth (Apple, Google, e-mail), schéma Postgres, RLS, Storage, synchro bidirectionnelle, suppression de compte | Synchro iPhone ↔ Android sous 30 s ; tests RLS automatisés ; suppression de compte vérifiée |
