@@ -45,7 +45,8 @@
       "title": "界面语言",
       "hint": "转写语言需单独设置。",
       "restartRtl": "应用将重新启动以更改文字方向。",
-      "optionA11y": "界面语言：{{language}}"
+      "optionA11y": "界面语言：{{language}}",
+      "available": "可用语言"
     },
     "transcription": {
       "title": "转写",

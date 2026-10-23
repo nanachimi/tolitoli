@@ -46,7 +46,8 @@
       "title": "Sprache der Benutzeroberfläche",
       "hint": "Die Transkriptionssprache wird separat eingestellt.",
       "restartRtl": "Die App wird neu gestartet, um die Schreibrichtung zu ändern.",
-      "optionA11y": "Sprache der Benutzeroberfläche: {{language}}"
+      "optionA11y": "Sprache der Benutzeroberfläche: {{language}}",
+      "available": "Verfügbare Sprachen"
     },
     "transcription": {
       "title": "Transkription",

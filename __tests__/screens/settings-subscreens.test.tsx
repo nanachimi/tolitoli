@@ -21,7 +21,10 @@ import { TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
 import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
 import { renderScreen } from './renderScreen';
 
-jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), back: jest.fn() },
+  useFocusEffect: () => {},
+}));
 jest.mock('@/features/library/storage', () => ({
   itemBytes: () => 0,
   totalBytes: (items: unknown[]) => items.length * 1024 * 1024,
@@ -48,13 +51,15 @@ describe('Settings groups', () => {
     expect(transcriptionLanguageSummary('wo', t)).toBe('Wolof · cloud requis');
   });
 
-  it('links to the transcription language, storage and about screens', async () => {
+  it('links to the interface language, transcription language, storage and about screens', async () => {
     await renderScreen(<SettingsScreen />);
     const user = userEvent.setup();
+    await user.press(screen.getByRole('button', { name: 'Langue de l’interface' }));
     await user.press(screen.getByRole('button', { name: 'Langue de transcription' }));
     await user.press(screen.getByRole('button', { name: 'Stockage' }));
     await user.press(screen.getByRole('button', { name: 'À propos' }));
     expect(jest.mocked(router.push).mock.calls.map(([path]) => path)).toEqual([
+      '/settings/interface-language',
       '/settings/transcription-language',
       '/settings/storage',
       '/settings/about',

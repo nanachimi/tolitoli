@@ -644,3 +644,19 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - Jest : détection sur des phrases arabes, françaises, hébraïques, chinoises, cyrilliques et wolof, et sur des textes neutres ; segment arabe en interface française ; segment français en interface arabe, la rangée restant RTL ; transcript mélangé dans le Détail.
   - Émulateur : un enregistrement de démonstration arabe-français (`demo-tunis`, ajouté au jeu de démonstration) en interface française et arabe, et un transcript swahili-anglais en interface arabe. Captures `docs/captures/step-1c/d032-segments-melanges-fr.png`, `d032-segments-melanges-ar.png` et `d032-segments-latins-ar.png`.
 - **Dette iOS** : vérifier sur iPhone que `writingDirection` donne le même alignement.
+
+## D-033 — Arbitrages du propriétaire sur D-031, langue de l'interface en sous-écran
+
+- **Date / étape** : 2026-10-23, étape 1c. Le propriétaire a mis à jour `docs/design/` (guides Dialog, OptionRow, Player, QualityChip, RecordingCard, StorageMeter et les aperçus). Ces guides tranchent les cinq écarts signalés en D-031.
+- **Arbitrages** :
+  1. **Dialog avec saisie** : accepté. Le guide prévoit une variante à un seul `TextField` (renommer). Le bouton d'action reste désactivé tant que la valeur est vide ou inchangée.
+  2. **Carte en échec** : l'état manquait au guide. La carte montre `alert-triangle` en `danger` et un `QualityChip` `failed` (« Échec », après la langue quand elle est connue) ; le Détail montre la même puce. Commit `step-1c: show a failed transcription on the card`.
+  3. **Seuil disque** : c'est celui du code. L'enregistrement est refusé quand l'espace libre ne couvre pas 10 minutes au débit du profil actif ; l'alerte apparaît sous 500 Mo. `diskSpace.ts` fait foi. Stockage, Bibliothèque et Enregistrement appellent `checkDiskSpace` avec le profil actif, et lisent l'espace libre par la même fonction. Un test fixe le refus à l'octet près. Aucun seuil en dur ailleurs.
+  4. **Alignement des transcriptions en arabe** : chaque segment suit sa propre écriture (D-032).
+  5. **Lecteur sans barre d'onglets** : accepté. Le Détail n'est pas un onglet ; le lecteur repose sur la marge sûre du bas.
+- **Langue de l'interface en sous-écran** (nouvelle règle du guide OptionRow : au-delà de cinq choix exclusifs, un sous-écran) :
+  - les Réglages montrent une ligne « Langue de l'interface », la langue courante en sous-titre et un chevron, sur le modèle de « Langue de transcription » ;
+  - les langues sont sur `app/settings/interface-language.tsx`, chacune dans son propre nom. Le redémarrage annoncé reste en sous-titre de la ligne qui change le sens d'écriture ;
+  - **au retour d'un sous-écran, le focus revient sur la ligne qui l'a ouvert** (`useReturnFocus` : `AccessibilityInfo.sendAccessibilityEvent(ligne, 'focus')` quand l'écran Réglages redevient actif). Cela vaut pour les quatre lignes de navigation. Vérifié par Jest ; **pas encore vérifié avec TalkBack** sur le téléphone ;
+  - captures `docs/captures/step-1c/d033-{reglages,langue-interface}-{fr,ar}-{clair,sombre}.png`.
+- **Ligne « Pseudo »** : elle dépend de `__DEV__`, qui vaut `false` dans tout bundle de release, y compris la build preview et les mises à jour EAS Update. La capture de la preview `272c3221` (`build/captures/step-1c/smoke-272c3221-settings.png`) ne montre ni « Pseudo » ni le groupe Développement. Les captures où elle apparaît viennent du dev client (« Tolitoli Dev »). La condition est conservée, extraite dans `interfaceLanguageOptions(dev)` et testée dans les deux cas. Un test sur le profil EAS (`APP_VARIANT`) n'apporterait rien : un bundle de développement n'existe que dans le dev client.

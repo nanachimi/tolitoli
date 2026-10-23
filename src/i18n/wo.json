@@ -45,7 +45,8 @@
       "title": "Làkku jumtukaay bi",
       "hint": "Làkk bi ñuy bindee baat yi, dañu koy tànn ci beneen bérab.",
       "restartRtl": "Aplikasioŋ bi dina tàmbaliwaat ngir soppi fan lañuy bindee.",
-      "optionA11y": "Làkku jumtukaay bi: {{language}}"
+      "optionA11y": "Làkku jumtukaay bi: {{language}}",
+      "available": "Làkk yi am"
     },
     "transcription": {
       "title": "Bind",

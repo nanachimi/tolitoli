@@ -1,17 +1,25 @@
 import Constants from 'expo-constants';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { router, type Href } from 'expo-router';
+import { useRef, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type HostInstance } from 'react-native';
 
 import { isDemoDataEnabled, setDemoDataEnabled, useLibrary } from '@/features/library/library';
 import { totalBytes } from '@/features/library/storage';
 import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
-import { setUiLanguage, type SelectableLanguage } from '@/i18n';
-import { isRtl, PSEUDO_LANGUAGE, UI_LANGUAGES } from '@/i18n/languages';
+import { useReturnFocus } from '@/features/settings/useReturnFocus';
 import { findTranscriptionLanguage } from '@/services/transcription/languages';
 import { AppText, OptionGroup, OptionRow, Screen, space } from '@/ui';
 import { formatBytes, type Translate } from '@/ui/format/display';
+
+import { interfaceLanguageOptions } from '../settings/interface-language';
+
+const PLURAL_SAMPLES = [0, 1, 2, 5, 11, 21, 100];
+
+/** The interface language in its own name ("Français"), as the sub-screen lists it. */
+function currentLanguageName(code: string): string {
+  return interfaceLanguageOptions().find((option) => option.code === code)?.nativeName ?? code;
+}
 
 /** "Kiswahili · brouillon", or "Wolof · cloud requis" when there is no local engine. */
 export function transcriptionLanguageSummary(code: string, t: Translate): string {
@@ -23,33 +31,20 @@ export function transcriptionLanguageSummary(code: string, t: Translate): string
   return t('quality.withLanguage', { language: language.nativeName, quality });
 }
 
-/** Lets the restart notice show before a direction change reloads the app. */
-const RESTART_NOTICE_MS = 1000;
-
-const PLURAL_SAMPLES = [0, 1, 2, 5, 11, 21, 100];
-
-type Option = { code: SelectableLanguage; nativeName: string };
-
-const OPTIONS: Option[] = __DEV__
-  ? [...UI_LANGUAGES, { code: PSEUDO_LANGUAGE, nativeName: 'Pseudo' }]
-  : [...UI_LANGUAGES];
-
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
-  const [restarting, setRestarting] = useState(false);
+  const openedFrom = useReturnFocus();
+  const interfaceRow = useRef<HostInstance>(null);
+  const transcriptionRow = useRef<HostInstance>(null);
+  const storageRow = useRef<HostInstance>(null);
+  const aboutRow = useRef<HostInstance>(null);
+  const open = (row: RefObject<HostInstance | null>, path: Href) => {
+    openedFrom(row.current);
+    router.push(path);
+  };
   const library = useLibrary();
   const transcriptionLanguage = useTranscriptionLanguage((state) => state.code);
   const usedBytes = totalBytes([...library.list(), ...library.listTrash()]);
-
-  const select = (code: SelectableLanguage) => {
-    if (code === i18n.language) return;
-    if (isRtl(code) !== isRtl(i18n.language)) {
-      setRestarting(true);
-      setTimeout(() => void setUiLanguage(code), RESTART_NOTICE_MS);
-      return;
-    }
-    void setUiLanguage(code);
-  };
 
   return (
     <Screen>
@@ -58,66 +53,49 @@ export default function SettingsScreen() {
           {t('settings.title')}
         </AppText>
 
-        <OptionGroup title={t('settings.language.title')} exclusive>
-          {OPTIONS.map((option) => (
-            <OptionRow
-              key={option.code}
-              kind="radio"
-              label={option.nativeName}
-              labelIsData
-              // Says it before choosing: this language flips the writing direction and restarts.
-              description={
-                isRtl(option.code) !== isRtl(i18n.language)
-                  ? t('settings.language.restartRtl')
-                  : undefined
-              }
-              checked={option.code === i18n.language}
-              disabled={restarting}
-              accessibilityLabel={t('settings.language.optionA11y', {
-                language: option.nativeName,
-              })}
-              onPress={() => select(option.code)}
-            />
-          ))}
+        <OptionGroup title={t('settings.language.title')}>
+          <OptionRow
+            ref={interfaceRow}
+            kind="link"
+            label={t('settings.language.title')}
+            description={currentLanguageName(i18n.language)}
+            onPress={() => open(interfaceRow, '/settings/interface-language')}
+          />
         </OptionGroup>
-        <AppText variant="caption" color="ink-muted" style={styles.hint}>
-          {t('settings.language.hint')}
-        </AppText>
 
         <OptionGroup title={t('settings.transcription.title')}>
           <OptionRow
             kind="link"
+            ref={transcriptionRow}
             label={t('settings.transcription.language')}
             description={transcriptionLanguageSummary(transcriptionLanguage, t)}
-            onPress={() => router.push('/settings/transcription-language')}
+            onPress={() => open(transcriptionRow, '/settings/transcription-language')}
           />
         </OptionGroup>
 
         <OptionGroup title={t('storage.title')}>
           <OptionRow
+            ref={storageRow}
             kind="link"
             label={t('storage.title')}
             description={t('settings.storage.used', {
               size: formatBytes(usedBytes, i18n.language, t),
             })}
-            onPress={() => router.push('/settings/storage')}
+            onPress={() => open(storageRow, '/settings/storage')}
           />
         </OptionGroup>
 
         <OptionGroup title={t('settings.about.title')}>
           <OptionRow
+            ref={aboutRow}
             kind="link"
             label={t('settings.about.title')}
             description={t('settings.about.version', {
               version: Constants.expoConfig?.version ?? '',
             })}
-            onPress={() => router.push('/settings/about')}
+            onPress={() => open(aboutRow, '/settings/about')}
           />
         </OptionGroup>
-
-        {restarting ? (
-          <AppText accessibilityLiveRegion="polite">{t('settings.language.restartRtl')}</AppText>
-        ) : null}
 
         {__DEV__ ? (
           <View style={styles.dev}>

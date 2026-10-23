@@ -47,7 +47,8 @@
       "title": "Langue de l’interface",
       "hint": "La langue de transcription se règle séparément.",
       "restartRtl": "L’application va redémarrer pour changer le sens d’écriture.",
-      "optionA11y": "Langue de l’interface : {{language}}"
+      "optionA11y": "Langue de l’interface : {{language}}",
+      "available": "Langues disponibles"
     },
     "transcription": {
       "title": "Transcription",

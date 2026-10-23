@@ -31,3 +31,8 @@ export async function usePseudoLocale() {
 }
 
 export const t = i18next.t;
+
+declare global {
+  /** Runs the screens' focus effects again, as when a screen comes back (jest.setup.ts). */
+  function refocus(): void;
+}

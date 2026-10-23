@@ -46,7 +46,8 @@
       "title": "App language",
       "hint": "The transcription language is set separately.",
       "restartRtl": "The app will restart to change the writing direction.",
-      "optionA11y": "App language: {{language}}"
+      "optionA11y": "App language: {{language}}",
+      "available": "Available languages"
     },
     "transcription": {
       "title": "Transcription",

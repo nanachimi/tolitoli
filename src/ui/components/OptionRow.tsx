@@ -1,5 +1,5 @@
-import { Children, type ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Children, type ReactNode, type Ref } from 'react';
+import { Pressable, StyleSheet, View, type HostInstance } from 'react-native';
 
 import { useTheme } from '../theme';
 import { AppText } from './AppText';
@@ -20,6 +20,8 @@ export type OptionRowProps = {
   accessibilityLabel?: string;
   /** The label is data (a language written in its own name), not interface text. */
   labelIsData?: boolean;
+  /** Lets a screen give the focus back to this row when a sub-screen closes. */
+  ref?: Ref<HostInstance>;
 };
 
 const SWITCH = { width: 44, height: 26, thumb: 18, inset: 3 };
@@ -66,11 +68,13 @@ export function OptionRow({
   disabled = false,
   accessibilityLabel,
   labelIsData = false,
+  ref,
 }: OptionRowProps) {
   const theme = useTheme();
   const role = kind === 'radio' ? 'radio' : kind === 'switch' ? 'switch' : 'button';
   return (
     <Pressable
+      ref={ref}
       accessibilityRole={role}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={description}
