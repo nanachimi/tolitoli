@@ -143,7 +143,7 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 | Zoulou | zu | Non | Sahara v2.5, modèle bilingue zoulou-anglais | Non |
 | Luganda | lg | Non | Sahara v2.5, modèle bilingue luganda-anglais | Non |
 | Wolof | wo | Non | Sahara v2.5 (bilingue wolof-français à confirmer) | Non |
-| Lingala | ln | Oui, qualité moyenne | Sahara v2.5 à confirmer auprès d'Intron ; sinon Sunbird ASR-51 auto-hébergé | Oui, qualité moyenne |
+| Lingala | ln | Oui, qualité moyenne | Aucun : non couvert par Intron (liste officielle vérifiée le 22 octobre 2026) ; Whisper local seulement en 1.0 | Oui, qualité moyenne |
 | Malgache | mg | Oui, qualité moyenne | Idem | Oui, qualité moyenne |
 
 **Conséquences**
@@ -156,9 +156,9 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 
 **À faire avant l'étape 8**
 
-- [ ] Contacter Intron : tarif par minute et dégressivité, liste exacte des 23 langues (lingala et malgache ?), séparation des locuteurs, horodatage par mot, latence, conservation de l'audio, région d'hébergement, conditions pour une app grand public.
+- [ ] Fait le 22 octobre 2026 : Intron est en libre-service. Inscription sur voice.intron.io, clé API dans l'onglet Developers, crédits prépayés (USD, ou NGN pour un compte nigérian), tarif visible après connexion. API : POST https://infer.voice.intron.io/file/v1/upload en multipart (audio\_file\_name, audio\_file\_blob, use\_language\_asr\_input), puis Get File Status ; formats wav, mp3, m4a, ogg, flac ; option use\_diarization ; use\_category à fixer sur file\_category\_general ou file\_category\_meeting\_notes (défaut : télésanté) ; use\_disable\_llm\_corrections à évaluer sur audio réel ; 60 requêtes par minute ; variantes synchrone et streaming disponibles ; documentation sur docs.voice.intron.io. Langues confirmées : sw, ha, yo, ig, pcm, zu, lg, wo (toutes en mode bilingue avec l'anglais), ainsi que fr, en, de, ru, ar. Non couverts : lingala et malgache. Restent à lire après connexion : prix par minute, crédits offerts, conservation de l'audio.
 - [ ] Collecter 30 minutes d'audio conversationnel réel par langue, avec le mélange anglais ou français habituel, pour le banc de mesure Whisper vs Sahara vs Sunbird.
-- [ ] Vérifier la licence de Sunbird ASR-51 si le repli lingala / malgache est nécessaire.
+- [ ] Sunbird ASR-51 n'est plus nécessaire : lingala et malgache restent sur Whisper local (qualité moyenne), sans moteur cloud en 1.0.
 
 ## Architecture technique
 
@@ -228,7 +228,7 @@ Le mode local reste gratuit et illimité pour toujours ; le cloud est un confort
 | AssemblyAI | environ 0,004 à 0,01 $/min | Oui | Bon | Très bonne diarisation, résumés intégrés pour la V2 |
 | OpenAI (Whisper / gpt-4o-transcribe) | environ 0,006 $/min | Non natif | Excellent | Qualité, mais pas de locuteurs sans post-traitement |
 | Google Speech-to-Text | environ 0,016 $/min | Oui | Bon | Plus cher ; utile si vous visez beaucoup de langues rares |
-| Intron Sahara v2.5 | Sur devis : tarif par minute à demander | À confirmer | Oui, français africain | Seul moteur commercial couvrant haoussa, yoruba, igbo, pidgin, zoulou, luganda, wolof et swahili bilingue : retenu pour les langues africaines (voir la section « Langues ») |
+| Intron Sahara v2.5 | Crédits prépayés en libre-service ; tarif par minute visible après inscription sur voice.intron.io | À confirmer | Oui, français africain | Seul moteur commercial couvrant haoussa, yoruba, igbo, pidgin, zoulou, luganda, wolof et swahili bilingue : retenu pour les langues africaines (voir la section « Langues ») |
 
 Avec Deepgram à 0,006 $/min, 60 min gratuites coûtent environ 0,36 $ par utilisateur actif et par mois ; le palier Plus à 20 h coûte environ 7,20 $ de STT au maximum pour 4,99 € encaissés, donc l'abonné moyen doit consommer moins de 12 h pour rester rentable. À surveiller dès la V1 avec un tableau de bord de consommation ; ajuster le quota Plus à 10 h si la moyenne dépasse 12 h.
 
@@ -373,7 +373,24 @@ Les étapes 0 à 5 constituent le MVP publiable en local uniquement ; publier à
 
 **Ajouts liés aux appels et à la synchronisation** : l'étape 1 inclut l'écriture par blocs et la récupération des fichiers partiels ; l'étape 6b « Appels » (détection d'appel, assistant d'appel, mémo post-appel, import automatique des enregistrements du dialer Android) s'insère après l'étape 6 et peut être reportée en V2 ; la synchronisation intelligente (boîte de sortie, upload résumable, sommes de contrôle, écran Synchronisation, politique wifi/données) fait partie des critères de fin de l'étape 7.
 
-**Réordonnancement imposé par les dix langues africaines** : sept d'entre elles n'ont aucun moteur local, donc l'app publiée doit déjà inclure le cloud STT. Nouvel ordre : 0, 1, 2, 3, 4, puis 7a (backend minimal : projet Supabase, authentification anonyme, Edge Function, compteur de quota, RLS), puis 8 (Deepgram et Intron Sahara v2.5, table `languages.ts`, banc de mesure par langue sur audio réel), puis 5 (finition, TestFlight et test interne Play), puis 6, 6b, 7b (comptes nommés et synchronisation complète), puis 9. La première version publiée correspond aux étapes 0 à 4, 7a, 8 et 5.
+**Plan accéléré : Android 1.0 sur le Play Store (22 octobre 2026).** Objectif : une première version publique Android le plus tôt possible ; iOS suit dès que le compte Apple Developer est pris. Quatre leviers :
+
+1. **Le test fermé Google Play démarre tôt.** Un compte développeur personnel doit faire tester l'app par au moins 12 testeurs pendant 14 jours consécutifs avant la production. Ce délai est incompressible : la première build utilisable part en test fermé dès la semaine 3, et les 14 jours courent pendant la fin du développement. À préparer dès maintenant : compte Play Console (25 $), recrutement des 12 testeurs, politique de confidentialité publiée, formulaire « sécurité des données », déclaration du service de premier plan micro avec vidéo de démonstration, fiche et captures.
+2. **Intron en libre-service, donc les langues africaines restent en 1.0.** Le backend se réduit à ce que la clé Intron impose : Edge Function Supabase qui porte la clé, authentification anonyme liée à l'appareil, compteur de quota côté serveur (étape 7a réduite). Comptes nommés et synchronisation multi-appareils passent en 1.1. Lingala et malgache restent sur Whisper local.
+3. **Deux sessions Claude Code en parallèle** (worktrees) dès la clôture de l'étape 1 : l'étape 2 (base locale et bibliothèque) et l'étape 3 (Whisper) ne touchent pas les mêmes fichiers. Le téléphone reste unique ; les tests sur appareil se font en alternance, toujours après un démarrage à froid.
+4. **Périmètre 1.0 réduit.** Conservé : enregistrement, transcription locale et cloud, lecteur synchronisé, recherche, export texte et audio, réglages, écran de consentement légal, accessibilité de base. Reporté en 1.1 ou 1.2 : vue tablette, dossiers, marqueurs, exports PDF et SRT, sauvegarde cloud, comptes nommés, synchronisation, flux Sahara en direct.
+
+| Semaine | Travail | Jalon |
+| --- | --- | --- |
+| 1 (en cours) | Clôture de l'étape 1 sur Android ; compte Play Console ; recrutement des testeurs ; compte Intron et lecture du tarif ; brouillons de la politique de confidentialité et de la fiche | Étape 1 close |
+| 2 | Étapes 2 et 3 en parallèle | Enregistrer, transcrire en local, retrouver un enregistrement |
+| 3 | Étape 4 (lecteur synchronisé, export) ; étape 5 réduite (consentement, réglages, onboarding) ; 7a réduite + 8 (Intron) si la semaine le permet | **Build en test fermé : le compte à rebours de 14 jours démarre** |
+| 4 et 5 | Corrections remontées par les testeurs via EAS Update ; 7a réduite + 8 (Intron) ; relecture juridique du consentement | Fin des 14 jours |
+| 6 | Soumission en production ; revue Google | **Tolitoli 1.0 Android sur le Play Store** |
+
+L'ordre d'exécution des étapes devient : 1, 1b, 1c, puis 2 et 3, puis 4, 5 réduite, 7a réduite, 8, 9. Révision du 23 octobre 2026 : les étapes 2 et 3 s'enchaînent dans un seul dépôt au lieu de deux worktrees en parallèle. Les worktrees ont coûté plus en coordination (DECISIONS.md et CLAUDE.md tenus par une seule session, téléphone partagé) qu'ils n'ont fait gagner, et l'étape 3 est de toute façon bornée par l'appareil. Le temps perdu est repris en faisant entrer react-native-executorch dans la build native de l'étape 2, pour que l'étape 3 n'ait pas à en lancer une autre. Les étapes 6, 6b et 7b passent en 1.1. Ce calendrier suppose une disponibilité quotidienne pour les tests sur appareil ; chaque jour sans test décale la semaine 3 d'autant.
+
+**Réordonnancement imposé par les dix langues africaines** : sept d'entre elles n'ont aucun moteur local, donc l'app publiée doit déjà inclure le cloud STT. Nouvel ordre : 0, 1, 2, 3, 4, puis 7a (backend minimal : projet Supabase, authentification anonyme, Edge Function, compteur de quota, RLS), puis 8 (Deepgram et Intron Sahara v2.5, table `languages.ts`, banc de mesure par langue sur audio réel), puis 5 (finition, TestFlight et test interne Play), puis 6, 6b, 7b (comptes nommés et synchronisation complète), puis 9. Ce réordonnancement est précisé par le plan accéléré ci-dessus (22 octobre 2026), qui fait foi.
 
 **Conventions à imposer dès l'étape 0** (reprises dans `CLAUDE.md`) : TypeScript strict ; services métier sans dépendance React ; un test par règle de routage et par migration ; aucune clé secrète dans le dépôt ; chaque étape = une branche et une PR ; commits en anglais, interface en français, anglais, allemand, russe, arabe (droite à gauche), wolof et chinois simplifié via i18n dès l'étape 0 (voir la section « Langues »).
 
