@@ -19,4 +19,5 @@ Faits vérifiés sur lesquels ils reposent (build de développement `7ff8b5e8`, 
   - La fiche du store ne promet rien à ces appareils : pas de « fonctionne sur tous les téléphones Android », ni de « même les plus modestes ».
   - Elle mentionne la restriction, par exemple « Nécessite un téléphone Android 64 bits ».
   - Le nombre de modèles exclus, relevé au premier envoi d'AAB dans le catalogue d'appareils, est noté dans `docs/DECISIONS.md`.
+- **Langues** (D-037) : la fiche ne promet rien pour le lingala et le malgache en 1.0 (affichés « pas encore disponible » dans l'app), et ne présente aucune langue comme transcrite sur l'appareil sans dire que la qualité dépend du modèle. Les langues africaines se transcrivent par le cloud.
 - **Hors 1.0** : comptes nommés, synchronisation, sauvegarde cloud, paiement. Le formulaire est à revoir à chaque ajout.

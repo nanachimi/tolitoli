@@ -115,7 +115,7 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 | Langues | Whisper standard (local, gratuit) | Moteurs spécialisés (cloud) | Qualité attendue |
 | --- | --- | --- | --- |
 | Français, anglais, allemand, russe, chinois mandarin, arabe standard | Oui | — | Bonne à très bonne ; l'arabe dialectal (maghrébin, égyptien) est nettement moins bien reconnu |
-| Swahili | Oui | Sunbird ASR-51, Google Chirp 3, AssemblyAI, AWS Transcribe | Environ 34 % de mots erronés avec Whisper, 9 % avec Sunbird ([source](https://convertaudiototext.com/blog/best-transcription-for-african-languages), [Sunbird](https://salt.sunbird.ai/models/asr-whisper-51-african-languages/)) |
+| Swahili | Oui | Sunbird ASR-51, Google Chirp 3, AssemblyAI, AWS Transcribe | Environ 34 % de mots erronés avec un grand modèle Whisper (pas le modèle embarqué : tiny et base sont autour de 100 %, D-037), 9 % avec Sunbird ([source](https://convertaudiototext.com/blog/best-transcription-for-african-languages), [Sunbird](https://salt.sunbird.ai/models/asr-whisper-51-african-languages/)) |
 | Haoussa, yoruba, amharique, somali, shona, lingala, afrikaans, malgache | Oui, mais médiocre | Sunbird ASR-51 (haoussa 17 %, yoruba 38 %), Google Chirp 3 (aperçu), AWS Transcribe, AssemblyAI (« fair ») | Yoruba vers 49 % d'erreurs en local : brouillon seulement ; acceptable en cloud spécialisé |
 | Wolof | Non : plus de 100 % d'erreurs sur les bancs d'essai | Sunbird ASR-51 (32 %), Google Chirp 3 (aperçu), AWS Transcribe (différé uniquement), Soynade / Wolof-HuBERT (accès anticipé), Meta MMS | Utilisable comme brouillon via le cloud spécialisé seulement |
 | Igbo, twi / akan, ewe, ga, dagbani, pidgin nigérian (Ghana, Nigeria) | Non | Sunbird ASR-51, Intron Sahara v2.5 (31 langues africaines, mélange de langues), Meta MMS | Idem |
@@ -124,7 +124,7 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 
 **Conséquences pour le produit**
 
-- Whisper embarqué reste le moteur local pour les grandes langues. Les modèles spécialisés africains (Sunbird est un Whisper large-v3 affiné, 1,5 milliard de paramètres, environ 3 Go) sont trop lourds pour un téléphone : ces langues passent obligatoirement par le cloud.
+- Whisper embarqué donne, en tiny et en base, une qualité de brouillon à moyenne même sur les grandes langues ; la qualité annoncée dépend du couple langue–modèle, et un texte vraiment lisible demande small ou le cloud (D-037). Les modèles spécialisés africains (Sunbird est un Whisper large-v3 affiné, 1,5 milliard de paramètres, environ 3 Go) sont trop lourds pour un téléphone : ces langues passent obligatoirement par le cloud.
 - Un second moteur cloud « langues africaines » est ajouté à l'étape 8, au choix : Sunbird ASR-51 auto-hébergé via faster-whisper sur un GPU à la demande (environ 0,50 à 1 $ par heure de calcul, licence à vérifier), ou l'API Intron Sahara v2.5, ou Google Chirp 3. Le routage choisit le moteur selon la langue de transcription sélectionnée.
 - La détection automatique de langue de Whisper n'est pas fiable pour ces langues : l'utilisateur choisit la langue de transcription manuellement, l'app la mémorise par défaut.
 - Le mélange de langues (wolof-français, bambara-français) est la norme dans l'usage réel ; Whisper standard le gère mal. Chaque langue cible est validée à l'étape 8 sur au moins 30 minutes d'audio réel, pas sur des corpus de lecture.
@@ -135,20 +135,20 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 
 | Langue | Code | Moteur local (Whisper embarqué) | Moteur cloud | Utilisable sans cloud ? |
 | --- | --- | --- | --- | --- |
-| Swahili | sw | Oui, brouillon (environ 34 % d'erreurs) | Sahara v2.5, modèle bilingue swahili-anglais | Oui, qualité brouillon |
-| Haoussa | ha | Oui, brouillon | Sahara v2.5, modèle bilingue haoussa-anglais | Oui, qualité brouillon |
-| Yoruba | yo | Oui, brouillon (environ 49 % d'erreurs) | Sahara v2.5, modèle bilingue yoruba-anglais | Oui, qualité brouillon |
+| Swahili | sw | Non : environ 100 % d'erreurs en tiny, base et small (FLEURS ; les 34 % sont un chiffre de grand modèle) | Sahara v2.5, modèle bilingue swahili-anglais | Non (D-037) |
+| Haoussa | ha | Non : environ 100 % d'erreurs (FLEURS) | Sahara v2.5, modèle bilingue haoussa-anglais | Non (D-037) |
+| Yoruba | yo | Non : plus de 100 % d'erreurs (FLEURS) | Sahara v2.5, modèle bilingue yoruba-anglais | Non (D-037) |
 | Igbo | ig | Non | Sahara v2.5 (bilingue à confirmer) | Non |
 | Pidgin nigérian | pcm | Non | Sahara v2.5, modèle bilingue pidgin-anglais | Non |
 | Zoulou | zu | Non | Sahara v2.5, modèle bilingue zoulou-anglais | Non |
 | Luganda | lg | Non | Sahara v2.5, modèle bilingue luganda-anglais | Non |
 | Wolof | wo | Non | Sahara v2.5 (bilingue wolof-français à confirmer) | Non |
-| Lingala | ln | Oui, qualité moyenne | Aucun : non couvert par Intron (liste officielle vérifiée le 22 octobre 2026) ; Whisper local seulement en 1.0 | Oui, qualité moyenne |
-| Malgache | mg | Oui, qualité moyenne | Idem | Oui, qualité moyenne |
+| Lingala | ln | Non : environ 100 % d'erreurs (FLEURS) | Aucun : non couvert par Intron (liste officielle vérifiée le 22 octobre 2026) | Non : « pas encore disponible » en 1.0 (D-037) |
+| Malgache | mg | Non : absent des tableaux FLEURS d'OpenAI | Idem | Non : « pas encore disponible » en 1.0 (D-037) |
 
 **Conséquences**
 
-- Sept langues sur dix n'ont aucun moteur local : pour elles, l'app ne fonctionne pas sans cloud. Le MVP « local uniquement » ne tient donc plus : le backend minimal et le moteur cloud remontent avant la première publication (voir le plan de développement).
+- Aucune des dix langues n'a de moteur local utilisable (D-037) : huit demandent le cloud, et le lingala et le malgache, que rien ne couvre, sont affichés « pas encore disponible » en 1.0. Le MVP « local uniquement » ne tient donc plus : le backend minimal et le moteur cloud remontent avant la première publication (voir le plan de développement).
 - Pour ne pas imposer de compte : authentification anonyme Supabase (identifiant lié à l'appareil) pour compter le quota ; le compte nommé reste optionnel et ne sert qu'à la synchronisation multi-appareils.
 - Une interface `TranscriptionEngine` unique et trois implémentations : `WhisperLocal`, `DeepgramCloud` (grandes langues, séparation des locuteurs) et `SaharaCloud` (langues africaines) ; `SunbirdCloud` en quatrième seulement si Intron ne couvre pas le lingala et le malgache. La table `languages.ts` associe à chaque langue son moteur local éventuel, son moteur cloud et sa qualité attendue, et pilote le sélecteur comme le routage.
 - Transcription en direct pendant l'enregistrement : Whisper local pour les langues qu'il couvre ; pour les langues africaines, l'API en flux de Sahara v2.5 le permet aussi, mais elle consomme le quota cloud en continu et exige du réseau pendant tout l'enregistrement. V1 : transcription différée (fichier envoyé à la fin de l'enregistrement, local d'abord) ; le flux Sahara est une option de V2.
@@ -158,7 +158,7 @@ Méthode : un fichier JSON par langue, clés en anglais, traduction automatique 
 
 - [ ] Fait le 22 octobre 2026 : Intron est en libre-service. Inscription sur voice.intron.io, clé API dans l'onglet Developers, crédits prépayés (USD, ou NGN pour un compte nigérian), tarif visible après connexion. API : POST https://infer.voice.intron.io/file/v1/upload en multipart (audio\_file\_name, audio\_file\_blob, use\_language\_asr\_input), puis Get File Status ; formats wav, mp3, m4a, ogg, flac ; option use\_diarization ; use\_category à fixer sur file\_category\_general ou file\_category\_meeting\_notes (défaut : télésanté) ; use\_disable\_llm\_corrections à évaluer sur audio réel ; 60 requêtes par minute ; variantes synchrone et streaming disponibles ; documentation sur docs.voice.intron.io. Langues confirmées : sw, ha, yo, ig, pcm, zu, lg, wo (toutes en mode bilingue avec l'anglais), ainsi que fr, en, de, ru, ar. Non couverts : lingala et malgache. Restent à lire après connexion : prix par minute, crédits offerts, conservation de l'audio.
 - [ ] Collecter 30 minutes d'audio conversationnel réel par langue, avec le mélange anglais ou français habituel, pour le banc de mesure Whisper vs Sahara vs Sunbird.
-- [ ] Sunbird ASR-51 n'est plus nécessaire : lingala et malgache restent sur Whisper local (qualité moyenne), sans moteur cloud en 1.0.
+- [ ] Sunbird ASR-51 n'est plus prévu : lingala et malgache n'ont aucun moteur en 1.0, ni local (Whisper embarqué autour de 100 % d'erreurs) ni cloud, et sont affichés « pas encore disponible » (D-037). Un moteur pour eux est une question de 1.1.
 
 ## Architecture technique
 
@@ -186,7 +186,7 @@ L'enregistrement produit un fichier .m4a et un flux PCM 16 kHz ; la file d'atten
 | Paiement | RevenueCat (expo plugin) | Gère App Store et Play Store, quotas, essais |
 | Build et mises à jour | EAS Build, EAS Update, EAS Submit | Pas de Mac requis pour compiler iOS |
 | Tests | Jest + React Native Testing Library ; Maestro pour les parcours | Les services métier sont du TypeScript pur, testables sans appareil |
-| Transcription cloud, langues africaines | Intron Sahara v2.5 (API REST et flux, appelée par une Edge Function) | Routage par langue via la table languages.ts ; Sunbird ASR-51 auto-hébergé en repli pour le lingala et le malgache si Intron ne les couvre pas |
+| Transcription cloud, langues africaines | Intron Sahara v2.5 (API REST et flux, appelée par une Edge Function) | Routage par langue via la table languages.ts ; lingala et malgache : aucun moteur en 1.0, « pas encore disponible » (D-037) |
 
 **Structure du dépôt**
 
@@ -453,7 +453,7 @@ Les étapes 0 à 5 constituent le MVP publiable en local uniquement ; publier à
 **Plan accéléré : Android 1.0 sur le Play Store (22 octobre 2026).** Objectif : une première version publique Android le plus tôt possible ; iOS suit dès que le compte Apple Developer est pris. Quatre leviers :
 
 1. **Le test fermé Google Play démarre tôt.** Un compte développeur personnel doit faire tester l'app par au moins 12 testeurs pendant 14 jours consécutifs avant la production. Ce délai est incompressible : la première build utilisable part en test fermé dès la semaine 3, et les 14 jours courent pendant la fin du développement. À préparer dès maintenant : compte Play Console (25 $), recrutement des 12 testeurs, politique de confidentialité publiée, formulaire « sécurité des données », déclaration du service de premier plan micro avec vidéo de démonstration, fiche et captures.
-2. **Intron en libre-service, donc les langues africaines restent en 1.0.** Le backend se réduit à ce que la clé Intron impose : Edge Function Supabase qui porte la clé, authentification anonyme liée à l'appareil, compteur de quota côté serveur (étape 7a réduite). Comptes nommés et synchronisation multi-appareils passent en 1.1. Lingala et malgache restent sur Whisper local.
+2. **Intron en libre-service, donc les langues africaines restent en 1.0.** Le backend se réduit à ce que la clé Intron impose : Edge Function Supabase qui porte la clé, authentification anonyme liée à l'appareil, compteur de quota côté serveur (étape 7a réduite). Comptes nommés et synchronisation multi-appareils passent en 1.1. Lingala et malgache : « pas encore disponible » en 1.0 (D-037).
 3. **Deux sessions Claude Code en parallèle** (worktrees) dès la clôture de l'étape 1 : l'étape 2 (base locale et bibliothèque) et l'étape 3 (Whisper) ne touchent pas les mêmes fichiers. Le téléphone reste unique ; les tests sur appareil se font en alternance, toujours après un démarrage à froid.
 4. **Périmètre 1.0 réduit.** Conservé : enregistrement, transcription locale et cloud, lecteur synchronisé, recherche, export texte et audio, réglages, écran de consentement légal, accessibilité de base. Reporté en 1.1 ou 1.2 : vue tablette, dossiers, marqueurs, exports PDF et SRT, sauvegarde cloud, comptes nommés, synchronisation, flux Sahara en direct.
 
