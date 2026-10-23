@@ -253,6 +253,83 @@ describe('SqliteLibraryRepository: transcription API for step 3', () => {
   });
 });
 
+describe('SqliteLibraryRepository: transcript drafts (step 3)', () => {
+  function transcribing(context = setup()) {
+    const { repository } = context;
+    repository.createRecording({ id: 'rec', createdAt: new Date(T0).toISOString() });
+    repository.finalizeRecording('rec', FINAL);
+    repository.queueTranscription('rec', { language: 'fr', engine: 'local', model: 'tiny' });
+    repository.startTranscription('rec');
+    return context;
+  }
+
+  it('keeps each segment with the cursor, without outbox entries', () => {
+    const { repository, client } = transcribing();
+    const before = outboxOps(client, 'rec');
+    repository.saveDraft('rec', { startMs: 1200, endMs: 4800, text: 'Bonjour' }, 4800);
+    repository.saveDraft('rec', null, 60_000);
+    repository.saveDraft('rec', { startMs: 61_000, endMs: 64_500, text: 'à tous' }, 64_500);
+    expect(repository.transcriptionCheckpoint('rec')).toEqual({
+      cursorMs: 64_500,
+      drafts: [
+        { startMs: 1200, endMs: 4800, text: 'Bonjour' },
+        { startMs: 61_000, endMs: 64_500, text: 'à tous' },
+      ],
+    });
+    expect(outboxOps(client, 'rec')).toEqual(before);
+  });
+
+  it('survives a relaunch', () => {
+    const context = transcribing();
+    context.repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Un' }, 3000);
+    expect(context.relaunch().transcriptionCheckpoint('rec')).toEqual({
+      cursorMs: 3000,
+      drafts: [{ startMs: 0, endMs: 3000, text: 'Un' }],
+    });
+  });
+
+  it('turns the drafts into the transcript in one go', () => {
+    const { repository, client } = transcribing();
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Un' }, 3000);
+    repository.saveDraft('rec', { startMs: 3500, endMs: 6000, text: 'Deux' }, 6000);
+    repository.completeTranscription('rec', { quality: 'good' });
+    expect(repository.segments('rec').map((segment) => segment.text)).toEqual(['Un', 'Deux']);
+    expect(repository.get('rec')).toMatchObject({ state: 'transcribed', quality: 'good' });
+    expect(repository.transcriptionCheckpoint('rec')).toEqual({ cursorMs: 0, drafts: [] });
+    expect(client.prepare(`select count(*) as n from transcript_drafts`).get()).toEqual({ n: 0 });
+    expect(repository.search('deux').map((item) => item.id)).toEqual(['rec']);
+  });
+
+  it('keeps the previous transcript through a retranscription that fails', () => {
+    const { repository } = transcribing();
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Ancien' }, 3000);
+    repository.completeTranscription('rec', { quality: 'good' });
+    // Another language: a new job, which fails halfway.
+    repository.queueTranscription('rec', { language: 'en', engine: 'local', model: 'tiny' });
+    repository.startTranscription('rec');
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Old' }, 3000);
+    expect(repository.segments('rec').map((segment) => segment.text)).toEqual(['Ancien']);
+    repository.failTranscription('rec', 'failed');
+    expect(repository.segments('rec').map((segment) => segment.text)).toEqual(['Ancien']);
+    expect(repository.search('ancien').map((item) => item.id)).toEqual(['rec']);
+  });
+
+  it('drops the drafts of an earlier job when a new one is queued', () => {
+    const { repository } = transcribing();
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Un' }, 3000);
+    repository.failTranscription('rec', 'failed');
+    repository.queueTranscription('rec', { language: 'de', engine: 'local', model: 'tiny' });
+    expect(repository.transcriptionCheckpoint('rec')).toEqual({ cursorMs: 0, drafts: [] });
+  });
+
+  it('refuses a draft outside a transcription under way', () => {
+    const { repository } = setup();
+    repository.createRecording({ id: 'rec', createdAt: new Date(T0).toISOString() });
+    repository.finalizeRecording('rec', FINAL);
+    expect(() => repository.saveDraft('rec', null, 1000)).toThrow(/No transcription under way/);
+  });
+});
+
 describe('SqliteLibraryRepository: trash purge', () => {
   function trashedOnDisk(id = 'old') {
     const context = setup();

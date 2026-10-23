@@ -3,7 +3,9 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 
 import journal from '../migrations/meta/_journal.json';
-import { MIGRATIONS_FOLDER, testDatabase } from './testDatabase';
+import { rmSync } from 'fs';
+
+import { MIGRATIONS_FOLDER, migrationsBefore, testDatabase } from './testDatabase';
 
 type Client = InstanceType<typeof Database>;
 
@@ -129,6 +131,43 @@ const MIGRATION_TESTS: Record<string, () => void> = {
     expect(
       client.prepare(`select rowid from segments_fts where segments_fts match '"23"'`).all(),
     ).toHaveLength(1);
+  },
+
+  '0003_transcript_drafts': () => {
+    // A device populated under 0002: a transcribed recording keeps everything.
+    const before = migrationsBefore('0003_transcript_drafts');
+    const client = new Database(':memory:');
+    client.pragma('foreign_keys = ON');
+    const db = drizzle(client);
+    migrate(db, { migrationsFolder: before });
+    rmSync(before, { recursive: true });
+    insertRecording(client, 'a', { transcription_state: 'done', language: 'fr', quality: 'good' });
+    client
+      .prepare(
+        `insert into segments (id, recording_id, start_ms, end_ms, text, search_text) values (?, ?, ?, ?, ?, ?)`,
+      )
+      .run('a:0', 'a', 0, 1000, 'Bonjour', 'bonjour');
+    migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
+
+    expect(
+      client
+        .prepare(`select transcription_state, quality, transcription_cursor_ms from recordings`)
+        .get(),
+    ).toEqual({ transcription_state: 'done', quality: 'good', transcription_cursor_ms: null });
+    expect(client.prepare(`select text from segments`).all()).toEqual([{ text: 'Bonjour' }]);
+
+    const draft = client.prepare(
+      `insert into transcript_drafts (recording_id, idx, start_ms, end_ms, text) values (?, ?, ?, ?, ?)`,
+    );
+    draft.run('a', 0, 0, 4000, 'Premier');
+    // One draft per index, a valid span, an existing recording.
+    expect(() => draft.run('a', 0, 4000, 8000, 'Doublon')).toThrow(/UNIQUE|PRIMARY/);
+    expect(() => draft.run('a', 1, 5000, 4000, 'À rebours')).toThrow(/CHECK/);
+    expect(() => draft.run('a', 2, -1, 4000, 'Négatif')).toThrow(/CHECK/);
+    expect(() => draft.run('nobody', 0, 0, 1000, 'Orphelin')).toThrow(/FOREIGN KEY/);
+    // Drafts go with their recording.
+    client.prepare(`delete from recordings where id = ?`).run('a');
+    expect(client.prepare(`select count(*) as n from transcript_drafts`).get()).toEqual({ n: 0 });
   },
 };
 

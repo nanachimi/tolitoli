@@ -2,7 +2,7 @@ import { and, asc, desc, eq, inArray, isNotNull, isNull, lte, sql } from 'drizzl
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 
 import * as schema from '@/db/schema';
-import { outbox, recordings, segments, type RecordingRow } from '@/db/schema';
+import { outbox, recordings, segments, transcriptDrafts, type RecordingRow } from '@/db/schema';
 
 import { joinPath, type Fs } from '../audio/fs';
 import type { RecordingManifest } from '../audio/recordingStore';
@@ -64,6 +64,12 @@ export type FinalizeInput = {
 };
 
 export type TranscriptSegment = Omit<Segment, 'id'>;
+
+/** Where a transcription under way stands: audio done up to `cursorMs`, its segments so far. */
+export type TranscriptionCheckpoint = {
+  cursorMs: number;
+  drafts: { startMs: number; endMs: number; text: string }[];
+};
 
 /** Library rows of SQLite (step 2), behind the interface the screens already use. */
 export class SqliteLibraryRepository implements LibraryRepository {
@@ -311,15 +317,22 @@ export class SqliteLibraryRepository implements LibraryRepository {
     });
   }
 
+  /** A new job (language, engine or model): the drafts of an earlier one are dropped. */
   queueTranscription(
     id: string,
     target: { language: string | null; engine: 'local' | 'cloud' | null; model: string | null },
   ): void {
-    this.moveTranscription(id, 'queue', {
-      ...target,
-      transcriptionIssue: null,
-      transcriptionProgress: null,
-    });
+    this.moveTranscription(
+      id,
+      'queue',
+      {
+        ...target,
+        transcriptionIssue: null,
+        transcriptionProgress: null,
+        transcriptionCursorMs: null,
+      },
+      (tx) => tx.delete(transcriptDrafts).where(eq(transcriptDrafts.recordingId, id)).run(),
+    );
   }
 
   startTranscription(id: string): void {
@@ -336,7 +349,68 @@ export class SqliteLibraryRepository implements LibraryRepository {
     this.emit();
   }
 
-  /** Replaces the whole transcript in one transaction; the FTS triggers follow. */
+  /**
+   * One step of a transcription under way: its new segment, if any, and the cursor, in one
+   * transaction. Working state: no outbox entry, no listener (progress is reported apart).
+   */
+  saveDraft(
+    id: string,
+    segment: { startMs: number; endMs: number; text: string } | null,
+    cursorMs: number,
+  ): void {
+    const row = this.requireRow(id);
+    if (row.transcriptionState !== 'transcribing') {
+      throw new Error(`No transcription under way for ${id}`);
+    }
+    this.db.transaction((tx) => {
+      if (segment) {
+        const [{ n }] = tx
+          .select({ n: sql<number>`count(*)` })
+          .from(transcriptDrafts)
+          .where(eq(transcriptDrafts.recordingId, id))
+          .all() as [{ n: number }];
+        tx.insert(transcriptDrafts)
+          .values({ recordingId: id, idx: n, ...segment })
+          .run();
+      }
+      tx.update(recordings)
+        .set({ transcriptionCursorMs: Math.max(0, Math.round(cursorMs)) })
+        .where(eq(recordings.id, id))
+        .run();
+    });
+  }
+
+  /** What a transcription resumes from: nothing done yet is a cursor at 0 and no draft. */
+  transcriptionCheckpoint(id: string): TranscriptionCheckpoint {
+    const row = this.requireRow(id);
+    const drafts = this.db
+      .select({
+        startMs: transcriptDrafts.startMs,
+        endMs: transcriptDrafts.endMs,
+        text: transcriptDrafts.text,
+      })
+      .from(transcriptDrafts)
+      .where(eq(transcriptDrafts.recordingId, id))
+      .orderBy(asc(transcriptDrafts.idx))
+      .all();
+    return { cursorMs: row.transcriptionCursorMs ?? 0, drafts };
+  }
+
+  /** The end of a transcription: its drafts become the transcript, in one transaction. */
+  completeTranscription(id: string, result: { quality: Quality | null }): void {
+    const { drafts } = this.transcriptionCheckpoint(id);
+    this.saveTranscript(
+      id,
+      drafts.map((draft) => ({ ...draft, speaker: null })),
+      result,
+    );
+  }
+
+  /**
+   * Replaces the whole transcript in one transaction; the FTS triggers follow. Until then the
+   * previous transcript stays: a retranscription that fails never leaves a recording without
+   * text (owner, step 3 plan).
+   */
   saveTranscript(
     id: string,
     transcript: TranscriptSegment[],
@@ -346,6 +420,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
     const transcriptionState = transcriptionTransition(row.transcriptionState, 'complete');
     this.write((tx) => {
       tx.delete(segments).where(eq(segments.recordingId, id)).run();
+      tx.delete(transcriptDrafts).where(eq(transcriptDrafts.recordingId, id)).run();
       transcript.forEach((segment, index) => {
         tx.insert(segments)
           .values({
@@ -364,6 +439,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
           transcriptionState,
           transcriptionProgress: 1,
           transcriptionIssue: null,
+          transcriptionCursorMs: null,
           quality: result.quality,
           updatedAt: this.nowMs(),
         })
@@ -533,10 +609,12 @@ export class SqliteLibraryRepository implements LibraryRepository {
     id: string,
     event: TranscriptionEvent,
     fields: Partial<typeof recordings.$inferInsert>,
+    also?: (tx: Tx) => void,
   ): void {
     const row = this.requireRow(id);
     const transcriptionState = transcriptionTransition(row.transcriptionState, event);
     this.write((tx) => {
+      also?.(tx);
       tx.update(recordings)
         .set({ ...fields, transcriptionState, updatedAt: this.nowMs() })
         .where(eq(recordings.id, id))

@@ -1,5 +1,13 @@
 import { sql } from 'drizzle-orm';
-import { check, index, integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import {
+  check,
+  index,
+  integer,
+  primaryKey,
+  real,
+  sqliteTable,
+  text,
+} from 'drizzle-orm/sqlite-core';
 
 /**
  * Local database (step 2, docs/plans/step-2.md). Dates are integers in ms, booleans
@@ -61,6 +69,11 @@ export const recordings = sqliteTable(
     language: text('language'),
     engine: text('engine', { enum: ENGINES }),
     model: text('model'),
+    /**
+     * Audio transcribed up to here (ms), while a transcription is under way; its segments
+     * wait in transcript_drafts. Null once the transcript is saved (step 3).
+     */
+    transcriptionCursorMs: integer('transcription_cursor_ms'),
     quality: text('quality', { enum: QUALITIES }),
     /** Computed with synchronisation (1.1); the column exists so that no migration is needed. */
     sha256: text('sha256'),
@@ -109,6 +122,28 @@ export const segments = sqliteTable(
   (t) => [index('segments_by_recording').on(t.recordingId, t.startMs)],
 );
 
+/**
+ * Segments of a transcription under way (step 3, owner's answer B). Written with the cursor in
+ * one transaction, moved into `segments` in one transaction at the end: a retranscription that
+ * fails leaves the previous transcript untouched. Working state, so no outbox entry.
+ */
+export const transcriptDrafts = sqliteTable(
+  'transcript_drafts',
+  {
+    recordingId: text('recording_id')
+      .notNull()
+      .references(() => recordings.id, { onDelete: 'cascade' }),
+    idx: integer('idx').notNull(),
+    startMs: integer('start_ms').notNull(),
+    endMs: integer('end_ms').notNull(),
+    text: text('text').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.recordingId, t.idx] }),
+    check('transcript_drafts_span', sql`${t.startMs} >= 0 and ${t.endMs} >= ${t.startMs}`),
+  ],
+);
+
 /** Every local change, written in the same transaction as the data (CLAUDE.md). */
 export const outbox = sqliteTable(
   'outbox',
@@ -132,3 +167,4 @@ export const outbox = sqliteTable(
 export type RecordingRow = typeof recordings.$inferSelect;
 export type SegmentRow = typeof segments.$inferSelect;
 export type OutboxRow = typeof outbox.$inferSelect;
+export type TranscriptDraftRow = typeof transcriptDrafts.$inferSelect;
