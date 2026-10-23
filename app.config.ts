@@ -85,6 +85,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         androidFSStopWithTask: false,
       },
     ],
+    // Playback only (step 2): foreground, no media-playback service to declare on Play, and
+    // no permission of its own; recording stays with react-native-audio-api (D-020).
+    ['expo-audio', { recordAudioAndroid: false, enableBackgroundPlayback: false }],
     // Android navigation bar follows the theme (D-015); background colour APIs were removed in v56.
     ['expo-navigation-bar', { enforceContrast: false }],
     // Recording notification shows the Tolitoli mark, not a generic microphone (D-023).
