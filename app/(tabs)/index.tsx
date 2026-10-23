@@ -8,7 +8,8 @@ import { useLibrary } from '@/features/library/library';
 import { RecordingActions } from '@/features/library/RecordingActions';
 import { RecordingDetail } from '@/features/library/RecordingDetail';
 import { freeBytes } from '@/features/library/storage';
-import { MODEL_BYTES, startModelDownload, useModel } from '@/features/transcription/model';
+import { startModelDownload, useModel } from '@/features/transcription/model';
+import { modelBytes } from '@/services/whisper/models';
 import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
 import { checkDiskSpace } from '@/services/audio/diskSpace';
 import type { LibraryItem } from '@/services/library';
@@ -112,6 +113,7 @@ function Card({
 function Notices() {
   const { t, i18n } = useTranslation();
   const model = useModel();
+  const total = modelBytes(model.model);
   const disk = checkDiskSpace(freeBytes(), ACTIVE_PROFILE);
   const size = (bytes: number) => formatBytes(bytes, i18n.language, t);
   return (
@@ -120,7 +122,7 @@ function Notices() {
         <Banner
           kind="alert"
           title={t('detail.issue.modelMissing.title')}
-          body={t('library.model.body', { size: size(MODEL_BYTES) })}
+          body={t('library.model.body', { size: size(total) })}
           action={{ label: t('library.model.download'), onPress: () => startModelDownload() }}
         />
       ) : model.status === 'waiting-wifi' ? (
@@ -129,7 +131,7 @@ function Notices() {
           kind="interrupted"
           icon="wifi-off"
           title={t('library.model.waitingWifi.title')}
-          body={t('library.model.waitingWifi.body', { size: size(MODEL_BYTES) })}
+          body={t('library.model.waitingWifi.body', { size: size(total) })}
           action={{
             label: t('library.model.waitingWifi.action'),
             onPress: () => startModelDownload({ mobileData: true }),
@@ -153,8 +155,8 @@ function Notices() {
           )}
           value={model.progress}
           detail={t('onboarding.model.detail', {
-            done: size(MODEL_BYTES * model.progress),
-            total: size(MODEL_BYTES),
+            done: size(total * model.progress),
+            total: size(total),
           })}
           state="running"
         />

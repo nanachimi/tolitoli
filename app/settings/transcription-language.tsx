@@ -9,7 +9,7 @@ import {
   useTranscriptionLanguage,
 } from '@/features/settings/transcriptionLanguage';
 import { CloudRequiredDialog } from '@/features/transcription/CloudRequiredDialog';
-import { LOCAL_MODEL } from '@/features/transcription/model';
+import { useSelectedModel } from '@/features/transcription/model';
 import { transcribeRecording } from '@/features/transcription/transcription';
 import {
   findTranscriptionLanguage,
@@ -30,6 +30,7 @@ export default function TranscriptionLanguageScreen() {
   const { t } = useTranslation();
   const { recording } = useLocalSearchParams<{ recording?: string }>();
   const setting = useTranscriptionLanguage((state) => state.code);
+  const model = useSelectedModel((state) => state.model);
   const item = recording ? library.get(recording) : undefined;
   const [chosen, setChosen] = useState<TranscriptionLanguageCode>(
     (item?.language as TranscriptionLanguageCode | null | undefined) ?? setting,
@@ -85,7 +86,7 @@ export default function TranscriptionLanguageScreen() {
         ) : null}
         <OptionGroup title={t('settings.transcription.title')} exclusive>
           {TRANSCRIPTION_LANGUAGES.map((language) => {
-            const quality = localQualityFor(language.code, LOCAL_MODEL);
+            const quality = localQualityFor(language.code, model);
             return (
               <OptionRow
                 key={language.code}

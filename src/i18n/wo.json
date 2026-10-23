@@ -107,6 +107,24 @@
         "running": "Mi ngi natt…",
         "import": "Indi dosi natt bi te bind ko"
       }
+    },
+    "model": {
+      "title": "Modelu bind",
+      "hint": "Modelu bi dafay bind ci biir jumtukaay bi. Bu gënee mag, mbind mi gën a baax, te dafay laaj barab, jamono ak xel yu ëpp. Jamono yi nat nañu leen ci Galaxy A05, telefon bu yomb; kalite yi jóge nañu ci limu OpenAI ci baat yu ñu jàng.",
+      "name": {
+        "tiny": "bi gën a woyof",
+        "base": "ñu ngi ko digle",
+        "small": "bi gën a leer"
+      },
+      "label": "{{model}} · {{name}}",
+      "description": "{{size}} · {{time}} · {{language}}: {{quality}}",
+      "time": "lu tollu ci {{minutes}} simili ci benn waxtu kàddu",
+      "timeUnknown": "jamono ji natagu ñu ko",
+      "optionA11y": "Modelu: {{model}}",
+      "warningTitle": "Modelu bii mën na diis lool ci telefon bii",
+      "warningBody": "Telefon bii am na {{memory}} ci xel; {{model}} dafay laaj lu tollu ci {{peak}} bu ngay bind. Android mën na ko taxawal: dina dellu fa mu taxawoon bu nga ubbeeti app bi.",
+      "defaultTinyTitle": "tiny lañu tànn ngir telefon bii",
+      "defaultTinyBody": "base dafa ëpp xel mi am fii. Ci weccit, mbind mi kalite bu gëna néew la ({{language}}: {{quality}})."
     }
   },
   "record": {

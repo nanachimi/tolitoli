@@ -108,6 +108,24 @@
         "running": "Messung läuft …",
         "import": "Prüfdatei importieren und transkribieren"
       }
+    },
+    "model": {
+      "title": "Transkriptionsmodell",
+      "hint": "Das Modell transkribiert auf dem Gerät. Je größer es ist, desto besser der Text – und desto mehr Speicher, Zeit und Arbeitsspeicher braucht es. Zeiten gemessen auf einem Galaxy A05, einem Einsteigerhandy; Qualitäten nach den von OpenAI veröffentlichten Werten für vorgelesene Sprache.",
+      "name": {
+        "tiny": "das leichteste",
+        "base": "empfohlen",
+        "small": "das genaueste"
+      },
+      "label": "{{model}} · {{name}}",
+      "description": "{{size}} · {{time}} · {{language}}: {{quality}}",
+      "time": "etwa {{minutes}} Min. pro Stunde Audio",
+      "timeUnknown": "Zeit noch nicht gemessen",
+      "optionA11y": "Modell: {{model}}",
+      "warningTitle": "Dieses Modell ist für dieses Telefon möglicherweise zu schwer",
+      "warningBody": "Dieses Telefon hat {{memory}} Arbeitsspeicher; {{model}} braucht beim Transkribieren etwa {{peak}}. Android kann es beenden: Es setzt dann beim nächsten Start dort fort, wo es aufgehört hat.",
+      "defaultTinyTitle": "tiny wurde für dieses Telefon gewählt",
+      "defaultTinyBody": "base übersteigt hier den verfügbaren Speicher. Dafür ist der Text von geringerer Qualität ({{language}}: {{quality}})."
     }
   },
   "record": {

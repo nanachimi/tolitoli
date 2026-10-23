@@ -9,8 +9,9 @@ import { totalBytes } from '@/features/library/storage';
 import { PLAYBACK_TRACE } from '@/features/player/playbackTrace';
 import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
 import type { BenchKind } from '@/features/transcription/bench';
+import type { LocalModelId } from '@/services/whisper/models';
 import { useReturnFocus } from '@/features/settings/useReturnFocus';
-import { LOCAL_MODEL } from '@/features/transcription/model';
+import { selectedModel, useSelectedModel } from '@/features/transcription/model';
 import {
   findTranscriptionLanguage,
   isNotYetAvailable,
@@ -29,11 +30,15 @@ function currentLanguageName(code: string): string {
 }
 
 /** "Kiswahili · brouillon", or "Wolof · cloud requis" when there is no local engine. */
-export function transcriptionLanguageSummary(code: string, t: Translate): string {
+export function transcriptionLanguageSummary(
+  code: string,
+  t: Translate,
+  model: LocalModelId = selectedModel(),
+): string {
   const language = findTranscriptionLanguage(code);
   if (!language) return '';
   // The quality of the model the app downloads: it depends on the model, not only the language.
-  const local = localQualityFor(language.code, LOCAL_MODEL);
+  const local = localQualityFor(language.code, model);
   const quality = local
     ? t(`quality.${local}`)
     : isNotYetAvailable(language.code)
@@ -47,6 +52,8 @@ export default function SettingsScreen() {
   const openedFrom = useReturnFocus();
   const interfaceRow = useRef<HostInstance>(null);
   const transcriptionRow = useRef<HostInstance>(null);
+  const modelRow = useRef<HostInstance>(null);
+  const selected = useSelectedModel((state) => state.model);
   const storageRow = useRef<HostInstance>(null);
   const aboutRow = useRef<HostInstance>(null);
   const open = (row: RefObject<HostInstance | null>, path: Href) => {
@@ -81,6 +88,16 @@ export default function SettingsScreen() {
             label={t('settings.transcription.language')}
             description={transcriptionLanguageSummary(transcriptionLanguage, t)}
             onPress={() => open(transcriptionRow, '/settings/transcription-language')}
+          />
+          <OptionRow
+            kind="link"
+            ref={modelRow}
+            label={t('settings.model.title')}
+            description={t('settings.model.label', {
+              model: selected,
+              name: t(`settings.model.name.${selected}`),
+            })}
+            onPress={() => open(modelRow, '/settings/transcription-model')}
           />
         </OptionGroup>
 

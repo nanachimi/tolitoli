@@ -8,19 +8,16 @@ import {
   firstOnboardingPage,
   type OnboardingPageNumber,
 } from '@/features/onboarding/onboarding';
-import {
-  cancelModelDownload,
-  MODEL_BYTES,
-  startModelDownload,
-  useModel,
-} from '@/features/transcription/model';
+import { cancelModelDownload, startModelDownload, useModel } from '@/features/transcription/model';
 import { OnboardingPage, Screen } from '@/ui';
+import { modelBytes } from '@/services/whisper/models';
 import { formatBytes } from '@/ui/format/display';
 
 /** Model page: the real download, Wi-Fi only by default (step 3). */
 function ModelPage({ onDone }: { onDone: () => void }) {
   const { t, i18n } = useTranslation();
-  const { status, progress } = useModel();
+  const { status, progress, model } = useModel();
+  const bytes = modelBytes(model);
   useEffect(() => startModelDownload(), []);
   const value = status === 'ready' ? 1 : progress;
   return (
@@ -34,8 +31,8 @@ function ModelPage({ onDone }: { onDone: () => void }) {
       download={{
         value,
         done: value >= 1,
-        doneSize: formatBytes(MODEL_BYTES * value, i18n.language, t),
-        totalSize: formatBytes(MODEL_BYTES, i18n.language, t),
+        doneSize: formatBytes(bytes * value, i18n.language, t),
+        totalSize: formatBytes(bytes, i18n.language, t),
       }}
     />
   );

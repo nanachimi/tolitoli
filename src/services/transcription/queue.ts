@@ -32,7 +32,8 @@ export interface TranscriptionStore {
   reportTranscriptionProgress(id: string, progress: number | null): void;
   /** The length the decoder produced, for a recording whose length was unknown. */
   recordDuration(id: string, durationMs: number): void;
-  completeTranscription(id: string, result: { quality: Quality | null }): void;
+  /** `model`: the one that actually transcribed it (the choice may change while queued). */
+  completeTranscription(id: string, result: { quality: Quality | null; model: string }): void;
   failTranscription(id: string, issue: TranscriptionIssue): void;
 }
 
@@ -215,7 +216,7 @@ export class TranscriptionQueue {
       if (last) break;
     }
     if (!totalMs) store.recordDuration(id, Math.round(decodedMs));
-    store.completeTranscription(id, { quality: this.deps.qualityFor(language, model) });
+    store.completeTranscription(id, { quality: this.deps.qualityFor(language, model), model });
     this.deps.log?.('done', id, 'in', Date.now() - startedAt, 'ms for', job.durationMs, 'ms');
   }
 

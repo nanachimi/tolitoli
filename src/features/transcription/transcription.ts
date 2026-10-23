@@ -19,7 +19,7 @@ import { isLocalModelId } from '@/services/whisper/models';
 import { color } from '@/ui/theme/tokens';
 
 import { FsmnDetector, WhisperLocal } from './executorch';
-import { LOCAL_MODEL, readyModel, useModel } from './model';
+import { readyModel, selectedModel, useModel } from './model';
 
 function log(...args: unknown[]): void {
   console.log('[transcription]', ...args);
@@ -209,7 +209,7 @@ export function transcribeRecording(
     library.assignTranscriptionLanguage(id, language);
     return route.kind;
   }
-  library.queueTranscription(id, { language, engine: 'local', model: LOCAL_MODEL });
+  library.queueTranscription(id, { language, engine: 'local', model: selectedModel() });
   transcriptionQueue.kick();
   return 'queued';
 }

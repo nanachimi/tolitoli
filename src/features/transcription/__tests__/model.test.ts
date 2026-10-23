@@ -17,11 +17,51 @@ describe('local model store', () => {
     });
   });
 
-  it('announces the real size of the model', () => {
+  it('announces the real size of the chosen model', () => {
     jest.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
-      const { MODEL_BYTES, LOCAL_MODEL } = require('../model');
-      expect(MODEL_BYTES).toBe(modelBytes(LOCAL_MODEL));
+      const { selectedModelBytes, selectedModel } = require('../model');
+      expect(selectedModelBytes()).toBe(modelBytes(selectedModel()));
     });
+  });
+
+  /** The model store and the key-value store of one fresh module registry. */
+  function fresh(before?: (storage: typeof Storage) => void) {
+    let loaded!: typeof import('../model') & { storage: typeof Storage };
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
+      const storage = require('@/features/settings/storage').settingsStorage as typeof Storage;
+      before?.(storage);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
+      loaded = { ...(require('../model') as typeof import('../model')), storage };
+    });
+    return loaded;
+  }
+
+  it('gives base by default, and remembers another choice', () => {
+    const model = fresh();
+    expect(model.selectedModel()).toBe('base');
+    model.selectModel('small');
+    expect(model.selectedModel()).toBe('small');
+    expect(model.storage.getItemSync('model.selected')).toBe('small');
+  });
+
+  it('starts on the remembered choice', () => {
+    const model = fresh((storage) => storage.setItemSync('model.selected', 'small'));
+    expect(model.selectedModel()).toBe('small');
+    expect(model.useModel.getState().model).toBe('small');
+  });
+
+  it('reads the tiny model downloaded before the model choice', () => {
+    const model = fresh((storage) => {
+      storage.setItemSync(
+        'model.local',
+        JSON.stringify({ model: 'tiny', paths: { whisper: '/w', tokenizer: '/t', vad: '/v' } }),
+      );
+      storage.setItemSync('model.selected', 'tiny');
+    });
+    // Jest has no file on disk: "missing" here, but the old entry is read, without a crash or
+    // a reset of the choice.
+    expect(model.useModel.getState()).toMatchObject({ model: 'tiny', status: 'missing' });
   });
 });

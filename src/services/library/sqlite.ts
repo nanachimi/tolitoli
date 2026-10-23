@@ -492,7 +492,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
   }
 
   /** The end of a transcription: its drafts become the transcript, in one transaction. */
-  completeTranscription(id: string, result: { quality: Quality | null }): void {
+  completeTranscription(id: string, result: { quality: Quality | null; model?: string }): void {
     const { drafts } = this.transcriptionCheckpoint(id);
     this.saveTranscript(
       id,
@@ -509,7 +509,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
   saveTranscript(
     id: string,
     transcript: TranscriptSegment[],
-    result: { quality: Quality | null },
+    result: { quality: Quality | null; model?: string },
   ): void {
     const row = this.requireRow(id);
     const transcriptionState = transcriptionTransition(row.transcriptionState, 'complete');
@@ -536,6 +536,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
           transcriptionIssue: null,
           transcriptionCursorMs: null,
           quality: result.quality,
+          ...(result.model ? { model: result.model } : {}),
           updatedAt: this.nowMs(),
         })
         .where(eq(recordings.id, id))

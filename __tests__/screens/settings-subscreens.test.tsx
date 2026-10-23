@@ -5,6 +5,7 @@ import { I18nManager } from 'react-native';
 import AboutScreen from '../../app/settings/about';
 import StorageScreen from '../../app/settings/storage';
 import TranscriptionLanguageScreen from '../../app/settings/transcription-language';
+import TranscriptionModelScreen from '../../app/settings/transcription-model';
 import SettingsScreen, { transcriptionLanguageSummary } from '../../app/(tabs)/settings';
 import TrashScreen, { trashDaysLeft } from '../../app/trash';
 import { library, setDemoDataEnabled } from '@/features/library/library';
@@ -16,7 +17,7 @@ import {
   useTranscriptionLanguage,
 } from '@/features/settings/transcriptionLanguage';
 import { i18next } from '@/i18n';
-import { LOCAL_MODEL } from '@/features/transcription/model';
+import { selectModel, selectedModel } from '@/features/transcription/model';
 import { localQualityFor, TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
 
 import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
@@ -50,7 +51,7 @@ describe('Settings groups', () => {
   it('summarises the transcription language with its quality, or that it needs the cloud', () => {
     const t = i18next.t;
     expect(transcriptionLanguageSummary('en', t)).toBe(
-      `English · ${t(`quality.${localQualityFor('en', LOCAL_MODEL)!}`)}`,
+      `English · ${t(`quality.${localQualityFor('en', selectedModel())!}`)}`,
     );
     expect(transcriptionLanguageSummary('wo', t)).toBe('Wolof · cloud requis');
   });
@@ -87,7 +88,7 @@ describe('Transcription language screen', () => {
     expect(radios).toHaveLength(TRANSCRIPTION_LANGUAGES.length);
     expect(screen.getByRole('radio', { name: 'Langue de transcription : Français' })).toBeChecked();
     // The quality of the model the app downloads, from languages.ts (never written by hand here).
-    const english = localQualityFor('en', LOCAL_MODEL)!;
+    const english = localQualityFor('en', selectedModel())!;
     expect(
       screen.getByRole('radio', { name: 'Langue de transcription : English' }).props
         .accessibilityHint,
@@ -280,5 +281,32 @@ describe.each([
     await usePseudoLocale();
     await renderScreen(<Component />);
     expect(hardCodedTexts()).toEqual([]);
+  });
+});
+
+describe('Transcription model screen (step 3)', () => {
+  afterEach(() => selectModel('base'));
+
+  it('offers tiny, base and small, each with its size, time and quality for the language', async () => {
+    await renderScreen(<TranscriptionModelScreen />);
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(3);
+    expect(screen.getByRole('radio', { name: 'Modèle : base' })).toBeChecked();
+    const small = screen.getByRole('radio', { name: 'Modèle : small' });
+    // Size, time per hour (or "not measured yet"), and the quality for French with small.
+    expect(small.props.accessibilityHint).toMatch(/Go|Mo/);
+    expect(small.props.accessibilityHint).toMatch(
+      new RegExp(`Français : ${i18next.t(`quality.${localQualityFor('fr', 'small')!}`)}`),
+    );
+  });
+
+  it('keeps the choice, and never shows a language without its quality or its reason', async () => {
+    setTranscriptionLanguage('wo');
+    await renderScreen(<TranscriptionModelScreen />);
+    await userEvent.setup().press(screen.getByRole('radio', { name: 'Modèle : small' }));
+    expect(selectedModel()).toBe('small');
+    expect(screen.getByRole('radio', { name: 'Modèle : small' }).props.accessibilityHint).toMatch(
+      /Wolof : cloud requis/,
+    );
   });
 });

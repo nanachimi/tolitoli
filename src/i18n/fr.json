@@ -109,6 +109,24 @@
         "running": "Mesure en cours…",
         "import": "Importer le fichier de banc et le transcrire"
       }
+    },
+    "model": {
+      "title": "Modèle de transcription",
+      "hint": "Le modèle transcrit sur l’appareil. Plus il est grand, meilleur est le texte, et plus il demande de place, de temps et de mémoire. Temps mesurés sur un Galaxy A05, un téléphone d’entrée de gamme ; qualités d’après les chiffres publiés par OpenAI sur de la parole lue.",
+      "name": {
+        "tiny": "le plus léger",
+        "base": "recommandé",
+        "small": "le plus précis"
+      },
+      "label": "{{model}} · {{name}}",
+      "description": "{{size}} · {{time}} · {{language}} : {{quality}}",
+      "time": "environ {{minutes}} min par heure d’audio",
+      "timeUnknown": "temps pas encore mesuré",
+      "optionA11y": "Modèle : {{model}}",
+      "warningTitle": "Ce modèle risque d’être trop lourd pour ce téléphone",
+      "warningBody": "Ce téléphone a {{memory}} de mémoire ; {{model}} en demande environ {{peak}} pendant une transcription. Android peut l’arrêter : elle reprend alors au lancement suivant, là où elle s’était arrêtée.",
+      "defaultTinyTitle": "tiny a été choisi pour ce téléphone",
+      "defaultTinyBody": "base y dépasse la mémoire disponible. En contrepartie, le texte est de moindre qualité ({{language}} : {{quality}})."
     }
   },
   "record": {

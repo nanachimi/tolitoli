@@ -30,20 +30,32 @@ export type BenchKind = 'decode' | 'vad' | 'tiny' | 'base' | 'import';
 
 const log = (...args: unknown[]) => console.log('[bench]', ...args);
 
+/** Title of the imported bench recording: speech read by a synthetic voice (speed only). */
+const BENCH_TITLE = 'Banc : Les Misérables (synthèse vocale)';
+
 function plainPath(uri: string): string {
   return decodeURI(uri.replace(/^file:\/\//, ''));
 }
 
-function target() {
-  const item = library
-    .list()
-    .filter((entry) => entry.audioPath && entry.durationMs && !entry.demo)
-    .sort((a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0))[0];
-  if (!item?.audioPath || !item.durationMs) throw new Error('No recording to measure');
+/** The imported bench recording when there is one (speech), else the longest recording. */
+async function target() {
+  const real = library.list().filter((entry) => entry.audioPath && !entry.demo);
+  const item =
+    real.find((entry) => entry.title === BENCH_TITLE) ??
+    real.sort((a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0))[0];
+  if (!item?.audioPath) throw new Error('No recording to measure');
+  const path = plainPath(joinPath(recordingsRoot(), item.audioPath));
+  // An imported file may have no length in the library: the container says it.
+  const durationMs =
+    item.durationMs ??
+    (typeof AudioEncoder.probeDurationMs === 'function'
+      ? await AudioEncoder.probeDurationMs(path)
+      : null);
+  if (!durationMs) throw new Error(`No length for ${item.id}`);
   return {
     id: item.id,
-    path: plainPath(joinPath(recordingsRoot(), item.audioPath)),
-    durationMs: item.durationMs,
+    path,
+    durationMs,
     language: isTranscriptionLanguageCode(item.language) ? item.language : 'fr',
   };
 }
@@ -128,7 +140,7 @@ async function importBenchRecording(): Promise<string> {
     durationMs,
     recovered: false,
   });
-  library.rename(id, 'Banc : Les Misérables (synthèse vocale)');
+  library.rename(id, BENCH_TITLE);
   transcribeRecording(id, 'fr');
   const report = `imported ${id}, ${minutes(durationMs ?? 0)} min, queued in French`;
   log(report);
@@ -138,7 +150,7 @@ async function importBenchRecording(): Promise<string> {
 /** Runs one measurement; the report is shown on screen and logged for logcat. */
 export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<string> {
   if (kind === 'import') return importBenchRecording();
-  const job = target();
+  const job = await target();
   const endMs = limitMinutes ? Math.min(job.durationMs, limitMinutes * 60_000) : job.durationMs;
   log('start', kind, job.id, `${minutes(endMs)} of ${minutes(job.durationMs)} min`, job.language);
 

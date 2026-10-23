@@ -107,6 +107,24 @@
         "running": "正在测量…",
         "import": "导入测试文件并转写"
       }
+    },
+    "model": {
+      "title": "转写模型",
+      "hint": "模型在设备上进行转写。模型越大，文本越好，但需要的空间、时间和内存也越多。时间在入门级手机 Galaxy A05 上测得；质量依据 OpenAI 公布的朗读语音数据。",
+      "name": {
+        "tiny": "最轻量",
+        "base": "推荐",
+        "small": "最准确"
+      },
+      "label": "{{model}} · {{name}}",
+      "description": "{{size}} · {{time}} · {{language}}：{{quality}}",
+      "time": "每小时音频约 {{minutes}} 分钟",
+      "timeUnknown": "时间尚未测量",
+      "optionA11y": "模型：{{model}}",
+      "warningTitle": "此模型对这部手机来说可能过重",
+      "warningBody": "这部手机有 {{memory}} 内存；{{model}} 转写时约需 {{peak}}。Android 可能会中止它：下次启动时会从中断处继续。",
+      "defaultTinyTitle": "已为这部手机选择 tiny",
+      "defaultTinyBody": "base 超出了这部手机的可用内存。代价是文本质量较低（{{language}}：{{quality}}）。"
     }
   },
   "record": {

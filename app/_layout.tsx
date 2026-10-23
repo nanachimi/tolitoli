@@ -46,6 +46,7 @@ function ThemedStack() {
           <Stack.Screen name="trash" />
           <Stack.Screen name="settings/interface-language" />
           <Stack.Screen name="settings/transcription-language" />
+          <Stack.Screen name="settings/transcription-model" />
           <Stack.Screen name="settings/storage" />
           <Stack.Screen name="settings/about" />
         </Stack.Protected>

@@ -4,7 +4,7 @@ import { I18nManager, StyleSheet } from 'react-native';
 
 import RecordingScreen from '../../app/recording/[id]';
 import { library, setDemoDataEnabled } from '@/features/library/library';
-import { LOCAL_MODEL } from '@/features/transcription/model';
+import { selectedModel } from '@/features/transcription/model';
 import { localQualityFor, TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
 import { MAX_TITLE_LENGTH } from '@/features/library/RecordingActions';
 import { i18next } from '@/i18n';
@@ -213,15 +213,15 @@ describe('Recording Detail, transcription (step 3)', () => {
         library.queueTranscription(entry.code, {
           language: entry.code,
           engine: 'local',
-          model: LOCAL_MODEL,
+          model: selectedModel(),
         });
         library.startTranscription(entry.code);
         library.saveDraft(entry.code, { startMs: 0, endMs: 1000, text: 'Texte' }, 1000);
         library.completeTranscription(entry.code, {
-          quality: localQualityFor(entry.code, LOCAL_MODEL),
+          quality: localQualityFor(entry.code, selectedModel()),
         });
         const view = await open(entry.code);
-        const quality = i18next.t(`quality.${localQualityFor(entry.code, LOCAL_MODEL)!}`);
+        const quality = i18next.t(`quality.${localQualityFor(entry.code, selectedModel())!}`);
         expect(
           screen.getByLabelText(
             i18next.t('quality.withLanguage', { language: entry.nativeName, quality }),

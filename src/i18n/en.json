@@ -108,6 +108,24 @@
         "running": "Measuring…",
         "import": "Import the bench file and transcribe it"
       }
+    },
+    "model": {
+      "title": "Transcription model",
+      "hint": "The model transcribes on the device. The larger it is, the better the text, and the more space, time and memory it needs. Times measured on a Galaxy A05, an entry-level phone; qualities from OpenAI’s published figures on read speech.",
+      "name": {
+        "tiny": "the lightest",
+        "base": "recommended",
+        "small": "the most accurate"
+      },
+      "label": "{{model}} · {{name}}",
+      "description": "{{size}} · {{time}} · {{language}}: {{quality}}",
+      "time": "about {{minutes}} min per hour of audio",
+      "timeUnknown": "time not measured yet",
+      "optionA11y": "Model: {{model}}",
+      "warningTitle": "This model may be too heavy for this phone",
+      "warningBody": "This phone has {{memory}} of memory; {{model}} needs about {{peak}} while transcribing. Android may stop it: it then resumes where it stopped at the next launch.",
+      "defaultTinyTitle": "tiny was chosen for this phone",
+      "defaultTinyBody": "base exceeds the memory available here. In return, the text is of lower quality ({{language}}: {{quality}})."
     }
   },
   "record": {
