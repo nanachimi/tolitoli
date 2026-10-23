@@ -1,0 +1,53 @@
+<!-- @dsCard group="Lecture" height=200 subtitle="en lecture, en pause" -->
+<!doctype html><html><head><style data-tokens="tolitoli">
+:root{--surface:#f7f1e8;--surface-raised:#fffaf3;--surface-sunken:#efe6d9;--ink:#2a211b;--ink-muted:#6b5c50;--ink-faint:#9a8878;--hairline:#e3d7c8;--accent:#b84a24;--on-accent:#fff6ee;--accent-soft:#f6dccd;--ochre:#b8862b;--success:#1f6f66;--warning:#9a5b12;--danger:#a3281f;--focus:#1f5f8b;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-12:48px;--radius-sm:8px;--radius-md:14px;--radius-lg:22px;--radius-pill:999px;--control-md:48px;--control-lg:72px;--control-xl:96px;--icon-sm:16px;--icon-md:24px;--icon-lg:32px;--stroke-icon:1.75px;--font-display:"Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;--font-body:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;--font-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;color-scheme:light dark}
+@media (prefers-color-scheme: dark){:root:root{--surface:#1c1816;--surface-raised:#272120;--surface-sunken:#141110;--ink:#f3ebe1;--ink-muted:#b8a999;--ink-faint:#7f7164;--hairline:#3b332d;--accent:#e47d52;--on-accent:#2a1309;--accent-soft:#4a2a1d;--ochre:#d9a84c;--success:#62b5a6;--warning:#dca15a;--danger:#e5776f;--focus:#82b7e3}}
+.display{font-family:var(--font-display);font-size:32px;line-height:38px;font-weight:600;letter-spacing:-0.01em}
+.title{font-family:var(--font-display);font-size:24px;line-height:30px;font-weight:600}
+.heading{font-family:var(--font-display);font-size:18px;line-height:24px;font-weight:500}
+.timer{font-family:var(--font-display);font-size:48px;line-height:52px;font-weight:500;letter-spacing:0.02em;font-variant-numeric:tabular-nums}
+.body{font-family:var(--font-body);font-size:16px;line-height:24px;font-weight:400}
+.body-strong{font-family:var(--font-body);font-size:16px;line-height:24px;font-weight:600}
+.caption{font-family:var(--font-body);font-size:13px;line-height:18px;font-weight:400}
+.overline{font-family:var(--font-body);font-size:12px;line-height:16px;font-weight:600;letter-spacing:0.06em}
+.timestamp{font-family:var(--font-mono);font-size:12px;line-height:16px;font-weight:500;font-variant-numeric:tabular-nums}
+html,body{background:var(--surface);color:var(--ink)}
+</style><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font-body);color:var(--ink);display:flex;flex-direction:column;gap:var(--space-4);max-width:420px}
+.ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.pl{background:var(--surface-raised);border:1px solid var(--hairline);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.bar{position:relative;height:4px;border-radius:var(--radius-pill);background:var(--surface-sunken);margin:var(--space-2) 0}
+.bar i{display:block;height:100%;border-radius:var(--radius-pill);background:var(--accent)}
+.bar .knob{position:absolute;top:-6px;width:16px;height:16px;border-radius:var(--radius-pill);background:var(--accent);border:2px solid var(--surface-raised)}
+.times{display:flex;justify-content:space-between;color:var(--ink-muted)}
+.times span{font-variant-numeric:tabular-nums}
+.ctl{display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-2)}
+.play{width:48px;height:48px;border-radius:var(--radius-pill);background:var(--accent);color:var(--on-accent);border:0;display:grid;place-items:center;cursor:pointer}
+.skip{background:none;border:0;color:var(--ink);cursor:pointer;display:flex;padding:var(--space-2)}
+.rate{margin-inline-start:auto;min-height:32px;padding:0 var(--space-3);border-radius:var(--radius-pill);background:var(--surface-sunken);border:1px solid var(--hairline);color:var(--ink);font:inherit;cursor:pointer}
+.paused .bar i,.paused .knob{background:var(--ink-muted)}
+</style></head><body>
+<div class="pl">
+<div class="bar"><i style="width:38%"></i><span class="knob" style="inset-inline-start:calc(38% - 8px)"></span></div>
+<div class="times caption"><span>12:14</span><span>32:08</span></div>
+<div class="ctl">
+<button class="skip" aria-label="Reculer de 15 secondes"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+<button class="play" aria-label="Pause"><svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg></button>
+<button class="skip" aria-label="Avancer de 15 secondes"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
+<button class="rate caption">1×</button>
+</div>
+</div>
+<div class="pl paused">
+<div class="bar"><i style="width:38%"></i><span class="knob" style="inset-inline-start:calc(38% - 8px)"></span></div>
+<div class="times caption"><span>12:14</span><span>32:08</span></div>
+<div class="ctl">
+<button class="skip" aria-label="Reculer de 15 secondes"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+<button class="play" aria-label="Lire"><svg class="ico" viewBox="0 0 24 24"><path d="m6 3 14 9-14 9z" fill="currentColor" stroke="none"/></svg></button>
+<button class="skip" aria-label="Avancer de 15 secondes"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
+<button class="rate caption">1,5×</button>
+</div>
+</div>
+</body></html>

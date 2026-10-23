@@ -8,8 +8,8 @@ import { Icon } from './Icon';
 export type RecordButtonProps = {
   mode: 'record' | 'stop';
   onPress: () => void;
-  /** Caption under the button ("Enregistrer", "Arrêter"). */
-  label: string;
+  /** Caption under the button ("Arrêter"). Record has none: its word lives in the label (guide). */
+  label?: string;
   /** "Enregistrer" or "Arrêter l'enregistrement", never just "micro" (guide RecordButton). */
   accessibilityLabel: string;
   disabled?: boolean;
@@ -68,14 +68,16 @@ export function RecordButton({
           />
         )}
       </Pressable>
-      <AppText
-        variant="caption"
-        color="ink-muted"
-        accessibilityElementsHidden
-        importantForAccessibility="no"
-      >
-        {label}
-      </AppText>
+      {label ? (
+        <AppText
+          variant="caption"
+          color="ink-muted"
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+        >
+          {label}
+        </AppText>
+      ) : null}
     </View>
   );
 }

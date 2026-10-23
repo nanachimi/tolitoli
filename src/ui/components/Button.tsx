@@ -5,7 +5,8 @@ import { useTheme, type ColorName } from '../theme';
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+/** `destructive` is the filled danger action of a Dialog (Dialog guide). */
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive';
 
 export type ButtonProps = {
   /** A verb in the infinitive, translated (guide Button). */
@@ -16,6 +17,8 @@ export type ButtonProps = {
   disabled?: boolean;
   /** When the visible label is not enough (it is by default). */
   accessibilityLabel?: string;
+  /** Why a disabled button is disabled (OnboardingPage guide). */
+  accessibilityHint?: string;
 };
 
 const INK: Record<ButtonVariant, ColorName> = {
@@ -23,6 +26,7 @@ const INK: Record<ButtonVariant, ColorName> = {
   secondary: 'ink',
   ghost: 'accent',
   danger: 'danger',
+  destructive: 'surface-raised',
 };
 
 /** One primary button per screen; 48 px touch area; focus ring outside the control. */
@@ -33,6 +37,7 @@ export function Button({
   icon,
   disabled = false,
   accessibilityLabel,
+  accessibilityHint,
 }: ButtonProps) {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
@@ -41,9 +46,11 @@ export function Button({
     ? theme.color['surface-sunken']
     : variant === 'primary'
       ? theme.color.accent
-      : variant === 'secondary'
-        ? theme.color['surface-raised']
-        : 'transparent';
+      : variant === 'destructive'
+        ? theme.color.danger
+        : variant === 'secondary'
+          ? theme.color['surface-raised']
+          : 'transparent';
   const border =
     !disabled && (variant === 'secondary' || variant === 'danger')
       ? theme.color.hairline
@@ -61,6 +68,7 @@ export function Button({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel ?? label}
+        accessibilityHint={accessibilityHint}
         accessibilityState={{ disabled }}
         disabled={disabled}
         onPress={onPress}

@@ -19,6 +19,8 @@ import {
   PhoneOff,
   Play,
   Plus,
+  RotateCcw,
+  RotateCw,
   Search,
   Settings,
   Share2,
@@ -55,6 +57,9 @@ const ICONS = {
   'phone-off': PhoneOff,
   play: Play,
   plus: Plus,
+  // Skip back / forward 15 s in the Player (Player guide and preview).
+  'rotate-ccw': RotateCcw,
+  'rotate-cw': RotateCw,
   search: Search,
   settings: Settings,
   'share-2': Share2,
@@ -67,8 +72,16 @@ const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
-/** Only chevrons point somewhere; every other icon keeps its drawing in RTL (CLAUDE.md, Design). */
-const MIRRORED_IN_RTL: ReadonlySet<IconName> = new Set(['chevron-left', 'chevron-right']);
+/**
+ * Chevrons point somewhere (CLAUDE.md, Design) and the Player's skip icons follow its
+ * mirrored bar (Player guide); every other icon keeps its drawing in RTL.
+ */
+const MIRRORED_IN_RTL: ReadonlySet<IconName> = new Set([
+  'chevron-left',
+  'chevron-right',
+  'rotate-ccw',
+  'rotate-cw',
+]);
 
 type BaseProps = {
   name: IconName;

@@ -9,17 +9,34 @@
   "library": {
     "title": "录音库",
     "empty": {
-      "title": "暂无录音",
-      "body": "你的录音及其转写文本将显示在这里。"
+      "title": "点按“录音”开始",
+      "body": "您的录音及其转写都保留在此设备上。"
     },
     "count_other": "{{count}} 条录音",
     "detailPlaceholder": "选择一条录音以在此处显示。",
-    "record": "录音",
     "recovered": "已恢复",
-    "itemA11y": "{{date}} 的录音，时长 {{duration}}",
-    "itemRecoveredA11y": "{{date}} 的录音，时长 {{duration}}，中断后已恢复",
     "durationUnknown": "未知",
-    "cardTitle": "{{date}} 的录音"
+    "cardTitle": "{{date}} 的录音",
+    "searchPlaceholder": "搜索录音",
+    "noResults": {
+      "title": "无结果",
+      "body": "换个词试试：搜索范围包括标题和转写。"
+    },
+    "a11y": {
+      "transcribing": "正在转写",
+      "quality": "{{language}}，质量{{quality}}",
+      "failed": "转写失败",
+      "recovered": "中断后已恢复",
+      "longPress": "长按可重命名或移到回收站",
+      "duration": "时长 {{duration}}"
+    },
+    "model": {
+      "body": "下载后即可在设备上转写（{{size}}，仅限 Wi‑Fi）。",
+      "download": "下载"
+    },
+    "storage": {
+      "manage": "管理空间"
+    }
   },
   "settings": {
     "title": "设置",
@@ -27,7 +44,32 @@
       "title": "界面语言",
       "hint": "转写语言需单独设置。",
       "restartRtl": "应用将重新启动以更改文字方向。",
-      "optionA11y": "界面语言：{{language}}"
+      "optionA11y": "界面语言：{{language}}",
+      "available": "可用语言"
+    },
+    "transcription": {
+      "title": "转写",
+      "language": "转写语言",
+      "hint": "录音中所说的语言。它决定所用的引擎；对这些语言，自动检测并不可靠。",
+      "cloudRequired": "需要云端",
+      "optionA11y": "转写语言：{{language}}",
+      "qualityLocal": "设备端质量：{{quality}}",
+      "cloudRequiredLong": "设备端无引擎：需要云端"
+    },
+    "storage": {
+      "used": "已用 {{size}}",
+      "trash": "回收站"
+    },
+    "about": {
+      "title": "关于",
+      "version": "版本 {{version}}",
+      "local": "您的录音及其转写保留在本设备上，未经您同意不会发送任何内容。",
+      "legal": "隐私政策和使用条款：将在发布前提供。"
+    },
+    "dev": {
+      "demo": "演示数据",
+      "demoOn": "已开启。虚构录音，从不写入设备。",
+      "demoOff": "已关闭。只显示您的真实录音。"
     }
   },
   "record": {
@@ -94,13 +136,132 @@
     "hours_other": "{{count}} 小时",
     "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
     "today": "今天",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB",
+    "listSeparator": "，"
   },
   "quality": {
     "good": "良好",
     "medium": "一般",
     "draft": "草稿",
     "busy": "正在转写…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "失败"
+  },
+  "common": {
+    "back": "返回",
+    "cancel": "取消"
+  },
+  "search": {
+    "clear": "清除搜索"
+  },
+  "progress": {
+    "done": "已完成"
+  },
+  "storage": {
+    "title": "存储",
+    "recordings": "录音 {{size}}",
+    "trash": "回收站 {{size}}",
+    "free": "可用 {{size}}",
+    "barA11y": "录音 {{recordings}}，回收站 {{trash}}，可用 {{free}}",
+    "emptyTrash": "清空回收站",
+    "lowTitle": "存储空间即将用尽",
+    "lowBody": "大约还能录音 {{minutes}} 分钟。",
+    "insufficientTitle": "存储空间不足",
+    "insufficientBody": "无法开始录音：请先释放空间。"
+  },
+  "player": {
+    "play": "播放",
+    "pause": "暂停",
+    "back15": "后退 15 秒",
+    "forward15": "前进 15 秒",
+    "rateA11y": "播放速度：{{rate}}",
+    "rateTitle": "播放速度",
+    "seekA11y": "播放位置",
+    "positionA11y": "{{position}} / {{total}}"
+  },
+  "onboarding": {
+    "continue": "继续",
+    "promise": {
+      "body": "录下一段对话，再以文字找回它。",
+      "caption": "一切都保留在您的设备上，无需账户。"
+    },
+    "consent": {
+      "title": "录音之前",
+      "body": "在许多国家，未经在场者同意录制对话是违法的。",
+      "caption": "开始录音前请告知他们。Tolitoli 录音时始终显示可见的指示。",
+      "checkbox": "我会告知在场的人我正在录音。",
+      "accept": "接受并继续",
+      "acceptHint": "请先勾选方框再继续。"
+    },
+    "model": {
+      "title": "转写模型",
+      "body": "Tolitoli 在您的设备上转写，模型只需下载一次。",
+      "progress": "模型下载",
+      "detail": "{{done}} / {{total}} · 仅限 Wi-Fi",
+      "downloading": "正在下载…",
+      "start": "开始",
+      "later": "稍后下载"
+    }
+  },
+  "trash": {
+    "title": "回收站",
+    "emptyTitle": "回收站为空",
+    "emptyBody": "移入回收站的录音会保留 30 天。",
+    "restore": "恢复",
+    "restoreA11y": "恢复 {{title}}",
+    "confirmEmptyTitle": "清空回收站？",
+    "confirmEmptyBody": "回收站中的录音将被永久删除，此操作无法撤销。",
+    "confirmTitle": "移到回收站？",
+    "confirmBody": "“{{title}}”将在回收站保留 30 天，期间可以恢复。"
+  },
+  "detail": {
+    "moreActions": "更多操作",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "说话人 {{number}}",
+    "segmentHint": "跳到 {{time}}",
+    "notFoundTitle": "找不到录音",
+    "notFoundBody": "它可能已移到回收站。请返回资料库。",
+    "noTranscriptTitle": "尚无转写",
+    "noTranscriptBody": "音频已保存在您的设备上。转写将在后续版本中提供。",
+    "transcribing": "正在转写",
+    "transcribingDetail": "这可能需要几分钟。您可以离开此页面。",
+    "issue": {
+      "failed": {
+        "title": "转写失败",
+        "body": "音频在您的设备上完好无损。您可以重新开始转写。",
+        "action": "重试"
+      },
+      "modelMissing": {
+        "title": "缺少转写模型",
+        "body": "模型下载后即开始转写，仅限 Wi‑Fi。"
+      },
+      "offline": {
+        "title": "离线",
+        "body": "网络恢复后将继续云端转写。音频保留在您的设备上。"
+      },
+      "quotaExhausted": {
+        "title": "云端额度已用完",
+        "body": "本月云端转写已不可用，下月将恢复。"
+      }
+    },
+    "cloudRequired": {
+      "title": "此语言需要云端",
+      "body": "设备端没有可转写此语言（{{language}}）的引擎。云端转写将在后续版本中提供。"
+    }
+  },
+  "actions": {
+    "rename": "重命名",
+    "trash": "移到回收站",
+    "exportNote": "导出功能将在后续版本中提供。"
+  },
+  "rename": {
+    "title": "重命名录音",
+    "body": "标题有助于在资料库和搜索中找到录音。",
+    "label": "标题",
+    "hint": "最多 {{max}} 个字符。",
+    "tooLong": "最多 {{max}} 个字符：请缩短标题。",
+    "confirm": "重命名"
   }
 }

@@ -9,18 +9,35 @@
   "library": {
     "title": "Bibliothek",
     "empty": {
-      "title": "Keine Aufnahmen",
-      "body": "Deine Aufnahmen und ihre Transkriptionen erscheinen hier."
+      "title": "Tippen Sie auf Aufnehmen, um zu beginnen",
+      "body": "Ihre Aufnahmen und ihre Transkriptionen bleiben auf diesem Gerät."
     },
     "count_one": "{{count}} Aufnahme",
     "count_other": "{{count}} Aufnahmen",
     "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen.",
-    "record": "Aufnehmen",
     "recovered": "Wiederhergestellt",
-    "itemA11y": "Aufnahme vom {{date}}, Dauer {{duration}}",
-    "itemRecoveredA11y": "Aufnahme vom {{date}}, Dauer {{duration}}, nach einer Unterbrechung wiederhergestellt",
     "durationUnknown": "unbekannt",
-    "cardTitle": "Aufnahme vom {{date}}"
+    "cardTitle": "Aufnahme vom {{date}}",
+    "searchPlaceholder": "In Aufnahmen suchen",
+    "noResults": {
+      "title": "Keine Ergebnisse",
+      "body": "Versuchen Sie ein anderes Wort: Die Suche umfasst Titel und Transkriptionen."
+    },
+    "a11y": {
+      "transcribing": "wird transkribiert",
+      "quality": "{{language}}, Qualität {{quality}}",
+      "failed": "Transkription fehlgeschlagen",
+      "recovered": "nach einer Unterbrechung wiederhergestellt",
+      "longPress": "Lange drücken zum Umbenennen oder Löschen",
+      "duration": "Dauer {{duration}}"
+    },
+    "model": {
+      "body": "Laden Sie es herunter, um auf dem Gerät zu transkribieren ({{size}}, nur WLAN).",
+      "download": "Herunterladen"
+    },
+    "storage": {
+      "manage": "Speicher verwalten"
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -28,7 +45,32 @@
       "title": "Sprache der Benutzeroberfläche",
       "hint": "Die Transkriptionssprache wird separat eingestellt.",
       "restartRtl": "Die App wird neu gestartet, um die Schreibrichtung zu ändern.",
-      "optionA11y": "Sprache der Benutzeroberfläche: {{language}}"
+      "optionA11y": "Sprache der Benutzeroberfläche: {{language}}",
+      "available": "Verfügbare Sprachen"
+    },
+    "transcription": {
+      "title": "Transkription",
+      "language": "Transkriptionssprache",
+      "hint": "Die in Ihren Aufnahmen gesprochene Sprache. Sie bestimmt die Engine; die automatische Erkennung ist für diese Sprachen nicht zuverlässig.",
+      "cloudRequired": "Cloud erforderlich",
+      "optionA11y": "Transkriptionssprache: {{language}}",
+      "qualityLocal": "Qualität auf dem Gerät: {{quality}}",
+      "cloudRequiredLong": "Keine Erkennung auf dem Gerät: Cloud erforderlich"
+    },
+    "storage": {
+      "used": "{{size}} belegt",
+      "trash": "Papierkorb"
+    },
+    "about": {
+      "title": "Über",
+      "version": "Version {{version}}",
+      "local": "Ihre Aufnahmen und Transkripte bleiben auf diesem Gerät. Ohne Ihre Zustimmung wird nichts gesendet.",
+      "legal": "Datenschutzerklärung und Nutzungsbedingungen: vor der Veröffentlichung verfügbar."
+    },
+    "dev": {
+      "demo": "Demodaten",
+      "demoOn": "Aktiv. Fiktive Aufnahmen, nie auf das Gerät geschrieben.",
+      "demoOff": "Aus. Nur Ihre echten Aufnahmen erscheinen."
     }
   },
   "record": {
@@ -98,13 +140,132 @@
     "hours_other": "{{count}} Std.",
     "hoursMinutes": "{{hours}} Std. {{minutes}}",
     "today": "Heute",
-    "yesterday": "Gestern"
+    "yesterday": "Gestern",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "gut",
     "medium": "mittel",
     "draft": "Entwurf",
     "busy": "Transkription …",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Fehlgeschlagen"
+  },
+  "common": {
+    "back": "Zurück",
+    "cancel": "Abbrechen"
+  },
+  "search": {
+    "clear": "Suche löschen"
+  },
+  "progress": {
+    "done": "Fertig"
+  },
+  "storage": {
+    "title": "Speicher",
+    "recordings": "Aufnahmen {{size}}",
+    "trash": "Papierkorb {{size}}",
+    "free": "Frei {{size}}",
+    "barA11y": "Aufnahmen {{recordings}}, Papierkorb {{trash}}, frei {{free}}",
+    "emptyTrash": "Papierkorb leeren",
+    "lowTitle": "Speicher fast voll",
+    "lowBody": "Noch etwa {{minutes}} Min. Aufnahme möglich.",
+    "insufficientTitle": "Zu wenig Speicher",
+    "insufficientBody": "Die Aufnahme startet nicht: Geben Sie zuerst Speicher frei."
+  },
+  "player": {
+    "play": "Abspielen",
+    "pause": "Pause",
+    "back15": "15 Sekunden zurück",
+    "forward15": "15 Sekunden vor",
+    "rateA11y": "Wiedergabegeschwindigkeit: {{rate}}",
+    "rateTitle": "Wiedergabegeschwindigkeit",
+    "seekA11y": "Wiedergabeposition",
+    "positionA11y": "{{position}} von {{total}}"
+  },
+  "onboarding": {
+    "continue": "Weiter",
+    "promise": {
+      "body": "Nehmen Sie ein Gespräch auf und finden Sie es als Text wieder.",
+      "caption": "Alles bleibt auf Ihrem Gerät. Kein Konto nötig."
+    },
+    "consent": {
+      "title": "Bevor Sie aufnehmen",
+      "body": "In vielen Ländern ist es illegal, ein Gespräch ohne Zustimmung der Anwesenden aufzunehmen.",
+      "caption": "Informieren Sie sie, bevor Sie die Aufnahme starten. Tolitoli zeigt während der Aufnahme immer eine sichtbare Anzeige.",
+      "checkbox": "Ich werde die Anwesenden informieren, dass ich aufnehme.",
+      "accept": "Akzeptieren und weiter",
+      "acceptHint": "Setzen Sie zuerst das Häkchen, um fortzufahren."
+    },
+    "model": {
+      "title": "Transkriptionsmodell",
+      "body": "Tolitoli transkribiert auf Ihrem Gerät. Das Modell wird nur einmal heruntergeladen.",
+      "progress": "Modell-Download",
+      "detail": "{{done}} von {{total}} · nur WLAN",
+      "downloading": "Wird heruntergeladen …",
+      "start": "Loslegen",
+      "later": "Später herunterladen"
+    }
+  },
+  "trash": {
+    "title": "Papierkorb",
+    "emptyTitle": "Papierkorb ist leer",
+    "emptyBody": "Aufnahmen im Papierkorb bleiben dort 30 Tage.",
+    "restore": "Wiederherstellen",
+    "restoreA11y": "{{title}} wiederherstellen",
+    "confirmEmptyTitle": "Papierkorb leeren?",
+    "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+    "confirmTitle": "In den Papierkorb verschieben?",
+    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden."
+  },
+  "detail": {
+    "moreActions": "Weitere Aktionen",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Sprecher {{number}}",
+    "segmentHint": "Zu {{time}} springen",
+    "notFoundTitle": "Aufnahme nicht gefunden",
+    "notFoundBody": "Sie wurde vielleicht in den Papierkorb verschoben. Kehren Sie zur Bibliothek zurück.",
+    "noTranscriptTitle": "Noch keine Transkription",
+    "noTranscriptBody": "Der Ton ist auf Ihrem Gerät gespeichert. Die Transkription kommt mit einer späteren Version.",
+    "transcribing": "Wird transkribiert",
+    "transcribingDetail": "Das kann einige Minuten dauern. Sie können diesen Bildschirm verlassen.",
+    "issue": {
+      "failed": {
+        "title": "Transkription fehlgeschlagen",
+        "body": "Der Ton ist auf Ihrem Gerät unversehrt. Sie können die Transkription erneut starten.",
+        "action": "Erneut versuchen"
+      },
+      "modelMissing": {
+        "title": "Transkriptionsmodell fehlt",
+        "body": "Die Transkription startet, sobald das Modell geladen ist, nur über WLAN."
+      },
+      "offline": {
+        "title": "Offline",
+        "body": "Die Cloud-Transkription wird fortgesetzt, sobald das Netz zurück ist. Der Ton bleibt auf Ihrem Gerät."
+      },
+      "quotaExhausted": {
+        "title": "Cloud-Kontingent aufgebraucht",
+        "body": "Die Cloud-Transkription ist diesen Monat nicht mehr verfügbar. Sie geht nächsten Monat weiter."
+      }
+    },
+    "cloudRequired": {
+      "title": "Diese Sprache erfordert die Cloud",
+      "body": "Keine Erkennung auf dem Gerät transkribiert diese Sprache ({{language}}). Die Cloud-Transkription kommt in einer späteren Version."
+    }
+  },
+  "actions": {
+    "rename": "Umbenennen",
+    "trash": "In den Papierkorb",
+    "exportNote": "Der Export kommt in einer späteren Version."
+  },
+  "rename": {
+    "title": "Aufnahme umbenennen",
+    "body": "Der Titel hilft, die Aufnahme in der Bibliothek und in der Suche zu finden.",
+    "label": "Titel",
+    "hint": "Höchstens {{max}} Zeichen.",
+    "tooLong": "Höchstens {{max}} Zeichen: Kürzen Sie den Titel.",
+    "confirm": "Umbenennen"
   }
 }

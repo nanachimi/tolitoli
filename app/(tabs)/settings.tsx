@@ -1,78 +1,115 @@
-import { useState } from 'react';
+import Constants from 'expo-constants';
+import { router, type Href } from 'expo-router';
+import { useRef, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type HostInstance } from 'react-native';
 
-import { setUiLanguage, type SelectableLanguage } from '@/i18n';
-import { isRtl, PSEUDO_LANGUAGE, UI_LANGUAGES } from '@/i18n/languages';
-import { AppText, OptionGroup, OptionRow, Screen, space } from '@/ui';
+import { isDemoDataEnabled, setDemoDataEnabled, useLibrary } from '@/features/library/library';
+import { totalBytes } from '@/features/library/storage';
+import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
+import { useReturnFocus } from '@/features/settings/useReturnFocus';
+import { findTranscriptionLanguage } from '@/services/transcription/languages';
+import { AppText, OptionGroup, OptionRow, Screen, space, TAB_SCREEN_EDGES } from '@/ui';
+import { formatBytes, type Translate } from '@/ui/format/display';
 
-/** Lets the restart notice show before a direction change reloads the app. */
-const RESTART_NOTICE_MS = 1000;
+import { interfaceLanguageOptions } from '../settings/interface-language';
 
 const PLURAL_SAMPLES = [0, 1, 2, 5, 11, 21, 100];
 
-type Option = { code: SelectableLanguage; nativeName: string };
+/** The interface language in its own name ("Français"), as the sub-screen lists it. */
+function currentLanguageName(code: string): string {
+  return interfaceLanguageOptions().find((option) => option.code === code)?.nativeName ?? code;
+}
 
-const OPTIONS: Option[] = __DEV__
-  ? [...UI_LANGUAGES, { code: PSEUDO_LANGUAGE, nativeName: 'Pseudo' }]
-  : [...UI_LANGUAGES];
+/** "Kiswahili · brouillon", or "Wolof · cloud requis" when there is no local engine. */
+export function transcriptionLanguageSummary(code: string, t: Translate): string {
+  const language = findTranscriptionLanguage(code);
+  if (!language) return '';
+  const quality = language.localQuality
+    ? t(`quality.${language.localQuality}`)
+    : t('settings.transcription.cloudRequired');
+  return t('quality.withLanguage', { language: language.nativeName, quality });
+}
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
-  const [restarting, setRestarting] = useState(false);
-
-  const select = (code: SelectableLanguage) => {
-    if (code === i18n.language) return;
-    if (isRtl(code) !== isRtl(i18n.language)) {
-      setRestarting(true);
-      setTimeout(() => void setUiLanguage(code), RESTART_NOTICE_MS);
-      return;
-    }
-    void setUiLanguage(code);
+  const openedFrom = useReturnFocus();
+  const interfaceRow = useRef<HostInstance>(null);
+  const transcriptionRow = useRef<HostInstance>(null);
+  const storageRow = useRef<HostInstance>(null);
+  const aboutRow = useRef<HostInstance>(null);
+  const open = (row: RefObject<HostInstance | null>, path: Href) => {
+    openedFrom(row.current);
+    router.push(path);
   };
+  const library = useLibrary();
+  const transcriptionLanguage = useTranscriptionLanguage((state) => state.code);
+  const usedBytes = totalBytes([...library.list(), ...library.listTrash()]);
 
   return (
-    <Screen>
+    <Screen edges={TAB_SCREEN_EDGES}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title" accessibilityRole="header" style={styles.title}>
           {t('settings.title')}
         </AppText>
 
-        <OptionGroup title={t('settings.language.title')} exclusive>
-          {OPTIONS.map((option) => (
-            <OptionRow
-              key={option.code}
-              kind="radio"
-              label={option.nativeName}
-              labelIsData
-              // Says it before choosing: this language flips the writing direction and restarts.
-              description={
-                isRtl(option.code) !== isRtl(i18n.language)
-                  ? t('settings.language.restartRtl')
-                  : undefined
-              }
-              checked={option.code === i18n.language}
-              disabled={restarting}
-              accessibilityLabel={t('settings.language.optionA11y', {
-                language: option.nativeName,
-              })}
-              onPress={() => select(option.code)}
-            />
-          ))}
+        <OptionGroup title={t('settings.language.title')}>
+          <OptionRow
+            ref={interfaceRow}
+            kind="link"
+            label={t('settings.language.title')}
+            description={currentLanguageName(i18n.language)}
+            onPress={() => open(interfaceRow, '/settings/interface-language')}
+          />
         </OptionGroup>
-        <AppText variant="caption" color="ink-muted">
-          {t('settings.language.hint')}
-        </AppText>
 
-        {restarting ? (
-          <AppText accessibilityLiveRegion="polite">{t('settings.language.restartRtl')}</AppText>
-        ) : null}
+        <OptionGroup title={t('settings.transcription.title')}>
+          <OptionRow
+            kind="link"
+            ref={transcriptionRow}
+            label={t('settings.transcription.language')}
+            description={transcriptionLanguageSummary(transcriptionLanguage, t)}
+            onPress={() => open(transcriptionRow, '/settings/transcription-language')}
+          />
+        </OptionGroup>
+
+        <OptionGroup title={t('storage.title')}>
+          <OptionRow
+            ref={storageRow}
+            kind="link"
+            label={t('storage.title')}
+            description={t('settings.storage.used', {
+              size: formatBytes(usedBytes, i18n.language, t),
+            })}
+            onPress={() => open(storageRow, '/settings/storage')}
+          />
+        </OptionGroup>
+
+        <OptionGroup title={t('settings.about.title')}>
+          <OptionRow
+            ref={aboutRow}
+            kind="link"
+            label={t('settings.about.title')}
+            description={t('settings.about.version', {
+              version: Constants.expoConfig?.version ?? '',
+            })}
+            onPress={() => open(aboutRow, '/settings/about')}
+          />
+        </OptionGroup>
 
         {__DEV__ ? (
           <View style={styles.dev}>
-            <AppText variant="overline" color="ink-muted" accessibilityRole="header">
-              {t('dev.title')}
-            </AppText>
+            <OptionGroup title={t('dev.title')}>
+              <OptionRow
+                kind="switch"
+                label={t('settings.dev.demo')}
+                description={t(
+                  isDemoDataEnabled() ? 'settings.dev.demoOn' : 'settings.dev.demoOff',
+                )}
+                checked={isDemoDataEnabled()}
+                onPress={() => setDemoDataEnabled(!isDemoDataEnabled())}
+              />
+            </OptionGroup>
             <AppText color="ink-muted">{t('dev.pluralTitle')}</AppText>
             {PLURAL_SAMPLES.map((count) => (
               <AppText key={count}>{t('library.count', { count })}</AppText>
@@ -104,5 +141,6 @@ function pluralDiagnostic(language: string): string {
 const styles = StyleSheet.create({
   content: { padding: space['space-4'], paddingTop: space['space-8'], gap: space['space-2'] },
   title: { marginBottom: space['space-4'] },
-  dev: { marginTop: space['space-6'], gap: space['space-2'] },
+  hint: { marginBottom: space['space-6'] },
+  dev: { marginTop: space['space-2'], gap: space['space-2'] },
 });

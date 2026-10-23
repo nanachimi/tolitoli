@@ -9,19 +9,36 @@
   "library": {
     "title": "Bibliothèque",
     "empty": {
-      "title": "Aucun enregistrement",
-      "body": "Vos enregistrements et leurs transcriptions apparaîtront ici."
+      "title": "Appuyez sur Enregistrer pour commencer",
+      "body": "Vos enregistrements et leurs transcriptions restent sur cet appareil."
     },
     "count_one": "{{count}} enregistrement",
     "count_many": "{{count}} d’enregistrements",
     "count_other": "{{count}} enregistrements",
     "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici.",
-    "record": "Enregistrer",
     "recovered": "Récupéré",
-    "itemA11y": "Enregistrement du {{date}}, durée {{duration}}",
-    "itemRecoveredA11y": "Enregistrement du {{date}}, durée {{duration}}, récupéré après une interruption",
     "durationUnknown": "inconnue",
-    "cardTitle": "Enregistrement du {{date}}"
+    "cardTitle": "Enregistrement du {{date}}",
+    "searchPlaceholder": "Rechercher dans les enregistrements",
+    "noResults": {
+      "title": "Aucun résultat",
+      "body": "Essayez un autre mot : la recherche porte sur les titres et les transcriptions."
+    },
+    "a11y": {
+      "transcribing": "transcription en cours",
+      "quality": "{{language}}, qualité {{quality}}",
+      "failed": "transcription en échec",
+      "recovered": "récupéré après une interruption",
+      "longPress": "Appui long pour renommer ou mettre à la corbeille",
+      "duration": "durée {{duration}}"
+    },
+    "model": {
+      "body": "Téléchargez-le pour transcrire sur l’appareil ({{size}}, wifi uniquement).",
+      "download": "Télécharger"
+    },
+    "storage": {
+      "manage": "Gérer l’espace"
+    }
   },
   "settings": {
     "title": "Réglages",
@@ -29,7 +46,32 @@
       "title": "Langue de l’interface",
       "hint": "La langue de transcription se règle séparément.",
       "restartRtl": "L’application va redémarrer pour changer le sens d’écriture.",
-      "optionA11y": "Langue de l’interface : {{language}}"
+      "optionA11y": "Langue de l’interface : {{language}}",
+      "available": "Langues disponibles"
+    },
+    "transcription": {
+      "title": "Transcription",
+      "language": "Langue de transcription",
+      "hint": "La langue parlée dans vos enregistrements. Elle choisit le moteur ; la détection automatique n’est pas fiable pour ces langues.",
+      "cloudRequired": "cloud requis",
+      "optionA11y": "Langue de transcription : {{language}}",
+      "qualityLocal": "Qualité sur l’appareil : {{quality}}",
+      "cloudRequiredLong": "Aucun moteur sur l’appareil : cloud requis"
+    },
+    "storage": {
+      "used": "{{size}} utilisés",
+      "trash": "Corbeille"
+    },
+    "about": {
+      "title": "À propos",
+      "version": "Version {{version}}",
+      "local": "Vos enregistrements et leurs transcriptions restent sur cet appareil. Rien n’est envoyé sans votre accord.",
+      "legal": "Politique de confidentialité et conditions d’utilisation : disponibles avant la publication."
+    },
+    "dev": {
+      "demo": "Données de démonstration",
+      "demoOn": "Activées. Des enregistrements fictifs, jamais écrits sur l’appareil.",
+      "demoOff": "Désactivées. Seuls vos vrais enregistrements apparaissent."
     }
   },
   "record": {
@@ -102,13 +144,132 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Aujourd’hui",
-    "yesterday": "Hier"
+    "yesterday": "Hier",
+    "megabytes": "{{value}} Mo",
+    "gigabytes": "{{value}} Go",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "bonne",
     "medium": "moyenne",
     "draft": "brouillon",
     "busy": "Transcription…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Échec"
+  },
+  "common": {
+    "back": "Retour",
+    "cancel": "Annuler"
+  },
+  "search": {
+    "clear": "Effacer la recherche"
+  },
+  "progress": {
+    "done": "Terminé"
+  },
+  "storage": {
+    "title": "Stockage",
+    "recordings": "Enregistrements {{size}}",
+    "trash": "Corbeille {{size}}",
+    "free": "Libre {{size}}",
+    "barA11y": "Enregistrements {{recordings}}, corbeille {{trash}}, libre {{free}}",
+    "emptyTrash": "Vider la corbeille",
+    "lowTitle": "Espace presque plein",
+    "lowBody": "Il reste environ {{minutes}} min d’enregistrement.",
+    "insufficientTitle": "Espace insuffisant",
+    "insufficientBody": "L’enregistrement ne démarrera pas : libérez de l’espace d’abord."
+  },
+  "player": {
+    "play": "Lire",
+    "pause": "Pause",
+    "back15": "Reculer de 15 secondes",
+    "forward15": "Avancer de 15 secondes",
+    "rateA11y": "Vitesse de lecture : {{rate}}",
+    "rateTitle": "Vitesse de lecture",
+    "seekA11y": "Position de lecture",
+    "positionA11y": "{{position}} sur {{total}}"
+  },
+  "onboarding": {
+    "continue": "Continuer",
+    "promise": {
+      "body": "Enregistrez une conversation, retrouvez-la écrite.",
+      "caption": "Tout reste sur votre appareil. Aucun compte n’est nécessaire."
+    },
+    "consent": {
+      "title": "Avant d’enregistrer",
+      "body": "Dans de nombreux pays, enregistrer une conversation sans l’accord des personnes présentes est illégal.",
+      "caption": "Informez-les avant de lancer l’enregistrement. Tolitoli affiche toujours un indicateur visible pendant qu’il enregistre.",
+      "checkbox": "J’informerai les personnes présentes que j’enregistre.",
+      "accept": "Accepter et continuer",
+      "acceptHint": "Cochez d’abord la case pour continuer."
+    },
+    "model": {
+      "title": "Modèle de transcription",
+      "body": "Tolitoli transcrit sur votre appareil. Le modèle se télécharge une seule fois.",
+      "progress": "Téléchargement du modèle",
+      "detail": "{{done}} sur {{total}} · wifi uniquement",
+      "downloading": "Téléchargement…",
+      "start": "Commencer",
+      "later": "Télécharger plus tard"
+    }
+  },
+  "trash": {
+    "title": "Corbeille",
+    "emptyTitle": "Corbeille vide",
+    "emptyBody": "Les enregistrements mis à la corbeille y restent 30 jours.",
+    "restore": "Restaurer",
+    "restoreA11y": "Restaurer {{title}}",
+    "confirmEmptyTitle": "Vider la corbeille ?",
+    "confirmEmptyBody": "Les enregistrements de la corbeille seront supprimés définitivement. Cette action est irréversible.",
+    "confirmTitle": "Mettre à la corbeille ?",
+    "confirmBody": "« {{title}} » restera 30 jours dans la corbeille, d’où vous pourrez le restaurer."
+  },
+  "detail": {
+    "moreActions": "Autres actions",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Locuteur {{number}}",
+    "segmentHint": "Aller à {{time}}",
+    "notFoundTitle": "Enregistrement introuvable",
+    "notFoundBody": "Il a peut-être été mis à la corbeille. Revenez à la bibliothèque.",
+    "noTranscriptTitle": "Pas encore de transcription",
+    "noTranscriptBody": "L’audio est enregistré sur votre appareil. La transcription arrivera avec une prochaine version.",
+    "transcribing": "Transcription en cours",
+    "transcribingDetail": "Cela peut prendre quelques minutes. Vous pouvez quitter cet écran.",
+    "issue": {
+      "failed": {
+        "title": "La transcription a échoué",
+        "body": "L’audio est intact sur votre appareil. Vous pouvez relancer la transcription.",
+        "action": "Réessayer"
+      },
+      "modelMissing": {
+        "title": "Modèle de transcription absent",
+        "body": "La transcription démarrera une fois le modèle téléchargé, en wifi uniquement."
+      },
+      "offline": {
+        "title": "Hors ligne",
+        "body": "La transcription cloud reprendra au retour du réseau. L’audio reste sur votre appareil."
+      },
+      "quotaExhausted": {
+        "title": "Quota cloud épuisé",
+        "body": "Ce mois-ci, la transcription cloud n’est plus disponible. Elle reprendra le mois prochain."
+      }
+    },
+    "cloudRequired": {
+      "title": "Cloud requis pour cette langue",
+      "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). La transcription cloud sera proposée dans une prochaine version."
+    }
+  },
+  "actions": {
+    "rename": "Renommer",
+    "trash": "Mettre à la corbeille",
+    "exportNote": "L’export arrivera dans une prochaine version."
+  },
+  "rename": {
+    "title": "Renommer l’enregistrement",
+    "body": "Le titre aide à retrouver l’enregistrement dans la bibliothèque et la recherche.",
+    "label": "Titre",
+    "hint": "{{max}} caractères au plus.",
+    "tooLong": "{{max}} caractères au plus : raccourcissez le titre.",
+    "confirm": "Renommer"
   }
 }

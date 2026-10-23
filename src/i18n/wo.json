@@ -9,17 +9,34 @@
   "library": {
     "title": "Bibliyoteek",
     "empty": {
-      "title": "Amul benn baat bu ñu dénc",
-      "body": "Say baat yu ñu dénc ak seeni bind dinañu feeñ fii."
+      "title": "Bësal Bind ngir tàmbali",
+      "body": "Sa bind yi ak seen mbind dañuy des ci jumtukaay bii."
     },
     "count_other": "{{count}} baat yu ñu dénc",
     "detailPlaceholder": "Tànnal benn baat bu ñu dénc ngir gis ko fii.",
-    "record": "Dénc",
     "recovered": "Dellu nañu ko",
-    "itemA11y": "Dénc bu {{date}}, diir {{duration}}",
-    "itemRecoveredA11y": "Dénc bu {{date}}, diir {{duration}}, dellu nañu ko ginnaaw benn dog",
     "durationUnknown": "xamuñu ko",
-    "cardTitle": "Dénc bu {{date}}"
+    "cardTitle": "Dénc bu {{date}}",
+    "searchPlaceholder": "Seet ci bind yi",
+    "noResults": {
+      "title": "Dara feeñul",
+      "body": "Jéemal beneen baat : seet bi dafay xool tur yi ak mbind yi."
+    },
+    "a11y": {
+      "transcribing": "bind bi mi ngi dox",
+      "quality": "{{language}}, kalite {{quality}}",
+      "failed": "bind bi antuwul",
+      "recovered": "delloo nañu ko ginnaaw ab dog",
+      "longPress": "Bësal lu yàgg ngir soppi tur walla yobu ci mbalit mi",
+      "duration": "diir {{duration}}"
+    },
+    "model": {
+      "body": "Wàccel ko ngir bind ci biir jumtukaay bi ({{size}}, wifi rekk).",
+      "download": "Wàcce"
+    },
+    "storage": {
+      "manage": "Toppatoo bérab bi"
+    }
   },
   "settings": {
     "title": "Tànneef yi",
@@ -27,7 +44,32 @@
       "title": "Làkku jumtukaay bi",
       "hint": "Làkk bi ñuy bindee baat yi, dañu koy tànn ci beneen bérab.",
       "restartRtl": "Aplikasioŋ bi dina tàmbaliwaat ngir soppi fan lañuy bindee.",
-      "optionA11y": "Làkku jumtukaay bi: {{language}}"
+      "optionA11y": "Làkku jumtukaay bi: {{language}}",
+      "available": "Làkk yi am"
+    },
+    "transcription": {
+      "title": "Bind",
+      "language": "Làkku bind",
+      "hint": "Làkk wi ñuy wax ci say dénc. Moo tànn masin bi ; xamal boppam du wóor ci làkk yii.",
+      "cloudRequired": "soxla na cloud",
+      "optionA11y": "Làkku bind : {{language}}",
+      "qualityLocal": "Kalite ci biir jumtukaay bi: {{quality}}",
+      "cloudRequiredLong": "Amul masin ci biir jumtukaay bi: cloud soxla na"
+    },
+    "storage": {
+      "used": "{{size}} lañu jëfandikoo",
+      "trash": "Pañe"
+    },
+    "about": {
+      "title": "Ci mbirum Tolitoli",
+      "version": "Wersiyoŋ {{version}}",
+      "local": "Say dénc ak seeni bind ci jumtukaay bii lay des. Dara du dem te nangoo-wuloo ko.",
+      "legal": "Politigu sutura ak sarti jëfandikoo : dinañu am bala tolitoli di génn."
+    },
+    "dev": {
+      "demo": "Done yu wone",
+      "demoOn": "Dox na. Ay bind yu dul dëgg, duñu leen bind mukk ci jumtukaay bi.",
+      "demoOff": "Fey na. Say dénc yu dëgg rekk ñoo feeñ."
     }
   },
   "record": {
@@ -94,13 +136,132 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Tey",
-    "yesterday": "Démb"
+    "yesterday": "Démb",
+    "megabytes": "{{value}} Mo",
+    "gigabytes": "{{value}} Go",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "baax na",
     "medium": "diggu-diggu",
     "draft": "bind bu njëkk",
     "busy": "Mi ngi bind…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Antuwul"
+  },
+  "common": {
+    "back": "Dellu",
+    "cancel": "Neenal"
+  },
+  "search": {
+    "clear": "Far seet bi"
+  },
+  "progress": {
+    "done": "Jeex na"
+  },
+  "storage": {
+    "title": "Denc",
+    "recordings": "Dénc yi {{size}}",
+    "trash": "Pañe {{size}}",
+    "free": "Des {{size}}",
+    "barA11y": "Dénc yi {{recordings}}, pañe {{trash}}, des {{free}}",
+    "emptyTrash": "Setal pañe bi",
+    "lowTitle": "Denc bi dafa bëgg fees",
+    "lowBody": "Des na lu tollu ci {{minutes}} min ci dénc.",
+    "insufficientTitle": "Denc bi doyul",
+    "insufficientBody": "Dénc bi du tàmbali : jëkk ngay wàññi ci denc bi."
+  },
+  "player": {
+    "play": "Dégg",
+    "pause": "Taxaw",
+    "back15": "Dellu ginnaaw 15 saa",
+    "forward15": "Jëm kanam 15 saa",
+    "rateA11y": "Gaawaayu dégg : {{rate}}",
+    "rateTitle": "Gaawaayu dégg",
+    "seekA11y": "Fi dégg bi tollu",
+    "positionA11y": "{{position}} ci {{total}}"
+  },
+  "onboarding": {
+    "continue": "Kontine",
+    "promise": {
+      "body": "Dénc waxtaan, gis ko mu bindu.",
+      "caption": "Lépp ci sa jumtukaay lay des. Soxlaa kont."
+    },
+    "consent": {
+      "title": "Bala ngay dénc",
+      "body": "Ci réew yu bari, dénc waxtaan te nit ñi fi nekk nangouñu ko, sàñ-sàñu nekku ci.",
+      "caption": "Xamal leen bala ngay tàmbali dénc bi. Tolitoli dina wone lu nu gis saa su ngay dénc.",
+      "checkbox": "Dinaa xamal nit ñi fi nekk ne maa ngi dénc.",
+      "accept": "Nangu te kontine",
+      "acceptHint": "Jëkk ngay tànn kaaro bi ngir kontine."
+    },
+    "model": {
+      "title": "Modelu bind",
+      "body": "Tolitoli ci sa jumtukaay lay bind. Modelu bi benn yoon rekk lay wàcc.",
+      "progress": "Wàcce modelu bi",
+      "detail": "{{done}} ci {{total}} · wifi rekk",
+      "downloading": "Mi ngi wàcc…",
+      "start": "Tàmbali",
+      "later": "Wàcce ko ginnaaw"
+    }
+  },
+  "trash": {
+    "title": "Pañe",
+    "emptyTitle": "Pañe bi amul dara",
+    "emptyBody": "Dénc yi ñu def ci pañe bi dañuy des fa 30 fan.",
+    "restore": "Delloo",
+    "restoreA11y": "Delloo {{title}}",
+    "confirmEmptyTitle": "Setal pañe bi ?",
+    "confirmEmptyBody": "Dénc yi nekk ci pañe bi dinañu leen far ba fàww. Mënuloo ko dellu ginnaaw.",
+    "confirmTitle": "Yobu ko ci mbalit mi ?",
+    "confirmBody": "« {{title}} » dina des 30 fan ci mbalit mi, fa nga ko mënee delloo."
+  },
+  "detail": {
+    "moreActions": "Yeneen jëf",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Waxkat {{number}}",
+    "segmentHint": "Dem ci {{time}}",
+    "notFoundTitle": "Duñu gis bind bi",
+    "notFoundBody": "Xéj na ñu ko yobu ci mbalit mi. Dellul ci bibliotek bi.",
+    "noTranscriptTitle": "Amul bind bu jóge ci baat ba leegi",
+    "noTranscriptBody": "Baat bi denc nañu ko ci sa jumtukaay. Bind bi dina ñëw ci beneen sumb.",
+    "transcribing": "Bind bi mi ngi dox",
+    "transcribingDetail": "Mën na yàgg ay simili. Mën nga génn ci xët wii.",
+    "issue": {
+      "failed": {
+        "title": "Bind bi antuwul",
+        "body": "Baat bi mi ngi ci sa jumtukaay, yàqu ko. Mën nga ko delloo bind.",
+        "action": "Jéemaat"
+      },
+      "modelMissing": {
+        "title": "Masinu bind bi nekkul",
+        "body": "Bind bi dina tàmbali bu masin bi wàcce, ci wifi rekk."
+      },
+      "offline": {
+        "title": "Amul réseau",
+        "body": "Bind ci cloud bi dina dellu bu réseau bi dellusee. Baat bi dina des ci sa jumtukaay."
+      },
+      "quotaExhausted": {
+        "title": "Cloud bi jeex na ci weer wii",
+        "body": "Bind ci cloud amatul ci weer wii. Dina dellu weer wi ñëw."
+      }
+    },
+    "cloudRequired": {
+      "title": "Làkk wii dafa soxla cloud",
+      "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Bind ci cloud dina ñëw ci beneen sumb."
+    }
+  },
+  "actions": {
+    "rename": "Soppi tur",
+    "trash": "Yobu ci mbalit mi",
+    "exportNote": "Yónnee dina ñëw ci beneen sumb."
+  },
+  "rename": {
+    "title": "Soppi turu bind bi",
+    "body": "Tur bi dina la dimbali nga gis bind bi ci bibliotek bi ak ci seet bi.",
+    "label": "Tur",
+    "hint": "{{max}} araf rekk.",
+    "tooLong": "{{max}} araf rekk : gàttal tur bi.",
+    "confirm": "Soppi tur"
   }
 }

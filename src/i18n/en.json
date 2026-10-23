@@ -9,18 +9,35 @@
   "library": {
     "title": "Library",
     "empty": {
-      "title": "No recordings",
-      "body": "Your recordings and their transcripts will appear here."
+      "title": "Tap Record to start",
+      "body": "Your recordings and their transcripts stay on this device."
     },
     "count_one": "{{count}} recording",
     "count_other": "{{count}} recordings",
     "detailPlaceholder": "Select a recording to show it here.",
-    "record": "Record",
     "recovered": "Recovered",
-    "itemA11y": "Recording from {{date}}, duration {{duration}}",
-    "itemRecoveredA11y": "Recording from {{date}}, duration {{duration}}, recovered after an interruption",
     "durationUnknown": "unknown",
-    "cardTitle": "Recording of {{date}}"
+    "cardTitle": "Recording of {{date}}",
+    "searchPlaceholder": "Search recordings",
+    "noResults": {
+      "title": "No results",
+      "body": "Try another word: search covers titles and transcripts."
+    },
+    "a11y": {
+      "transcribing": "transcribing",
+      "quality": "{{language}}, {{quality}} quality",
+      "failed": "transcription failed",
+      "recovered": "recovered after an interruption",
+      "longPress": "Long press to rename or move to trash",
+      "duration": "length {{duration}}"
+    },
+    "model": {
+      "body": "Download it to transcribe on the device ({{size}}, wifi only).",
+      "download": "Download"
+    },
+    "storage": {
+      "manage": "Manage space"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -28,7 +45,32 @@
       "title": "App language",
       "hint": "The transcription language is set separately.",
       "restartRtl": "The app will restart to change the writing direction.",
-      "optionA11y": "App language: {{language}}"
+      "optionA11y": "App language: {{language}}",
+      "available": "Available languages"
+    },
+    "transcription": {
+      "title": "Transcription",
+      "language": "Transcription language",
+      "hint": "The language spoken in your recordings. It picks the engine; automatic detection is not reliable for these languages.",
+      "cloudRequired": "cloud required",
+      "optionA11y": "Transcription language: {{language}}",
+      "qualityLocal": "On-device quality: {{quality}}",
+      "cloudRequiredLong": "No on-device engine: cloud required"
+    },
+    "storage": {
+      "used": "{{size}} used",
+      "trash": "Trash"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version {{version}}",
+      "local": "Your recordings and their transcripts stay on this device. Nothing is sent without your consent.",
+      "legal": "Privacy policy and terms of use: available before release."
+    },
+    "dev": {
+      "demo": "Demo data",
+      "demoOn": "On. Fictional recordings, never written to the device.",
+      "demoOff": "Off. Only your real recordings appear."
     }
   },
   "record": {
@@ -98,13 +140,132 @@
     "hours_other": "{{count}} h",
     "hoursMinutes": "{{hours}} h {{minutes}}",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "megabytes": "{{value}} MB",
+    "gigabytes": "{{value}} GB",
+    "listSeparator": ", "
   },
   "quality": {
     "good": "good",
     "medium": "fair",
     "draft": "draft",
     "busy": "Transcribing…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Failed"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel"
+  },
+  "search": {
+    "clear": "Clear search"
+  },
+  "progress": {
+    "done": "Done"
+  },
+  "storage": {
+    "title": "Storage",
+    "recordings": "Recordings {{size}}",
+    "trash": "Trash {{size}}",
+    "free": "Free {{size}}",
+    "barA11y": "Recordings {{recordings}}, trash {{trash}}, free {{free}}",
+    "emptyTrash": "Empty trash",
+    "lowTitle": "Storage almost full",
+    "lowBody": "About {{minutes}} min of recording left.",
+    "insufficientTitle": "Not enough storage",
+    "insufficientBody": "Recording will not start: free up some space first."
+  },
+  "player": {
+    "play": "Play",
+    "pause": "Pause",
+    "back15": "Back 15 seconds",
+    "forward15": "Forward 15 seconds",
+    "rateA11y": "Playback speed: {{rate}}",
+    "rateTitle": "Playback speed",
+    "seekA11y": "Playback position",
+    "positionA11y": "{{position}} of {{total}}"
+  },
+  "onboarding": {
+    "continue": "Continue",
+    "promise": {
+      "body": "Record a conversation, find it in writing.",
+      "caption": "Everything stays on your device. No account needed."
+    },
+    "consent": {
+      "title": "Before you record",
+      "body": "In many countries, recording a conversation without the agreement of the people present is illegal.",
+      "caption": "Tell them before you start recording. Tolitoli always shows a visible indicator while it records.",
+      "checkbox": "I will tell the people present that I am recording.",
+      "accept": "Accept and continue",
+      "acceptHint": "Tick the box first to continue."
+    },
+    "model": {
+      "title": "Transcription model",
+      "body": "Tolitoli transcribes on your device. The model downloads only once.",
+      "progress": "Model download",
+      "detail": "{{done}} of {{total}} · wifi only",
+      "downloading": "Downloading…",
+      "start": "Start",
+      "later": "Download later"
+    }
+  },
+  "trash": {
+    "title": "Trash",
+    "emptyTitle": "Trash is empty",
+    "emptyBody": "Recordings moved to the trash stay there for 30 days.",
+    "restore": "Restore",
+    "restoreA11y": "Restore {{title}}",
+    "confirmEmptyTitle": "Empty the trash?",
+    "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone.",
+    "confirmTitle": "Move to trash?",
+    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it."
+  },
+  "detail": {
+    "moreActions": "More actions",
+    "meta": "{{date}} · {{duration}}",
+    "speaker": "Speaker {{number}}",
+    "segmentHint": "Go to {{time}}",
+    "notFoundTitle": "Recording not found",
+    "notFoundBody": "It may have been moved to the trash. Go back to the library.",
+    "noTranscriptTitle": "No transcript yet",
+    "noTranscriptBody": "The audio is saved on your device. Transcription will come with a later version.",
+    "transcribing": "Transcribing",
+    "transcribingDetail": "This may take a few minutes. You can leave this screen.",
+    "issue": {
+      "failed": {
+        "title": "Transcription failed",
+        "body": "The audio is intact on your device. You can start the transcription again.",
+        "action": "Try again"
+      },
+      "modelMissing": {
+        "title": "Transcription model missing",
+        "body": "Transcription will start once the model is downloaded, over wifi only."
+      },
+      "offline": {
+        "title": "Offline",
+        "body": "Cloud transcription will resume when the network is back. The audio stays on your device."
+      },
+      "quotaExhausted": {
+        "title": "Cloud quota used up",
+        "body": "Cloud transcription is no longer available this month. It will resume next month."
+      }
+    },
+    "cloudRequired": {
+      "title": "This language needs the cloud",
+      "body": "No on-device engine transcribes this language ({{language}}). Cloud transcription will be offered in a later version."
+    }
+  },
+  "actions": {
+    "rename": "Rename",
+    "trash": "Move to trash",
+    "exportNote": "Export will come in a later version."
+  },
+  "rename": {
+    "title": "Rename the recording",
+    "body": "The title helps you find the recording in the library and in search.",
+    "label": "Title",
+    "hint": "{{max}} characters at most.",
+    "tooLong": "{{max}} characters at most: shorten the title.",
+    "confirm": "Rename"
   }
 }

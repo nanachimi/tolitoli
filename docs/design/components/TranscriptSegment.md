@@ -2,5 +2,6 @@ Un segment de transcription dans l'écran Détail : horodatage en `timestamp` (m
 
 - Appui sur un segment : le lecteur saute à son horodatage. Appui long : copier.
 - Le texte mélangé (swahili-anglais, wolof-français) s'affiche tel quel, sans marquage de langue, dans la police système.
+- Chaque segment s'aligne sur sa propre écriture, détectée à son premier caractère fort : un segment qui commence en arabe s'aligne à droite, un segment qui commence en français à gauche, quelle que soit la langue de l'interface. L'horodatage, le nom du locuteur et les marges restent dans la direction de l'interface.
 - Pas de ponctuation ajoutée par l'interface ; ce que le moteur rend est ce qu'on lit. Les locuteurs sont « Locuteur 1 », « Locuteur 2 » jusqu'à renommage.
 - Le consommateur fournit `segment` (startMs, text, speaker?), `state` (`past` | `active` | `upcoming`), `onPress`.

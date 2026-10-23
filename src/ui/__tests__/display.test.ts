@@ -1,6 +1,10 @@
 import { i18next, initI18n } from '@/i18n';
 import {
   dateLocale,
+  formatBytes,
+  formatPlayerTime,
+  formatRate,
+  formatSpokenDuration,
   dayKey,
   formatClock,
   formatDayGroup,
@@ -78,5 +82,31 @@ describe('display formats (brand book)', () => {
     } finally {
       Intl.DateTimeFormat = original;
     }
+  });
+});
+
+describe('sizes, player times and rates', () => {
+  it('writes sizes in the most readable unit, in the locale', () => {
+    expect(formatBytes(240 * 1024 * 1024, 'fr', i18next.t)).toBe('240 Mo');
+    expect(formatBytes(1.8 * 1024 ** 3, 'fr', i18next.t)).toBe('1,8 Go');
+  });
+
+  it.each([
+    [125_000, '2:05'],
+    [32 * 60_000 + 8000, '32:08'],
+    [3_723_000, '1:02:03'],
+  ])('player time of %d ms is %s', (ms, expected) => {
+    expect(formatPlayerTime(ms)).toBe(expected);
+  });
+
+  it('writes rates with the locale decimal separator', () => {
+    expect(formatRate(1.5, 'fr')).toBe('1,5×');
+    expect(formatRate(0.75, 'en')).toBe('0.75×');
+    expect(formatRate(1, 'de')).toBe('1×');
+  });
+
+  it('speaks a position in minutes and seconds', () => {
+    expect(formatSpokenDuration(734_000, i18next.t)).toBe('12 min 14 s');
+    expect(formatSpokenDuration(8000, i18next.t)).toBe('8 s');
   });
 });

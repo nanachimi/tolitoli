@@ -36,6 +36,6 @@ describe('Arabic (RTL) rendering', () => {
     expect(row.flexDirection).toBe('row');
     expect(list.borderEndWidth).toBeGreaterThan(0);
     expect(list.borderRightWidth).toBeUndefined();
-    expect(screen.getByText('لا توجد تسجيلات')).toBeOnTheScreen();
+    expect(screen.getByText('اضغط على تسجيل للبدء')).toBeOnTheScreen();
   });
 });

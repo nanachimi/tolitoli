@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '../theme';
 import { AppText } from './AppText';
 import { Button } from './Button';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
 
 export type BannerKind = 'interrupted' | 'resumable' | 'alert';
 
@@ -14,10 +14,12 @@ export type BannerProps = {
   body: string;
   /** At most one; never during a call (D-023): the consumer leaves it out. */
   action?: { label: string; onPress: () => void };
+  /** Overrides the kind's icon when the cause has its own (`wifi-off` when offline). */
+  icon?: IconName;
 };
 
 /** State banner under the timer; it goes away when the state changes, never by itself. */
-export function Banner({ kind, title, body, action }: BannerProps) {
+export function Banner({ kind, title, body, action, icon }: BannerProps) {
   const theme = useTheme();
   const alert = kind === 'alert';
   return (
@@ -36,7 +38,10 @@ export function Banner({ kind, title, body, action }: BannerProps) {
         },
       ]}
     >
-      <Icon name={alert ? 'alert-triangle' : 'phone-off'} color={alert ? 'danger' : 'accent'} />
+      <Icon
+        name={icon ?? (alert ? 'alert-triangle' : 'phone-off')}
+        color={alert ? 'danger' : 'accent'}
+      />
       <View style={[styles.text, { gap: theme.space['space-1'] }]}>
         <AppText variant="body-strong" accessibilityRole="header">
           {title}

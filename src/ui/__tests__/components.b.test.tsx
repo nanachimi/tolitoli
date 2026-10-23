@@ -79,6 +79,17 @@ describe('QualityChip', () => {
     expect(flat(screen.getByText(text)).color).toBe(ink);
   });
 
+  it('failed says "Échec" in danger, after the language when it is known', async () => {
+    await renderScreen(<QualityChip language="Français" quality="failed" />);
+    expect(flat(screen.getByText('Français · Échec')).color).toBe(light.danger);
+    expect(screen.getByTestId('icon-alert-triangle', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('failed reads "Échec" alone when the language is unknown', async () => {
+    await renderScreen(<QualityChip quality="failed" />);
+    expect(screen.getByLabelText('Échec')).toBeOnTheScreen();
+  });
+
   it('busy reads "Transcription…"', async () => {
     await renderScreen(<QualityChip quality="busy" />);
     expect(screen.getByText('Transcription…')).toBeOnTheScreen();
@@ -105,6 +116,20 @@ describe('RecordingCard', () => {
     expect(screen.getByLabelText('Carte')).toBeOnTheScreen();
     expect(screen.getByText('09:31 · 1 h 12', { includeHiddenElements: true })).toBeTruthy();
     expect(screen.getByText('Récupéré', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('shows a failure to the eye: danger icon and an "Échec" chip', async () => {
+    await renderScreen(
+      <RecordingCard
+        recording={{ ...recording, state: 'failed', language: 'Français', recovered: false }}
+        accessibilityLabel="Carte"
+      />,
+    );
+    const icons = screen.getAllByTestId('icon-alert-triangle', { includeHiddenElements: true });
+    // The state icon, then the chip's.
+    expect(icons).toHaveLength(2);
+    expect(JSON.stringify(icons[0])).toContain(light.danger);
+    expect(screen.getByText('Français · Échec', { includeHiddenElements: true })).toBeTruthy();
   });
 
   it('has no chevron while there is nowhere to go, one when it opens something', async () => {
@@ -136,6 +161,48 @@ describe('RecordingCard', () => {
 });
 
 describe('TranscriptSegment', () => {
+  function textStyle(text: string) {
+    return flat(screen.getByText(text, { includeHiddenElements: true }));
+  }
+
+  it('aligns an Arabic segment on its script in a French interface', async () => {
+    await renderScreen(
+      <TranscriptSegment
+        timestamp="0:14"
+        text="الميزانية جاهزة، je vous envoie le fichier ce soir."
+        state="past"
+        onPress={jest.fn()}
+      />,
+    );
+    expect(textStyle('الميزانية جاهزة، je vous envoie le fichier ce soir.')).toMatchObject({
+      direction: 'rtl',
+      writingDirection: 'rtl',
+      textAlign: 'auto',
+    });
+  });
+
+  it('aligns a French segment on its script in an Arabic interface, the row staying RTL', async () => {
+    jest.replaceProperty(I18nManager, 'isRTL', true);
+    await i18next.changeLanguage('ar');
+    await renderScreen(
+      <TranscriptSegment
+        timestamp="0:06"
+        speaker="المتحدث 2"
+        text="Oui, on commence. عندي سؤال على الميزانية."
+        state="past"
+        onPress={jest.fn()}
+      />,
+    );
+    expect(textStyle('Oui, on commence. عندي سؤال على الميزانية.')).toMatchObject({
+      direction: 'ltr',
+      writingDirection: 'ltr',
+    });
+    // Timestamp and speaker keep the interface direction: no direction of their own.
+    expect(textStyle('0:06').direction).toBeUndefined();
+    expect(textStyle('المتحدث 2').direction).toBeUndefined();
+    expect(flat(screen.getByRole('button')).flexDirection).toBe('row');
+  });
+
   it.each([
     ['past', 'transparent', light.ink],
     ['active', light['accent-soft'], light.ink],

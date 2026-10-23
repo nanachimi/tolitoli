@@ -1,0 +1,193 @@
+import { screen, userEvent } from '@testing-library/react-native';
+import { router } from 'expo-router';
+import { I18nManager } from 'react-native';
+
+import AboutScreen from '../../app/settings/about';
+import StorageScreen from '../../app/settings/storage';
+import TranscriptionLanguageScreen from '../../app/settings/transcription-language';
+import SettingsScreen, { transcriptionLanguageSummary } from '../../app/(tabs)/settings';
+import TrashScreen from '../../app/trash';
+import { library, setDemoDataEnabled } from '@/features/library/library';
+import { freeBytes } from '@/features/library/storage';
+import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
+import { estimateRecordingBytes, MIN_RECORDING_MINUTES } from '@/services/audio/diskSpace';
+import {
+  setTranscriptionLanguage,
+  useTranscriptionLanguage,
+} from '@/features/settings/transcriptionLanguage';
+import { i18next } from '@/i18n';
+import { TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
+
+import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
+import { renderScreen } from './renderScreen';
+
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), back: jest.fn() },
+  useFocusEffect: () => {},
+}));
+jest.mock('@/features/library/storage', () => ({
+  itemBytes: () => 0,
+  totalBytes: (items: unknown[]) => items.length * 1024 * 1024,
+  freeBytes: jest.fn(() => 8 * 1024 ** 3),
+}));
+
+beforeEach(async () => {
+  await i18next.changeLanguage('fr');
+  setTranscriptionLanguage('fr');
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  jest.mocked(freeBytes).mockReturnValue(8 * 1024 ** 3);
+  jest.mocked(router.push).mockClear();
+  for (const item of library.listTrash()) library.restore(item.id);
+  setDemoDataEnabled(false);
+});
+
+describe('Settings groups', () => {
+  it('summarises the transcription language with its quality, or that it needs the cloud', () => {
+    const t = i18next.t;
+    expect(transcriptionLanguageSummary('sw', t)).toBe('Kiswahili · brouillon');
+    expect(transcriptionLanguageSummary('wo', t)).toBe('Wolof · cloud requis');
+  });
+
+  it('links to the interface language, transcription language, storage and about screens', async () => {
+    await renderScreen(<SettingsScreen />);
+    const user = userEvent.setup();
+    await user.press(screen.getByRole('button', { name: 'Langue de l’interface' }));
+    await user.press(screen.getByRole('button', { name: 'Langue de transcription' }));
+    await user.press(screen.getByRole('button', { name: 'Stockage' }));
+    await user.press(screen.getByRole('button', { name: 'À propos' }));
+    expect(jest.mocked(router.push).mock.calls.map(([path]) => path)).toEqual([
+      '/settings/interface-language',
+      '/settings/transcription-language',
+      '/settings/storage',
+      '/settings/about',
+    ]);
+  });
+
+  it('turns the demo set on with a development switch', async () => {
+    await renderScreen(<SettingsScreen />);
+    const toggle = screen.getByRole('switch', { name: 'Données de démonstration' });
+    expect(toggle).not.toBeChecked();
+    await userEvent.setup().press(toggle);
+    expect(await screen.findByRole('switch', { checked: true })).toBeOnTheScreen();
+    expect(library.list().some((item) => item.demo)).toBe(true);
+  });
+});
+
+describe('Transcription language screen', () => {
+  it('lists the 16 languages, each with its quality or the cloud it needs', async () => {
+    await renderScreen(<TranscriptionLanguageScreen />);
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(TRANSCRIPTION_LANGUAGES.length);
+    expect(screen.getByRole('radio', { name: 'Langue de transcription : Français' })).toBeChecked();
+    expect(
+      screen.getByRole('radio', { name: 'Langue de transcription : Lingála' }).props
+        .accessibilityHint,
+    ).toBe('Qualité sur l’appareil : moyenne');
+    expect(
+      screen.getByRole('radio', { name: 'Langue de transcription : Wolof' }).props
+        .accessibilityHint,
+    ).toBe('Aucun moteur sur l’appareil : cloud requis');
+  });
+
+  it('keeps the choice, independent of the interface language', async () => {
+    await renderScreen(<TranscriptionLanguageScreen />);
+    await userEvent
+      .setup()
+      .press(screen.getByRole('radio', { name: 'Langue de transcription : Kiswahili' }));
+    expect(useTranscriptionLanguage.getState().code).toBe('sw');
+    expect(i18next.language).toBe('fr');
+  });
+
+  it('goes back with a mirrored chevron in Arabic', async () => {
+    jest.replaceProperty(I18nManager, 'isRTL', true);
+    await i18next.changeLanguage('ar');
+    await renderScreen(<TranscriptionLanguageScreen />);
+    await userEvent.setup().press(screen.getByRole('button', { name: 'رجوع' }));
+    expect(router.back).toHaveBeenCalled();
+  });
+});
+
+describe('Storage screen', () => {
+  it('shows the meter and links to the trash', async () => {
+    await renderScreen(<StorageScreen />);
+    expect(screen.getByRole('header', { name: 'Stockage' })).toBeOnTheScreen();
+    expect(screen.getByRole('image', { name: /libre 8 Go/ })).toBeOnTheScreen();
+    // An empty trash has nothing to empty.
+    expect(screen.queryByRole('button', { name: 'Vider la corbeille' })).toBeNull();
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Corbeille' }));
+    expect(router.push).toHaveBeenCalledWith('/trash');
+  });
+
+  // The same function as the recording screen's (diskSpace.ts): no threshold of its own.
+  const threshold = estimateRecordingBytes(ACTIVE_PROFILE, MIN_RECORDING_MINUTES);
+
+  it('refuses just under the recording threshold', async () => {
+    jest.mocked(freeBytes).mockReturnValue(threshold - 1);
+    await renderScreen(<StorageScreen />);
+    expect(screen.getByText('Espace insuffisant')).toBeOnTheScreen();
+  });
+
+  it('only warns at the threshold itself', async () => {
+    jest.mocked(freeBytes).mockReturnValue(threshold);
+    await renderScreen(<StorageScreen />);
+    expect(screen.queryByText('Espace insuffisant')).toBeNull();
+    expect(screen.getByText('Espace presque plein')).toBeOnTheScreen();
+  });
+
+  it('asks before emptying the trash', async () => {
+    setDemoDataEnabled(true);
+    // Emptying hides the item for the whole session: the other tests use other items.
+    library.trash('demo-failed');
+    await renderScreen(<StorageScreen />);
+    const user = userEvent.setup();
+    await user.press(screen.getByRole('button', { name: 'Vider la corbeille' }));
+    expect(screen.getByRole('header', { name: 'Vider la corbeille ?' })).toBeOnTheScreen();
+    expect(library.listTrash()).toHaveLength(1);
+    const confirm = screen.getAllByRole('button', { name: 'Vider la corbeille' }).at(-1);
+    await user.press(confirm!);
+    expect(library.listTrash()).toHaveLength(0);
+  });
+});
+
+describe('Trash screen', () => {
+  it('is quietly empty', async () => {
+    await renderScreen(<TrashScreen />);
+    expect(screen.getByText('Corbeille vide', { exact: false })).toBeOnTheScreen();
+  });
+
+  it('restores a trashed recording', async () => {
+    setDemoDataEnabled(true);
+    library.trash('demo-market');
+    const title = library.listTrash()[0]!.title!;
+    await renderScreen(<TrashScreen />);
+    await userEvent.setup().press(screen.getByRole('button', { name: `Restaurer ${title}` }));
+    expect(library.listTrash()).toHaveLength(0);
+    expect(library.get('demo-market')).toBeTruthy();
+  });
+});
+
+describe('About screen', () => {
+  it('states the local promise and that legal texts are not final', async () => {
+    await renderScreen(<AboutScreen />);
+    expect(screen.getByText(/restent sur cet appareil/)).toBeOnTheScreen();
+    expect(screen.getByText(/disponibles avant la publication/)).toBeOnTheScreen();
+  });
+});
+
+describe.each([
+  ['Transcription language', TranscriptionLanguageScreen],
+  ['Storage', StorageScreen],
+  ['Trash', TrashScreen],
+  ['About', AboutScreen],
+])('%s screen under pseudo-localization', (_name, Component) => {
+  it('renders no hard-coded string', async () => {
+    setDemoDataEnabled(true);
+    library.trash('demo-market');
+    await usePseudoLocale();
+    await renderScreen(<Component />);
+    expect(hardCodedTexts()).toEqual([]);
+  });
+});

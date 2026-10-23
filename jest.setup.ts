@@ -16,3 +16,24 @@ jest.mock('expo-localization', () => ({
 jest.mock('expo-updates', () => ({
   reloadAsync: jest.fn(() => Promise.resolve()),
 }));
+
+// useFocusEffect needs a navigator; screens render alone in tests. Effects run on mount,
+// and `globalThis.refocus()` runs them again, as when a screen comes back into view.
+const mockFocusEffects = new Set<() => unknown>();
+(globalThis as { refocus?: () => void }).refocus = () =>
+  mockFocusEffects.forEach((effect) => effect());
+jest.mock('expo-router', () => {
+  const { useEffect } = jest.requireActual<typeof import('react')>('react');
+  return {
+    ...jest.requireActual('expo-router'),
+    useFocusEffect: (effect: () => unknown) =>
+      useEffect(() => {
+        mockFocusEffects.add(effect);
+        const cleanup = effect();
+        return () => {
+          mockFocusEffects.delete(effect);
+          if (typeof cleanup === 'function') cleanup();
+        };
+      }, [effect]),
+  };
+});
