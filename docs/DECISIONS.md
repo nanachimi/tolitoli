@@ -701,7 +701,13 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **Permissions nouvelles dans l'APK**, toutes « normales » :
   - `ACCESS_WIFI_STATE`, `WAKE_LOCK` et `DOWNLOAD_WITHOUT_NOTIFICATION` (react-native-blob-util) ;
   - `MODIFY_AUDIO_SETTINGS` (expo-audio, sans service de lecture en arrière-plan) ;
-  - `BIND_GET_INSTALL_REFERRER_SERVICE`, origine à identifier.
+  - `BIND_GET_INSTALL_REFERRER_SERVICE` : **origine identifiée**.
+    - Chaîne : `react-native-executorch` 0.10.6 → `react-native-device-info` 15.0.2 (dépendance directe d'executorch, que son `package.json` dit réservée à son « API legacy ») → `com.android.installreferrer:installreferrer:1.1.2` (ligne 59 de `android/build.gradle` de device-info). Le manifeste de cette AAR (Google Maven, vérifié) déclare `com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE`.
+    - Ce qu'elle fait : le constructeur de `RNDeviceModule` ouvre une connexion au service « Install Referrer » du Play Store et range le référent d'installation dans les `SharedPreferences`. Rien n'est envoyé par le réseau, mais c'est une donnée d'attribution lue sans raison.
+    - Quand : seulement si le module natif est instancié. Seule l'API legacy d'executorch importe device-info (`legacy/src/constants/modelRegistry.js`, pour `isEmulatorSync`). L'API principale, dont `useSpeechToText` prévu pour l'étape 3, ne l'importe pas, et Tolitoli n'importe pas encore executorch.
+    - Elle ne sert à rien à Tolitoli. **Proposition : la retirer avant la soumission**, plutôt que la déclarer dans le formulaire « sécurité des données ». Deux moyens, qui demandent une build et une modification de la configuration native, à valider par le propriétaire :
+      - `tools:node="remove"` sur la permission, comme pour les permissions de blob-util ;
+      - en plus, exclure `com.android.installreferrer` de Gradle : device-info charge ces classes par réflexion et se passe d'elles proprement.
 
   Celles à retirer de la production sont listées dans `docs/store/README.md`.
 
