@@ -1,47 +1,25 @@
 import { settingsStorage as Storage } from '@/features/settings/storage';
+import { modelBytes } from '@/services/whisper/models';
 
-import {
-  cancelModelDownload,
-  MODEL_STORAGE_KEY,
-  SIMULATED_DOWNLOAD_MS,
-  startModelDownload,
-  useModel,
-} from '../model';
-
-beforeEach(() => {
-  jest.useFakeTimers();
-  Storage.clearSync();
-  useModel.setState({ status: 'missing', progress: 0 });
-});
-
-afterEach(() => {
-  cancelModelDownload();
-  jest.useRealTimers();
-});
-
-describe('simulated model download', () => {
-  it('moves from missing to ready, and remembers it', () => {
-    startModelDownload();
-    expect(useModel.getState().status).toBe('downloading');
-    jest.advanceTimersByTime(SIMULATED_DOWNLOAD_MS / 2);
-    expect(useModel.getState().progress).toBeCloseTo(0.5);
-    jest.advanceTimersByTime(SIMULATED_DOWNLOAD_MS);
-    expect(useModel.getState()).toEqual({ status: 'ready', progress: 1 });
-    expect(Storage.getItemSync(MODEL_STORAGE_KEY)).toBe('ready');
-    expect(jest.getTimerCount()).toBe(0);
+describe('local model store', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    Storage.clearSync();
   });
 
-  it('goes back to missing when put off', () => {
-    startModelDownload();
-    jest.advanceTimersByTime(1000);
-    cancelModelDownload();
-    expect(useModel.getState()).toEqual({ status: 'missing', progress: 0 });
-    expect(jest.getTimerCount()).toBe(0);
+  it('ignores the simulated "ready" of step 1c: the real model is still missing', () => {
+    Storage.setItemSync('model.status', 'ready');
+    jest.isolateModules(() => {
+      const { useModel, readyModel } = require('../model');
+      expect(useModel.getState()).toMatchObject({ status: 'missing', progress: 0 });
+      expect(readyModel()).toBeNull();
+    });
   });
 
-  it('does not start twice', () => {
-    startModelDownload();
-    startModelDownload();
-    expect(jest.getTimerCount()).toBe(1);
+  it('announces the real size of the model', () => {
+    jest.isolateModules(() => {
+      const { MODEL_BYTES, LOCAL_MODEL } = require('../model');
+      expect(MODEL_BYTES).toBe(modelBytes(LOCAL_MODEL));
+    });
   });
 });

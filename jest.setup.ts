@@ -74,3 +74,32 @@ setLibraryOpener(async (choice) => openTestLibrary(choice));
 beforeEach(async () => {
   await openLibrary();
 });
+
+// executorch's native runtime is not in Jest. Telemetry stays observable: tests check it is off.
+jest.mock('react-native-executorch', () => ({
+  setTelemetryEnabled: jest.fn(),
+  // Never ends by itself; an abort ("Plus tard") rejects it, as the real one does.
+  download: jest.fn(
+    (_source: unknown, options?: { signal?: AbortSignal }) =>
+      new Promise((_resolve, reject) =>
+        options?.signal?.addEventListener('abort', () => reject(new Error('DOWNLOAD_ABORTED'))),
+      ),
+  ),
+  createWhisperSpeechToText: jest.fn(),
+  createFsmnVoiceActivityDetector: jest.fn(),
+  WHISPER_LANGUAGES: ['en', 'fr', 'de', 'ru', 'zh', 'ar', 'sw', 'ha', 'yo', 'ln', 'mg'],
+  models: {
+    voiceActivityDetection: {
+      FSMN_VAD: {
+        XNNPACK_FP32: { modelPath: 'https://example.invalid/vad.pte', defaultOptions: {} },
+      },
+    },
+  },
+}));
+
+// No network in Jest: Wi-Fi unless a test says otherwise.
+jest.mock('expo-network', () => ({
+  NetworkStateType: { WIFI: 'WIFI', ETHERNET: 'ETHERNET', CELLULAR: 'CELLULAR' },
+  getNetworkStateAsync: jest.fn(async () => ({ type: 'WIFI', isConnected: true })),
+  addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
+}));

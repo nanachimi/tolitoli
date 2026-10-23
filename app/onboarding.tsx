@@ -10,14 +10,14 @@ import {
 } from '@/features/onboarding/onboarding';
 import {
   cancelModelDownload,
-  SIMULATED_MODEL_BYTES,
+  MODEL_BYTES,
   startModelDownload,
   useModel,
 } from '@/features/transcription/model';
 import { OnboardingPage, Screen } from '@/ui';
 import { formatBytes } from '@/ui/format/display';
 
-/** Model page: the download is simulated until step 3. */
+/** Model page: the real download, Wi-Fi only by default (step 3). */
 function ModelPage({ onDone }: { onDone: () => void }) {
   const { t, i18n } = useTranslation();
   const { status, progress } = useModel();
@@ -34,8 +34,8 @@ function ModelPage({ onDone }: { onDone: () => void }) {
       download={{
         value,
         done: value >= 1,
-        doneSize: formatBytes(SIMULATED_MODEL_BYTES * value, i18n.language, t),
-        totalSize: formatBytes(SIMULATED_MODEL_BYTES, i18n.language, t),
+        doneSize: formatBytes(MODEL_BYTES * value, i18n.language, t),
+        totalSize: formatBytes(MODEL_BYTES, i18n.language, t),
       }}
     />
   );

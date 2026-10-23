@@ -1,14 +1,11 @@
 import { act, screen, userEvent } from '@testing-library/react-native';
+import { download } from 'react-native-executorch';
 import { router } from 'expo-router';
 
 import LibraryScreen, { SEARCH_DEBOUNCE_MS } from '../../app/(tabs)/index';
 import { library, setDemoDataEnabled } from '@/features/library/library';
 import { freeBytes } from '@/features/library/storage';
-import {
-  cancelModelDownload,
-  SIMULATED_DOWNLOAD_MS,
-  useModel,
-} from '@/features/transcription/model';
+import { cancelModelDownload, useModel } from '@/features/transcription/model';
 import { i18next } from '@/i18n';
 import * as layout from '@/ui/layout/useLayoutMode';
 
@@ -34,6 +31,7 @@ jest.mock('@/ui/layout/useLayoutMode', () => ({
 }));
 
 beforeEach(async () => {
+  jest.mocked(download).mockClear();
   await i18next.changeLanguage('fr');
   await setDemoDataEnabled(true);
   useModel.setState({ status: 'ready', progress: 1 });
@@ -143,8 +141,17 @@ describe('Library notices', () => {
     await userEvent
       .setup({ advanceTimers: jest.advanceTimersByTime })
       .press(screen.getByRole('button', { name: 'Télécharger' }));
+    await act(async () => {
+      for (let i = 0; i < 20 && jest.mocked(download).mock.calls.length === 0; i++) {
+        await Promise.resolve();
+      }
+    });
+    expect(download).toHaveBeenCalled();
     expect(screen.getByRole('progressbar', { name: 'Téléchargement du modèle' })).toBeOnTheScreen();
-    await act(() => jest.advanceTimersByTimeAsync(SIMULATED_DOWNLOAD_MS));
+    await act(async () => {
+      useModel.setState({ status: 'ready', progress: 1 });
+      await jest.advanceTimersByTimeAsync(0);
+    });
     expect(screen.queryByRole('progressbar')).toBeNull();
     expect(screen.queryByText('Modèle de transcription absent')).toBeNull();
   });

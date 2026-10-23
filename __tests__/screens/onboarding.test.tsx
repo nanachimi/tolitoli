@@ -1,4 +1,5 @@
 import { act, screen, userEvent } from '@testing-library/react-native';
+import { download } from 'react-native-executorch';
 import { settingsStorage as Storage } from '@/features/settings/storage';
 import { BackHandler, I18nManager } from 'react-native';
 
@@ -9,11 +10,7 @@ import {
   isOnboardingDone,
   useOnboarding,
 } from '@/features/onboarding/onboarding';
-import {
-  cancelModelDownload,
-  SIMULATED_DOWNLOAD_MS,
-  useModel,
-} from '@/features/transcription/model';
+import { cancelModelDownload, useModel } from '@/features/transcription/model';
 import { i18next } from '@/i18n';
 
 import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
@@ -21,6 +18,7 @@ import { renderScreen } from './renderScreen';
 
 beforeEach(async () => {
   Storage.clearSync();
+  jest.mocked(download).mockClear();
   useOnboarding.setState({ done: false });
   useModel.setState({ status: 'missing', progress: 0 });
   await i18next.changeLanguage('fr');
@@ -53,11 +51,21 @@ describe('Onboarding', () => {
     expect(screen.getByRole('button', { name: 'Téléchargement…' })).toBeDisabled();
   });
 
-  it('starts the app once the simulated download ends', async () => {
+  it('downloads the model, and starts the app once it is verified', async () => {
     jest.useFakeTimers();
     acceptConsent();
     await renderScreen(<OnboardingScreen />);
-    await act(() => jest.advanceTimersByTimeAsync(SIMULATED_DOWNLOAD_MS));
+    await act(async () => {
+      for (let i = 0; i < 20 && jest.mocked(download).mock.calls.length === 0; i++) {
+        await Promise.resolve();
+      }
+    });
+    expect(download).toHaveBeenCalled();
+    // What the downloader reports once every file matches its digest.
+    await act(async () => {
+      useModel.setState({ status: 'ready', progress: 1 });
+      await jest.advanceTimersByTimeAsync(0);
+    });
     await userEvent
       .setup({ advanceTimers: jest.advanceTimersByTime })
       .press(screen.getByRole('button', { name: 'Commencer' }));

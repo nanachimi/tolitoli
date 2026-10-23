@@ -8,11 +8,7 @@ import { useLibrary } from '@/features/library/library';
 import { RecordingActions } from '@/features/library/RecordingActions';
 import { RecordingDetail } from '@/features/library/RecordingDetail';
 import { freeBytes } from '@/features/library/storage';
-import {
-  SIMULATED_MODEL_BYTES,
-  startModelDownload,
-  useModel,
-} from '@/features/transcription/model';
+import { MODEL_BYTES, startModelDownload, useModel } from '@/features/transcription/model';
 import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
 import { checkDiskSpace } from '@/services/audio/diskSpace';
 import type { LibraryItem } from '@/services/library';
@@ -124,7 +120,7 @@ function Notices() {
         <Banner
           kind="alert"
           title={t('detail.issue.modelMissing.title')}
-          body={t('library.model.body', { size: size(SIMULATED_MODEL_BYTES) })}
+          body={t('library.model.body', { size: size(MODEL_BYTES) })}
           action={{ label: t('library.model.download'), onPress: startModelDownload }}
         />
       ) : model.status === 'downloading' ? (
@@ -132,8 +128,8 @@ function Notices() {
           label={t('onboarding.model.progress')}
           value={model.progress}
           detail={t('onboarding.model.detail', {
-            done: size(SIMULATED_MODEL_BYTES * model.progress),
-            total: size(SIMULATED_MODEL_BYTES),
+            done: size(MODEL_BYTES * model.progress),
+            total: size(MODEL_BYTES),
           })}
           state="running"
         />
