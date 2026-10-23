@@ -25,6 +25,7 @@ import {
   RecordButton,
   RecordingCard,
   Screen,
+  TAB_SCREEN_EDGES,
   SearchField,
   SplitLayout,
   space,
@@ -263,7 +264,7 @@ export default function LibraryScreen() {
   const menuTitle = menuFor ? itemTitle(menuFor, now, i18n.language, t) : '';
 
   return (
-    <Screen>
+    <Screen edges={TAB_SCREEN_EDGES}>
       <SplitLayout
         list={
           <View style={styles.fill}>

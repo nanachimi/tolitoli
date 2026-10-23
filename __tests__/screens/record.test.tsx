@@ -208,6 +208,11 @@ describe('Library list from the manifests', () => {
     expect(StyleSheet.flatten(bar.props.style).backgroundColor).toBe(color.light['surface-raised']);
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeOnTheScreen();
     expect(screen.queryByText('Enregistrer', { includeHiddenElements: true })).toBeNull();
+    // The bar rests on the tab bar, which carries the bottom inset: no inset in between.
+    // The native view receives the edges as a map, `off` for the ones left out.
+    const edges = screen.getByTestId('screen').props.edges as Record<string, string>;
+    expect(edges.bottom ?? 'off').toBe('off');
+    expect(edges.top).not.toBe('off');
   });
 
   it('has no hard-coded string with recordings (pseudo-locale)', async () => {

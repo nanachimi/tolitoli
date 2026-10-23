@@ -9,7 +9,7 @@ import { totalBytes } from '@/features/library/storage';
 import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
 import { useReturnFocus } from '@/features/settings/useReturnFocus';
 import { findTranscriptionLanguage } from '@/services/transcription/languages';
-import { AppText, OptionGroup, OptionRow, Screen, space } from '@/ui';
+import { AppText, OptionGroup, OptionRow, Screen, space, TAB_SCREEN_EDGES } from '@/ui';
 import { formatBytes, type Translate } from '@/ui/format/display';
 
 import { interfaceLanguageOptions } from '../settings/interface-language';
@@ -47,7 +47,7 @@ export default function SettingsScreen() {
   const usedBytes = totalBytes([...library.list(), ...library.listTrash()]);
 
   return (
-    <Screen>
+    <Screen edges={TAB_SCREEN_EDGES}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title" accessibilityRole="header" style={styles.title}>
           {t('settings.title')}
