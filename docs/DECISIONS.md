@@ -806,7 +806,7 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 
 ### Reprise
 
-**Où nous en sommes.** 18 commits sur `step-3-transcription`, tous poussés, tests verts. La transcription locale fonctionne de bout en bout sur l'A05 : téléchargement vérifié, décodage, VAD, Whisper, segments en base, service de premier plan écran éteint. **Mais tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio sur l'A05** (moins de 15 au cahier). Base serait deux à trois fois pire. Sur l'appareil type de nos utilisateurs, la transcription locale telle qu'elle est n'existe pas.
+**Où nous en sommes.** 19 commits sur `step-3-transcription`, tous poussés, tests verts. La transcription locale fonctionne de bout en bout sur l'A05 : téléchargement vérifié, décodage, VAD, Whisper, segments en base, service de premier plan écran éteint. **Mais tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio sur l'A05** (moins de 15 au cahier). Base serait deux à trois fois pire. Sur l'appareil type de nos utilisateurs, la transcription locale telle qu'elle est n'existe pas.
 
 **STOP du propriétaire** sur l'écran de choix du modèle (`41d821a`) et sur « base par défaut » : décision caduque, prise sur la qualité sans le chiffre de débit. Les commits restent ; rien ne se construit au-dessus avant d'avoir tranché le moteur.
 
@@ -818,7 +818,13 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **À comparer** à executorch fp32 : plus de 66 min/h mesurées, mesure inachevée.
 - **Si l'écart est d'un facteur 3 ou plus** : c'est un changement de bibliothèque native imposée par CLAUDE.md. Je propose le remplacement avec les chiffres, et le propriétaire tranche.
 - **Si l'écart est faible** : le problème est Whisper lui-même sur ce matériel. La transcription locale devient une fonction pour les mémos courts, et le cloud le chemin normal pour une réunion d'une heure.
-- La consigne du propriétaire s'arrête sur « Dans les deux c… » (message tronqué) : la fin est à lui redemander à la reprise.
+- **Dans les deux cas, les chiffres avant le code** (propriétaire).
+
+**Restent aussi à faire demain, quel que soit le moteur** :
+
+- vérifier sur l'APK de la build `preview-trace` `37f64774` que `BIND_GET_INSTALL_REFERRER_SERVICE` est absente, et consigner la liste complète des permissions ;
+- tester la reprise après `am force-stop` ;
+- vérifier l'hypothèse des 35 % de mémoire (`capability.ts`) sur un émulateur à 2 Go. **C'est une hypothèse, pas une mesure.**
 
 **État laissé** :
 

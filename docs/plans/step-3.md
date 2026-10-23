@@ -174,7 +174,7 @@ Le téléphone est demandé une fois, pour les points 2 à 5. Chaque test se fai
 
 Le texte de référence est la section « Reprise » de D-037. En bref :
 
-- **Où nous en sommes** : 18 commits poussés, tests verts. La chaîne complète fonctionne sur l'A05, mais **tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio**, en release, écran éteint, sur batterie. La mesure était inachevée à 77,6 min de calcul pour 70,6 min d'audio. Le cahier vise moins de 15.
+- **Où nous en sommes** : 19 commits poussés, tests verts. La chaîne complète fonctionne sur l'A05, mais **tiny en XNNPACK fp32 dépasse 66 min de calcul par heure d'audio**, en release, écran éteint, sur batterie. La mesure était inachevée à 77,6 min de calcul pour 70,6 min d'audio. Le cahier vise moins de 15.
 - **Mesuré** :
   - téléchargement de tiny en environ 1 à 2 min en wifi ;
   - décodage à 13 fois le temps réel (environ 4,6 min par heure), avant la correction `16f7f37`, pas encore mesurée ;
@@ -186,5 +186,9 @@ Le texte de référence est la section « Reprise » de D-037. En bref :
 - **Première action de demain** : l'expérience whisper.cpp quantifié (q5 et q8, NEON) contre executorch fp32, sur l'A05, même fichier, tiny puis base. Elle est bornée à une journée, et ses suites sont décrites dans D-037 :
   - un facteur 3 ou plus : proposition de remplacement de bibliothèque, le propriétaire tranche ;
   - un écart faible : le local devient la voie des mémos courts, le cloud celle des réunions.
-- **À redemander** : la fin de la consigne du 24 octobre, tronquée à « Dans les deux c… ».
+- **Dans les deux cas, les chiffres avant le code.**
+- **Aussi demain, quel que soit le moteur** :
+  - permissions sur l'APK `preview-trace` `37f64774` ;
+  - reprise après `am force-stop` ;
+  - hypothèse des 35 % de mémoire à vérifier sur un émulateur à 2 Go (une hypothèse, pas une mesure).
 - **Attention au premier lancement de la preview** : la transcription de l'enregistrement de banc `f6adae63` reprendra d'elle-même.
