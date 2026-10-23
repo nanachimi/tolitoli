@@ -12,6 +12,7 @@ import {
 import { i18next } from '@/i18n';
 import { PSEUDO_LANGUAGE } from '@/i18n/languages';
 import { PSEUDO_OPEN } from '@/i18n/pseudo';
+import { library } from '@/features/library/library';
 import type { RecordingManifest } from '@/services/audio/recordingStore';
 import { color } from '@/ui';
 
@@ -174,7 +175,7 @@ describe('Record screen', () => {
   });
 });
 
-describe('Library list from the manifests', () => {
+describe('Library list of imported step-1 recordings', () => {
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date(2026, 9, 22, 12), doNotFake: ['setImmediate', 'nextTick'] });
   });
@@ -183,9 +184,14 @@ describe('Library list from the manifests', () => {
   });
 
   it('lists recordings with an accessible summary and a recovered badge', async () => {
-    setRecording({
-      recordings: [manifest({ id: 'a', recovered: true }), manifest({ id: 'b', durationMs: null })],
-    });
+    // Manifests of step 1, imported into the database at launch.
+    library.importManifests(
+      [
+        manifest({ id: 'a', recovered: true, status: 'local' }),
+        manifest({ id: 'b', durationMs: null, status: 'local' }),
+      ],
+      () => null,
+    );
     await renderScreen(<LibraryScreen />);
     expect(
       screen.getByLabelText(

@@ -69,8 +69,8 @@
     },
     "dev": {
       "demo": "Demo data",
-      "demoOn": "On. Fictional recordings, never written to the device.",
-      "demoOff": "Off. Only your real recordings appear."
+      "demoOn": "Demo database active (tolitoli-demo.db). The real database is not touched.",
+      "demoOff": "Real database active (tolitoli.db): your real recordings."
     }
   },
   "record": {
@@ -218,7 +218,10 @@
     "confirmEmptyTitle": "Empty the trash?",
     "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone.",
     "confirmTitle": "Move to trash?",
-    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it."
+    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it.",
+    "daysLeft_one": "Deleted for good in {{count}} day",
+    "daysLeft_other": "Deleted for good in {{count}} days",
+    "purgeNext": "Deleted for good at the next launch"
   },
   "detail": {
     "moreActions": "More actions",

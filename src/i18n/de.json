@@ -69,8 +69,8 @@
     },
     "dev": {
       "demo": "Demodaten",
-      "demoOn": "Aktiv. Fiktive Aufnahmen, nie auf das Gerät geschrieben.",
-      "demoOff": "Aus. Nur Ihre echten Aufnahmen erscheinen."
+      "demoOn": "Demo-Datenbank aktiv (tolitoli-demo.db). Die echte Datenbank bleibt unberührt.",
+      "demoOff": "Echte Datenbank aktiv (tolitoli.db): Ihre echten Aufnahmen."
     }
   },
   "record": {
@@ -218,7 +218,10 @@
     "confirmEmptyTitle": "Papierkorb leeren?",
     "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
     "confirmTitle": "In den Papierkorb verschieben?",
-    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden."
+    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden.",
+    "daysLeft_one": "Endgültig gelöscht in {{count}} Tag",
+    "daysLeft_other": "Endgültig gelöscht in {{count}} Tagen",
+    "purgeNext": "Beim nächsten Start endgültig gelöscht"
   },
   "detail": {
     "moreActions": "Weitere Aktionen",

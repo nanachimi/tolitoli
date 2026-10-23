@@ -20,6 +20,7 @@ import {
   type RecordingEvent,
   type TranscriptionEvent,
 } from './states';
+import type { DemoItem } from './demo';
 import type {
   LibraryItem,
   LibraryItemState,
@@ -434,6 +435,55 @@ export class SqliteLibraryRepository implements LibraryRepository {
     });
   }
 
+  // ---- development demo database --------------------------------------------------------
+
+  /**
+   * Seeds an empty demo database (tolitoli-demo.db) with the demo set, states included.
+   * The repository refuses it on any other database: the real one is never written to.
+   */
+  seedDemo(items: DemoItem[], segmentsOf: (id: string) => Segment[]): boolean {
+    if (!this.options.demo) throw new Error('Demo data only goes to the demo database');
+    if (this.db.select({ id: recordings.id }).from(recordings).limit(1).all().length > 0) {
+      return false;
+    }
+    const at = this.nowMs();
+    this.write((tx) => {
+      for (const item of items) {
+        tx.insert(recordings)
+          .values({
+            id: item.id,
+            title: item.title,
+            createdAt: Date.parse(item.createdAt),
+            updatedAt: at,
+            durationMs: item.durationMs,
+            // What the file would weigh at 64 kbit/s (D-021): the Storage screen has sizes to show.
+            audioSize:
+              item.durationMs === null ? null : Math.round(item.durationMs * DEMO_BYTES_PER_MS),
+            state: 'local',
+            transcriptionState: DEMO_TRANSCRIPTION_STATE[item.state],
+            transcriptionProgress: item.progress ?? null,
+            transcriptionIssue: item.issue ?? null,
+            language: item.language,
+            quality: item.quality,
+            recovered: item.recovered,
+          })
+          .run();
+        this.indexTitle(tx, item.id, item.title);
+        segmentsOf(item.id).forEach((segment) => {
+          tx.insert(segments)
+            .values({
+              ...segment,
+              recordingId: item.id,
+              searchText: foldForSearch(segment.text),
+            })
+            .run();
+        });
+        this.log(tx, 'recording', item.id, 'create', { demo: true });
+      }
+    });
+    return true;
+  }
+
   // ---- subscription ------------------------------------------------------------------------
 
   subscribe(listener: () => void): () => void {
@@ -552,6 +602,8 @@ export class SqliteLibraryRepository implements LibraryRepository {
       language,
       quality: row.quality,
       recovered: row.recovered,
+      audioPath: row.audioPath,
+      audioSize: row.audioSize,
       ...(row.transcriptionProgress !== null && row.transcriptionState === 'transcribing'
         ? { progress: row.transcriptionProgress }
         : {}),
@@ -560,6 +612,16 @@ export class SqliteLibraryRepository implements LibraryRepository {
     };
   }
 }
+
+/** 64 kbit/s AAC (D-021), in bytes per millisecond. */
+const DEMO_BYTES_PER_MS = 64_000 / 8 / 1000;
+
+const DEMO_TRANSCRIPTION_STATE: Record<LibraryItemState, RecordingRow['transcriptionState']> = {
+  audio: 'none',
+  transcribing: 'transcribing',
+  transcribed: 'done',
+  failed: 'failed',
+};
 
 const ITEM_STATE: Record<RecordingRow['transcriptionState'], LibraryItemState> = {
   none: 'audio',

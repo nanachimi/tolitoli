@@ -5,6 +5,7 @@ import {
   finalizeRecording as finalizeManifest,
   listRecordings,
 } from '../../audio/recordingStore';
+import { demoItems, demoSegments } from '../demo';
 import { SqliteLibraryRepository, TRASH_RETENTION_DAYS } from '../sqlite';
 import { InvalidRecordingTransition } from '../states';
 
@@ -345,5 +346,29 @@ describe('SqliteLibraryRepository: trash purge', () => {
     next.purgeExpiredTrash();
     expect(client.prepare(`select count(*) as n from recordings`).get()).toEqual({ n: 0 });
     expect(next.importManifests(listRecordings(fs, ROOT), () => 3)).toEqual([]);
+  });
+});
+
+describe('SqliteLibraryRepository: demo database', () => {
+  it('refuses the demo set on the real database', () => {
+    const { repository } = setup();
+    expect(() => repository.seedDemo(demoItems(new Date(T0)), demoSegments)).toThrow(/demo/);
+    expect(repository.list()).toEqual([]);
+  });
+
+  it('seeds an empty demo database once, states and transcripts included', () => {
+    const { db, fs } = setup();
+    const demo = new SqliteLibraryRepository({
+      db,
+      fs,
+      root: ROOT,
+      now: () => new Date(T0),
+      demo: true,
+    });
+    expect(demo.seedDemo(demoItems(new Date(T0)), demoSegments)).toBe(true);
+    expect(demo.seedDemo(demoItems(new Date(T0)), demoSegments)).toBe(false);
+    expect(demo.list()).toHaveLength(demoItems(new Date(T0)).length);
+    expect(demo.get('demo-failed')).toMatchObject({ state: 'failed', issue: 'failed', demo: true });
+    expect(demo.search('mbote na bino').map((item) => item.id)).toEqual(['demo-kinshasa']);
   });
 });

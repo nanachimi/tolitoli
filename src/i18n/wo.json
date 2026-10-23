@@ -68,8 +68,8 @@
     },
     "dev": {
       "demo": "Done yu wone",
-      "demoOn": "Dox na. Ay bind yu dul dëgg, duñu leen bind mukk ci jumtukaay bi.",
-      "demoOff": "Fey na. Say dénc yu dëgg rekk ñoo feeñ."
+      "demoOn": "Bàaasu wone bi mi ngi dox (tolitoli-demo.db). Bàaasu dëgg bi du ñu ko laal.",
+      "demoOff": "Bàaasu dëgg bi mi ngi dox (tolitoli.db) : say bind yu dëgg."
     }
   },
   "record": {
@@ -214,7 +214,9 @@
     "confirmEmptyTitle": "Setal pañe bi ?",
     "confirmEmptyBody": "Dénc yi nekk ci pañe bi dinañu leen far ba fàww. Mënuloo ko dellu ginnaaw.",
     "confirmTitle": "Yobu ko ci mbalit mi ?",
-    "confirmBody": "« {{title}} » dina des 30 fan ci mbalit mi, fa nga ko mënee delloo."
+    "confirmBody": "« {{title}} » dina des 30 fan ci mbalit mi, fa nga ko mënee delloo.",
+    "daysLeft_other": "Dees na ko far ci {{count}} fan",
+    "purgeNext": "Dees na ko far bu appli bi tàmbalee"
   },
   "detail": {
     "moreActions": "Yeneen jëf",

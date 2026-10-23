@@ -20,7 +20,11 @@ export type LibraryItem = {
   /** Progress of a running transcription, 0–1, when known. */
   progress?: number;
   issue?: TranscriptionIssue;
-  /** Part of the development demo set, never written anywhere. */
+  /** Final audio file, relative to the recordings root; null while recording or for demo items. */
+  audioPath: string | null;
+  /** Bytes on disk (the database's audio_size). */
+  audioSize: number | null;
+  /** From the development demo database (docs/plans/step-2.md). */
   demo: boolean;
 };
 

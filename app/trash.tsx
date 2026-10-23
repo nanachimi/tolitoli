@@ -5,9 +5,22 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import { itemTitle } from '@/features/library/display';
 import { useLibrary } from '@/features/library/library';
-import type { TrashedItem } from '@/services/library';
+import { TRASH_RETENTION_DAYS, type TrashedItem } from '@/services/library';
 import { AppText, Button, Dialog, EmptyState, Screen, ScreenHeader, space, useTheme } from '@/ui';
-import { formatDurationShort } from '@/ui/format/display';
+import { formatDurationShort, type Translate } from '@/ui/format/display';
+
+/** Whole days before the launch-time purge takes it, audio included (owner, step 2 plan). */
+export function trashDaysLeft(trashedAt: string, now: Date): number {
+  const purgeAt = Date.parse(trashedAt) + TRASH_RETENTION_DAYS * DAY_MS;
+  return Math.ceil((purgeAt - now.getTime()) / DAY_MS);
+}
+
+function daysLeftLabel(trashedAt: string, now: Date, t: Translate): string {
+  const days = trashDaysLeft(trashedAt, now);
+  return days > 0 ? t('trash.daysLeft', { count: days }) : t('trash.purgeNext');
+}
+
+const DAY_MS = 86_400_000;
 
 function Row({ item, now }: { item: TrashedItem; now: Date }) {
   const { t, i18n } = useTranslation();
@@ -38,6 +51,9 @@ function Row({ item, now }: { item: TrashedItem; now: Date }) {
           {item.durationMs === null
             ? t('library.durationUnknown')
             : formatDurationShort(item.durationMs, t)}
+        </AppText>
+        <AppText variant="caption" color="ink-muted">
+          {daysLeftLabel(item.trashedAt, now, t)}
         </AppText>
       </View>
       <Button

@@ -2,9 +2,11 @@ import type { LibraryItem, Segment } from './types';
 
 /**
  * Development demo set (step 1c): fictional recordings covering every state the
- * interface must show (cahier, « États à concevoir »). Kept in memory only, never
- * written, and only reachable from a development switch.
+ * interface must show (cahier, « États à concevoir »). Since step 2 it lives in its own
+ * database file, tolitoli-demo.db, seeded once and never mixed with the real one.
  */
+
+export type DemoItem = Omit<LibraryItem, 'audioPath' | 'audioSize'>;
 
 const MINUTE = 60_000;
 
@@ -18,7 +20,7 @@ function at(now: Date, daysAgo: number, hours: number, minutes: number): string 
   ).toISOString();
 }
 
-export function demoItems(now: Date): LibraryItem[] {
+export function demoItems(now: Date): DemoItem[] {
   const base = { recovered: false, demo: true } as const;
   return [
     {

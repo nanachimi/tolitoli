@@ -1,0 +1,6 @@
+// Types of the migrations index that `npx drizzle-kit generate` writes as JavaScript.
+declare const migrations: {
+  journal: { entries: { idx: number; when: number; tag: string; breakpoints: boolean }[] };
+  migrations: Record<string, string>;
+};
+export default migrations;

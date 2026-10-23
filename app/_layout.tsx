@@ -8,7 +8,8 @@ import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
 import { useOnboarding } from '@/features/onboarding/onboarding';
-import { recoverAtLaunch } from '@/features/recording/recordingController';
+import { startLibrary } from '@/features/library/launch';
+import { useLibraryVersion } from '@/features/library/library';
 import { initI18n } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/ui';
 
@@ -24,11 +25,6 @@ function ThemedStack() {
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(theme.color.surface);
   }, [theme.color.surface]);
-
-  // Recordings left by a killed app are finalised and marked recovered, never deleted.
-  useEffect(() => {
-    void recoverAtLaunch();
-  }, []);
 
   return (
     <>
@@ -60,7 +56,13 @@ function ThemedStack() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ Rubik_500Medium, Rubik_600SemiBold });
-  const ready = fontsLoaded || fontError !== null;
+  const libraryReady = useLibraryVersion((state) => state.ready);
+  const ready = (fontsLoaded || fontError !== null) && libraryReady;
+
+  // Database open and migrated, recordings recovered (never deleted), then the trash purge.
+  useEffect(() => {
+    void startLibrary();
+  }, []);
 
   useEffect(() => {
     // On a font error the app goes on with the system font rather than staying on the splash.

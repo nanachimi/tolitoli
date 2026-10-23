@@ -56,3 +56,14 @@ jest.mock('expo-router', () => {
       }, [effect]),
   };
 });
+
+// Screens read the library: every test gets a fresh in-memory database, the real one or
+// the demo one as the development switch says (src/features/library/library.ts).
+/* eslint-disable import/first */
+import { openTestLibrary } from './src/db/__tests__/testLibrary';
+import { openLibrary, setLibraryOpener } from './src/features/library/library';
+
+setLibraryOpener(async (choice) => openTestLibrary(choice));
+beforeEach(async () => {
+  await openLibrary();
+});

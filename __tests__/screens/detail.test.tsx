@@ -22,16 +22,14 @@ function open(id: string) {
 
 beforeEach(async () => {
   await i18next.changeLanguage('fr');
-  setDemoDataEnabled(true);
+  await setDemoDataEnabled(true);
 });
 
-afterEach(() => {
+afterEach(async () => {
   jest.restoreAllMocks();
   jest.useRealTimers();
   jest.mocked(router.back).mockClear();
-  for (const item of library.listTrash()) library.restore(item.id);
-  library.rename('demo-meeting', 'Réunion fournisseur');
-  setDemoDataEnabled(false);
+  await setDemoDataEnabled(false);
 });
 
 describe('Recording Detail', () => {
@@ -163,7 +161,6 @@ describe('Recording Detail in Arabic and pseudo-locale', () => {
   it('mirrors the back chevron in Arabic', async () => {
     jest.replaceProperty(I18nManager, 'isRTL', true);
     await i18next.changeLanguage('ar');
-    // demo-failed may have been retried above: the singleton keeps it for the session.
     await open('demo-market');
     expect(screen.getByText('نفدت الحصة السحابية')).toBeOnTheScreen();
     const chevron = screen.getByTestId('icon-chevron-left', { includeHiddenElements: true });
