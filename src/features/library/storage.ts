@@ -1,8 +1,8 @@
-import { File, Paths } from 'expo-file-system';
+import { File } from 'expo-file-system';
 
 import type { LibraryItem } from '@/services/library';
 
-import { recordingsRoot } from '../recording/expoFs';
+import { availableDiskSpace, recordingsRoot } from '../recording/expoFs';
 import { useRecordingStore } from '../recording/useRecordingStore';
 
 /** AAC 64 kbit/s (D-021): what a demo item would weigh on disk. */
@@ -25,6 +25,7 @@ export function totalBytes(items: LibraryItem[]): number {
   return items.reduce((sum, item) => sum + itemBytes(item), 0);
 }
 
+/** The same reading as the recording screen's, so both screens say the same thing. */
 export function freeBytes(): number {
-  return Paths.availableDiskSpace;
+  return availableDiskSpace();
 }

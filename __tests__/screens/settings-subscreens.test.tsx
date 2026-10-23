@@ -8,6 +8,9 @@ import TranscriptionLanguageScreen from '../../app/settings/transcription-langua
 import SettingsScreen, { transcriptionLanguageSummary } from '../../app/(tabs)/settings';
 import TrashScreen from '../../app/trash';
 import { library, setDemoDataEnabled } from '@/features/library/library';
+import { freeBytes } from '@/features/library/storage';
+import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
+import { estimateRecordingBytes, MIN_RECORDING_MINUTES } from '@/services/audio/diskSpace';
 import {
   setTranscriptionLanguage,
   useTranscriptionLanguage,
@@ -22,7 +25,7 @@ jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn() } }
 jest.mock('@/features/library/storage', () => ({
   itemBytes: () => 0,
   totalBytes: (items: unknown[]) => items.length * 1024 * 1024,
-  freeBytes: () => 8 * 1024 ** 3,
+  freeBytes: jest.fn(() => 8 * 1024 ** 3),
 }));
 
 beforeEach(async () => {
@@ -32,6 +35,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   jest.restoreAllMocks();
+  jest.mocked(freeBytes).mockReturnValue(8 * 1024 ** 3);
   jest.mocked(router.push).mockClear();
   for (const item of library.listTrash()) library.restore(item.id);
   setDemoDataEnabled(false);
@@ -110,6 +114,22 @@ describe('Storage screen', () => {
     expect(screen.queryByRole('button', { name: 'Vider la corbeille' })).toBeNull();
     await userEvent.setup().press(screen.getByRole('button', { name: 'Corbeille' }));
     expect(router.push).toHaveBeenCalledWith('/trash');
+  });
+
+  // The same function as the recording screen's (diskSpace.ts): no threshold of its own.
+  const threshold = estimateRecordingBytes(ACTIVE_PROFILE, MIN_RECORDING_MINUTES);
+
+  it('refuses just under the recording threshold', async () => {
+    jest.mocked(freeBytes).mockReturnValue(threshold - 1);
+    await renderScreen(<StorageScreen />);
+    expect(screen.getByText('Espace insuffisant')).toBeOnTheScreen();
+  });
+
+  it('only warns at the threshold itself', async () => {
+    jest.mocked(freeBytes).mockReturnValue(threshold);
+    await renderScreen(<StorageScreen />);
+    expect(screen.queryByText('Espace insuffisant')).toBeNull();
+    expect(screen.getByText('Espace presque plein')).toBeOnTheScreen();
   });
 
   it('asks before emptying the trash', async () => {
