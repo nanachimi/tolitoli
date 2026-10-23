@@ -60,9 +60,11 @@ describe('Recording Detail', () => {
   it('follows the playback with the simulated clock', async () => {
     jest.useFakeTimers();
     await open('demo-meeting');
+    // Start from 0:26 so that a few seconds of clock reach the next segments.
+    await fireEvent.press(screen.getByRole('button', { name: /send the email/ }));
     await fireEvent.press(screen.getByRole('button', { name: 'Lire' }));
     expect(screen.getByRole('button', { name: 'Pause' })).toBeOnTheScreen();
-    await act(() => jest.advanceTimersByTimeAsync(36_000));
+    await act(() => jest.advanceTimersByTimeAsync(10_000));
     expect(screen.getByRole('button', { name: /bei ya usafiri/ })).toBeSelected();
   });
 
