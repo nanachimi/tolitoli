@@ -383,7 +383,7 @@ Les étapes 0 à 5 constituent le MVP publiable en local uniquement ; publier à
 | Semaine | Travail | Jalon |
 | --- | --- | --- |
 | 1 (en cours) | Clôture de l'étape 1 sur Android ; compte Play Console ; recrutement des testeurs ; compte Intron et lecture du tarif ; brouillons de la politique de confidentialité et de la fiche | Étape 1 close |
-| 2 | Étapes 2 et 3 en parallèle | Enregistrer, transcrire en local, retrouver un enregistrement |
+| 2 | Étapes 2 puis 3, en séquence (D-035) | Enregistrer, transcrire en local, retrouver un enregistrement |
 | 3 | Étape 4 (lecteur synchronisé, export) ; étape 5 réduite (consentement, réglages, onboarding) ; 7a réduite + 8 (Intron) si la semaine le permet | **Build en test fermé : le compte à rebours de 14 jours démarre** |
 | 4 et 5 | Corrections remontées par les testeurs via EAS Update ; 7a réduite + 8 (Intron) ; relecture juridique du consentement | Fin des 14 jours |
 | 6 | Soumission en production ; revue Google | **Tolitoli 1.0 Android sur le Play Store** |
