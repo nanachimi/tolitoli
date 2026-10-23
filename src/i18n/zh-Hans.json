@@ -14,7 +14,6 @@
     },
     "count_other": "{{count}} 条录音",
     "detailPlaceholder": "选择一条录音以在此处显示。",
-    "record": "录音",
     "recovered": "已恢复",
     "durationUnknown": "未知",
     "cardTitle": "{{date}} 的录音",

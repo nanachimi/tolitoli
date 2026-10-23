@@ -17,7 +17,6 @@
     "count_many": "{{count}} записей",
     "count_other": "{{count}} записи",
     "detailPlaceholder": "Выберите запись, чтобы открыть её здесь.",
-    "record": "Записать",
     "recovered": "Восстановлено",
     "durationUnknown": "неизвестна",
     "cardTitle": "Запись от {{date}}",

@@ -16,7 +16,6 @@
     "count_many": "{{count}} d’enregistrements",
     "count_other": "{{count}} enregistrements",
     "detailPlaceholder": "Sélectionnez un enregistrement pour l’afficher ici.",
-    "record": "Enregistrer",
     "recovered": "Récupéré",
     "durationUnknown": "inconnue",
     "cardTitle": "Enregistrement du {{date}}",

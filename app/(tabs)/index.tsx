@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SectionList, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 
 import { itemTitle } from '@/features/library/display';
 import { useLibrary } from '@/features/library/library';
@@ -27,10 +27,9 @@ import {
   Screen,
   SearchField,
   SplitLayout,
-  size,
   space,
-  textSpec,
   useLayoutMode,
+  useTheme,
   type RecordingCardState,
 } from '@/ui';
 import {
@@ -41,22 +40,6 @@ import {
   formatShortDate,
   formatTime,
 } from '@/ui/format/display';
-
-/**
- * Bottom margin of the list: the Record button, its caption (with the space-2 gap) and
- * space-6, so the last card scrolls above the button, never under it (guide RecordButton).
- */
-export function listBottomMargin(fontScale: number): number {
-  // The caption grows with the system font size; the button does not.
-  return (
-    size['control-lg'] +
-    space['space-2'] +
-    Math.ceil(textSpec.caption.lineHeight * fontScale) +
-    space['space-6']
-  );
-}
-
-export const LIST_BOTTOM_MARGIN = listBottomMargin(1);
 
 /** Search runs as one types, after this pause (guide SearchField). */
 export const SEARCH_DEBOUNCE_MS = 250;
@@ -176,8 +159,8 @@ function Notices() {
 export default function LibraryScreen() {
   const { t, i18n } = useTranslation();
   const library = useLibrary();
+  const theme = useTheme();
   const split = useLayoutMode() === 'tablet-split';
-  const { fontScale } = useWindowDimensions();
   const [query, setQuery] = useState('');
   const [searched, setSearched] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
@@ -234,7 +217,7 @@ export default function LibraryScreen() {
       // A tall tablet pane shows more than the default ten rows (headers count as rows).
       initialNumToRender={16}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
-      contentContainerStyle={[styles.list, { paddingBottom: listBottomMargin(fontScale) }]}
+      contentContainerStyle={styles.list}
       keyboardShouldPersistTaps="handled"
       ListHeaderComponent={
         <View style={styles.header}>
@@ -285,10 +268,20 @@ export default function LibraryScreen() {
         list={
           <View style={styles.fill}>
             {list}
-            <View style={styles.record} pointerEvents="box-none">
+            {/* A docked bar, not a floating button: the list stops above it, so no card is
+                ever hidden (guide RecordButton). */}
+            <View
+              testID="record-bar"
+              style={[
+                styles.recordBar,
+                {
+                  backgroundColor: theme.color['surface-raised'],
+                  borderTopColor: theme.color.hairline,
+                },
+              ]}
+            >
               <RecordButton
                 mode="record"
-                label={t('library.record')}
                 accessibilityLabel={t('record.start')}
                 onPress={() => router.push('/record')}
               />
@@ -326,6 +319,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: space['space-4'],
     paddingTop: space['space-8'],
+    paddingBottom: space['space-6'],
   },
   header: { gap: space['space-4'], marginBottom: space['space-2'] },
   overline: { marginTop: space['space-4'], marginBottom: space['space-2'] },
@@ -337,11 +331,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: space['space-6'],
   },
-  record: {
-    position: 'absolute',
-    start: 0,
-    end: 0,
-    bottom: space['space-6'],
+  recordBar: {
     alignItems: 'center',
+    paddingVertical: space['space-4'],
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

@@ -19,7 +19,6 @@
     "count_many": "{{count}} تسجيلًا",
     "count_other": "{{count}} تسجيل",
     "detailPlaceholder": "اختر تسجيلًا لعرضه هنا.",
-    "record": "تسجيل",
     "recovered": "مُستعاد",
     "durationUnknown": "غير معروفة",
     "cardTitle": "تسجيل {{date}}",

@@ -15,7 +15,6 @@
     "count_one": "{{count}} Aufnahme",
     "count_other": "{{count}} Aufnahmen",
     "detailPlaceholder": "Wähle eine Aufnahme aus, um sie hier anzuzeigen.",
-    "record": "Aufnehmen",
     "recovered": "Wiederhergestellt",
     "durationUnknown": "unbekannt",
     "cardTitle": "Aufnahme vom {{date}}",

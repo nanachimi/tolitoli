@@ -1,7 +1,7 @@
 import { screen, userEvent } from '@testing-library/react-native';
-import { I18nManager } from 'react-native';
+import { I18nManager, StyleSheet } from 'react-native';
 
-import LibraryScreen, { LIST_BOTTOM_MARGIN, listBottomMargin } from '../../app/(tabs)/index';
+import LibraryScreen from '../../app/(tabs)/index';
 import RecordScreen from '../../app/record';
 import * as controller from '@/features/recording/recordingController';
 import {
@@ -13,6 +13,7 @@ import { i18next } from '@/i18n';
 import { PSEUDO_LANGUAGE } from '@/i18n/languages';
 import { PSEUDO_OPEN } from '@/i18n/pseudo';
 import type { RecordingManifest } from '@/services/audio/recordingStore';
+import { color } from '@/ui';
 
 import { renderScreen } from './renderScreen';
 
@@ -198,11 +199,15 @@ describe('Library list from the manifests', () => {
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeOnTheScreen();
   });
 
-  it('leaves room for the Record button so the last card scrolls above it', () => {
-    // Button 72 + gap 8 + caption line 18 + space-6 24.
-    expect(LIST_BOTTOM_MARGIN).toBe(72 + 8 + 18 + 24);
-    // At 1.5× the caption takes 27 px instead of 18.
-    expect(listBottomMargin(1.5)).toBe(72 + 8 + 27 + 24);
+  it('docks the Record button in a bar under the list, without a caption', async () => {
+    setRecording({ recordings: [manifest({})] });
+    await renderScreen(<LibraryScreen />);
+    const bar = screen.getByTestId('record-bar');
+    // The list ends where the bar starts: the bar is the list pane's last child, not an overlay.
+    expect(StyleSheet.flatten(bar.props.style).position).toBeUndefined();
+    expect(StyleSheet.flatten(bar.props.style).backgroundColor).toBe(color.light['surface-raised']);
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeOnTheScreen();
+    expect(screen.queryByText('Enregistrer', { includeHiddenElements: true })).toBeNull();
   });
 
   it('has no hard-coded string with recordings (pseudo-locale)', async () => {
