@@ -32,7 +32,19 @@
     },
     "model": {
       "body": "下载后即可在设备上转写（{{size}}，仅限 Wi‑Fi）。",
-      "download": "下载"
+      "download": "下载",
+      "waitingWifi": {
+        "title": "正在等待 Wi-Fi",
+        "body": "连接 Wi-Fi 后，转写模型（{{size}}）将自动下载。",
+        "action": "使用移动数据"
+      },
+      "failed": {
+        "title": "模型下载已中断",
+        "integrity": "有一个下载的文件与原始文件不一致，已删除且未被使用。",
+        "network": "连接已中断。下载将从中断处继续。",
+        "action": "重试"
+      },
+      "verifying": "正在校验模型"
     },
     "storage": {
       "manage": "管理空间"
@@ -54,7 +66,15 @@
       "cloudRequired": "需要云端",
       "optionA11y": "转写语言：{{language}}",
       "qualityLocal": "设备端质量：{{quality}}",
-      "cloudRequiredLong": "设备端无引擎：需要云端"
+      "cloudRequiredLong": "设备端无引擎：需要云端",
+      "cloudBanner": {
+        "title": "这种语言需要云端转写",
+        "body": "此设备上没有引擎能转写这种语言（{{language}}）。您的录音会被保留，但暂时没有转写文本。"
+      },
+      "forRecording": {
+        "title": "此录音的语言",
+        "hint": "将用所选语言重新转写。新转写完成前，旧的转写仍会显示。"
+      }
     },
     "storage": {
       "used": "已用 {{size}}",
@@ -227,7 +247,7 @@
     "notFoundTitle": "找不到录音",
     "notFoundBody": "它可能已移到回收站。请返回资料库。",
     "noTranscriptTitle": "尚无转写",
-    "noTranscriptBody": "音频已保存在您的设备上。转写将在后续版本中提供。",
+    "noTranscriptBody": "音频已保存在您的设备上。您现在就可以转写。",
     "transcribing": "正在转写",
     "transcribingDetail": "这可能需要几分钟。您可以离开此页面。",
     "issue": {
@@ -251,13 +271,20 @@
     },
     "cloudRequired": {
       "title": "此语言需要云端",
-      "body": "设备端没有可转写此语言（{{language}}）的引擎。云端转写将在后续版本中提供。"
-    }
+      "body": "此设备上没有引擎能转写这种语言（{{language}}）。它需要云端转写。",
+      "action": "了解更多"
+    },
+    "transcribe": "转写",
+    "queued": "等待转写",
+    "queuedDetail": "录音按时间先后逐条转写，最早的优先。",
+    "paused": "转写已暂停",
+    "pausedDetail": "录音优先。录音结束后，转写会从中断处继续。"
   },
   "actions": {
     "rename": "重命名",
     "trash": "移到回收站",
-    "exportNote": "导出功能将在后续版本中提供。"
+    "exportNote": "导出功能将在后续版本中提供。",
+    "changeLanguage": "更改转写语言"
   },
   "rename": {
     "title": "重命名录音",
@@ -266,5 +293,19 @@
     "hint": "最多 {{max}} 个字符。",
     "tooLong": "最多 {{max}} 个字符：请缩短标题。",
     "confirm": "重命名"
+  },
+  "transcription": {
+    "notification": {
+      "title": "正在转写",
+      "starting": "正在准备转写…",
+      "progress": "已转写 {{percent}}%",
+      "channel": "转写"
+    },
+    "cloudDialog": {
+      "title": "用{{language}}转写？",
+      "body": "此设备上没有引擎能转写这种语言（{{language}}）。它需要云端转写，云端转写将在 Tolitoli 的后续版本中推出。在此之前，您的录音会完好地保存在设备上。",
+      "confirm": "选择其他语言",
+      "close": "关闭"
+    }
   }
 }

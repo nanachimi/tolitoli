@@ -1,6 +1,8 @@
 import {
-  findTranscriptionLanguage,
   isTranscriptionLanguageCode,
+  localQualityFor,
+  QUALITY_THRESHOLDS,
+  qualityFromWer,
   requiresCloud,
   TRANSCRIPTION_LANGUAGES,
 } from '../languages';
@@ -12,22 +14,31 @@ describe('transcription languages (CLAUDE.md, Langues de transcription)', () => 
     expect(new Set(codes).size).toBe(16);
   });
 
-  it('transcribes the major languages locally in good quality', () => {
-    for (const code of ['fr', 'en', 'de', 'ru', 'zh', 'ar']) {
-      expect(findTranscriptionLanguage(code)?.localQuality).toBe('good');
-    }
+  it('derives the quality from the model, not only the language (owner, step 3)', () => {
+    expect(localQualityFor('fr', 'tiny')).toBe('draft');
+    expect(localQualityFor('fr', 'base')).toBe('medium');
+    expect(localQualityFor('en', 'tiny')).toBe('good');
+    expect(localQualityFor('wo', 'base')).toBeNull();
   });
 
-  it('gives Swahili, Hausa and Yoruba a draft local quality, Lingala and Malagasy a medium one', () => {
-    expect(['sw', 'ha', 'yo'].map((c) => findTranscriptionLanguage(c)?.localQuality)).toEqual([
-      'draft',
-      'draft',
-      'draft',
-    ]);
-    expect(['ln', 'mg'].map((c) => findTranscriptionLanguage(c)?.localQuality)).toEqual([
-      'medium',
-      'medium',
-    ]);
+  it('never calls a figure nobody measured better than draft', () => {
+    expect(localQualityFor('mg', 'tiny')).toBe('draft');
+    expect(qualityFromWer(null)).toBe('draft');
+  });
+
+  it('cuts at the thresholds', () => {
+    expect(qualityFromWer(QUALITY_THRESHOLDS.good - 0.1)).toBe('good');
+    expect(qualityFromWer(QUALITY_THRESHOLDS.good)).toBe('medium');
+    expect(qualityFromWer(QUALITY_THRESHOLDS.medium)).toBe('medium');
+    expect(qualityFromWer(QUALITY_THRESHOLDS.medium + 0.1)).toBe('draft');
+  });
+
+  it('says where every local figure comes from', () => {
+    for (const language of TRANSCRIPTION_LANGUAGES) {
+      for (const estimate of Object.values(language.local ?? {})) {
+        expect(['whisper-paper', 'tolitoli']).toContain(estimate.source);
+      }
+    }
   });
 
   it('requires the cloud for exactly igbo, pidgin, zulu, luganda and wolof', () => {

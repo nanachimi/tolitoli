@@ -33,7 +33,19 @@
     },
     "model": {
       "body": "Download it to transcribe on the device ({{size}}, wifi only).",
-      "download": "Download"
+      "download": "Download",
+      "waitingWifi": {
+        "title": "Waiting for Wi-Fi",
+        "body": "The transcription model ({{size}}) will download as soon as you are on Wi-Fi.",
+        "action": "Use mobile data"
+      },
+      "failed": {
+        "title": "Model download stopped",
+        "integrity": "A downloaded file did not match the original: it was deleted without being used.",
+        "network": "The connection dropped. The download will resume where it stopped.",
+        "action": "Try again"
+      },
+      "verifying": "Checking the model"
     },
     "storage": {
       "manage": "Manage space"
@@ -55,7 +67,15 @@
       "cloudRequired": "cloud required",
       "optionA11y": "Transcription language: {{language}}",
       "qualityLocal": "On-device quality: {{quality}}",
-      "cloudRequiredLong": "No on-device engine: cloud required"
+      "cloudRequiredLong": "No on-device engine: cloud required",
+      "cloudBanner": {
+        "title": "This language needs cloud transcription",
+        "body": "No engine on this device transcribes this language ({{language}}). Your recordings will be kept, without a transcript for now."
+      },
+      "forRecording": {
+        "title": "Language of this recording",
+        "hint": "The transcript will be redone in the chosen language. The old one stays visible until the new one is ready."
+      }
     },
     "storage": {
       "used": "{{size}} used",
@@ -232,7 +252,7 @@
     "notFoundTitle": "Recording not found",
     "notFoundBody": "It may have been moved to the trash. Go back to the library.",
     "noTranscriptTitle": "No transcript yet",
-    "noTranscriptBody": "The audio is saved on your device. Transcription will come with a later version.",
+    "noTranscriptBody": "The audio is saved on your device. You can transcribe it now.",
     "transcribing": "Transcribing",
     "transcribingDetail": "This may take a few minutes. You can leave this screen.",
     "issue": {
@@ -256,13 +276,20 @@
     },
     "cloudRequired": {
       "title": "This language needs the cloud",
-      "body": "No on-device engine transcribes this language ({{language}}). Cloud transcription will be offered in a later version."
-    }
+      "body": "No engine on this device transcribes this language ({{language}}). It needs cloud transcription.",
+      "action": "Learn more"
+    },
+    "transcribe": "Transcribe",
+    "queued": "Waiting to be transcribed",
+    "queuedDetail": "Recordings are transcribed one at a time, oldest first.",
+    "paused": "Transcription paused",
+    "pausedDetail": "Recording comes first. The transcription will resume where it stopped as soon as the recording ends."
   },
   "actions": {
     "rename": "Rename",
     "trash": "Move to trash",
-    "exportNote": "Export will come in a later version."
+    "exportNote": "Export will come in a later version.",
+    "changeLanguage": "Change the transcription language"
   },
   "rename": {
     "title": "Rename the recording",
@@ -271,5 +298,19 @@
     "hint": "{{max}} characters at most.",
     "tooLong": "{{max}} characters at most: shorten the title.",
     "confirm": "Rename"
+  },
+  "transcription": {
+    "notification": {
+      "title": "Transcribing",
+      "starting": "Getting the transcription ready…",
+      "progress": "{{percent}}% transcribed",
+      "channel": "Transcription"
+    },
+    "cloudDialog": {
+      "title": "Transcribe in {{language}}?",
+      "body": "No engine on this device transcribes this language ({{language}}). It needs cloud transcription, which will come in a future version of Tolitoli. Until then, your recordings stay on your device, untouched.",
+      "confirm": "Choose another language",
+      "close": "Close"
+    }
   }
 }

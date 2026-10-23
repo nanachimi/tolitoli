@@ -156,6 +156,24 @@ describe('Library notices', () => {
     expect(screen.queryByText('Modèle de transcription absent')).toBeNull();
   });
 
+  it('waits for Wi-Fi, and offers mobile data instead', async () => {
+    useModel.setState({ status: 'waiting-wifi', progress: 0 });
+    await renderScreen(<LibraryScreen />);
+    expect(screen.getByText('En attente du wifi')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Utiliser les données mobiles' })).toBeOnTheScreen();
+  });
+
+  it('says a model file failed its check, and offers to try again', async () => {
+    useModel.setState({ status: 'failed', failure: 'integrity', progress: 0 });
+    await renderScreen(<LibraryScreen />);
+    expect(
+      screen.getByText(
+        'Un fichier reçu ne correspondait pas à l’original : il a été supprimé sans être utilisé.',
+      ),
+    ).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeOnTheScreen();
+  });
+
   it('warns when space runs low and leads to the storage screen', async () => {
     jest.mocked(freeBytes).mockReturnValue(300 * 1024 * 1024);
     await renderScreen(<LibraryScreen />);

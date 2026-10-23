@@ -14,6 +14,7 @@ import { listRecordings, type RecordingManifest } from '@/services/audio/recordi
 import type { FinalizeInput } from '@/services/library';
 
 import { getLibrary } from '../library/library';
+import { transcribeRecording } from '../transcription/transcription';
 import { recoverInterruptedRecordings } from '@/services/audio/recovery';
 import { RecordingSession, type SessionSnapshot } from '@/services/audio/session';
 import { color } from '@/ui/theme/tokens';
@@ -253,9 +254,11 @@ export async function stopRecording(): Promise<void> {
   try {
     const manifest = await active.stop();
     log('stopped', manifest.id, manifest.durationMs, manifest.finalFile, manifest.unreadable);
-    inLibrary('finalize', () =>
-      getLibrary().finalizeRecording(manifest.id, finalizeInputOf(manifest)),
-    );
+    inLibrary('finalize', () => {
+      getLibrary().finalizeRecording(manifest.id, finalizeInputOf(manifest));
+      // Written on the device first, then transcribed (CLAUDE.md, « Local d'abord »).
+      transcribeRecording(manifest.id);
+    });
   } catch (error) {
     log('stop failed', String(error));
     setState({ notice: 'error' });
@@ -293,7 +296,12 @@ export async function recoverAtLaunch(): Promise<void> {
   refreshRecordings();
   // Rows left `recording` by a cut, then manifests the database has never seen (step 1).
   const manifests = useRecordingStore.getState().recordings;
-  inLibrary('reconcile', () => getLibrary().reconcileUnfinished(manifests, finalFileSize));
+  inLibrary('reconcile', () => {
+    // A recording cut by a kill is finalised now, then transcribed like any other.
+    getLibrary()
+      .reconcileUnfinished(manifests, finalFileSize)
+      .forEach((id) => transcribeRecording(id));
+  });
   inLibrary('import', () => {
     const imported = getLibrary().importManifests(manifests, finalFileSize);
     if (imported.length > 0) log('imported', imported.join(', '));

@@ -223,16 +223,18 @@ export class SqliteLibraryRepository implements LibraryRepository {
   reconcileUnfinished(
     manifests: RecordingManifest[],
     sizeOf: (manifest: RecordingManifest) => number | null,
-  ): void {
+  ): string[] {
     const byId = new Map(manifests.map((m) => [m.id, m]));
     const stuck = this.db
       .select()
       .from(recordings)
       .where(and(eq(recordings.state, 'recording'), isNull(recordings.purgedAt)))
       .all();
+    const finalized: string[] = [];
     for (const row of stuck) {
       const manifest = byId.get(row.id);
       if (manifest?.status !== 'local') continue;
+      finalized.push(row.id);
       this.finalizeRecording(row.id, {
         audioPath: manifest.finalFile,
         audioSize: sizeOf(manifest),
@@ -241,6 +243,7 @@ export class SqliteLibraryRepository implements LibraryRepository {
         recovered: manifest.recovered,
       });
     }
+    return finalized;
   }
 
   /** Only the lifecycle of CLAUDE.md: synchronisation (1.1) drives the other arrows. */
@@ -337,6 +340,40 @@ export class SqliteLibraryRepository implements LibraryRepository {
 
   startTranscription(id: string): void {
     this.moveTranscription(id, 'start', { transcriptionProgress: 0 });
+  }
+
+  /**
+   * The language of a recording no engine can transcribe yet (cloud required, step 3): no
+   * job, but the Detail knows what to say. A recording already transcribed keeps its own.
+   */
+  assignTranscriptionLanguage(id: string, language: string): void {
+    const row = this.requireRow(id);
+    if (row.transcriptionState !== 'none' || row.language === language) return;
+    this.write((tx) => {
+      tx.update(recordings)
+        .set({ language, updatedAt: this.nowMs() })
+        .where(eq(recordings.id, id))
+        .run();
+      this.log(tx, 'recording', id, 'update', { language });
+    });
+  }
+
+  /** Failed for this reason, outside the trash: what a ready model sends back to the queue. */
+  failedTranscriptions(issue: TranscriptionIssue): string[] {
+    return this.db
+      .select({ id: recordings.id })
+      .from(recordings)
+      .where(
+        and(
+          eq(recordings.transcriptionState, 'failed'),
+          eq(recordings.transcriptionIssue, issue),
+          isNull(recordings.deletedAt),
+          isNull(recordings.purgedAt),
+        ),
+      )
+      .orderBy(asc(recordings.createdAt))
+      .all()
+      .map((row) => row.id);
   }
 
   /** Back in the queue, drafts and cursor kept: it resumes where it stopped (step 3). */
@@ -765,9 +802,11 @@ export class SqliteLibraryRepository implements LibraryRepository {
       recovered: row.recovered,
       audioPath: row.audioPath,
       audioSize: row.audioSize,
-      ...(row.transcriptionProgress !== null && row.transcriptionState === 'transcribing'
+      ...(row.transcriptionProgress !== null &&
+      (row.transcriptionState === 'transcribing' || row.transcriptionState === 'queued')
         ? { progress: row.transcriptionProgress }
         : {}),
+      ...(row.transcriptionState === 'queued' ? { waiting: true as const } : {}),
       ...(row.transcriptionIssue ? { issue: row.transcriptionIssue } : {}),
       demo: this.options.demo ?? false,
     };

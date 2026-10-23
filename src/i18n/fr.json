@@ -34,7 +34,19 @@
     },
     "model": {
       "body": "Téléchargez-le pour transcrire sur l’appareil ({{size}}, wifi uniquement).",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "waitingWifi": {
+        "title": "En attente du wifi",
+        "body": "Le modèle de transcription ({{size}}) se téléchargera dès que vous serez connecté au wifi.",
+        "action": "Utiliser les données mobiles"
+      },
+      "failed": {
+        "title": "Téléchargement du modèle interrompu",
+        "integrity": "Un fichier reçu ne correspondait pas à l’original : il a été supprimé sans être utilisé.",
+        "network": "La connexion a été coupée. Le téléchargement reprendra où il s’était arrêté.",
+        "action": "Réessayer"
+      },
+      "verifying": "Vérification du modèle"
     },
     "storage": {
       "manage": "Gérer l’espace"
@@ -56,7 +68,15 @@
       "cloudRequired": "cloud requis",
       "optionA11y": "Langue de transcription : {{language}}",
       "qualityLocal": "Qualité sur l’appareil : {{quality}}",
-      "cloudRequiredLong": "Aucun moteur sur l’appareil : cloud requis"
+      "cloudRequiredLong": "Aucun moteur sur l’appareil : cloud requis",
+      "cloudBanner": {
+        "title": "Cette langue demande la transcription cloud",
+        "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). Vos enregistrements seront conservés, sans transcription pour l’instant."
+      },
+      "forRecording": {
+        "title": "Langue de cet enregistrement",
+        "hint": "La transcription sera refaite dans la langue choisie. L’ancienne reste visible jusqu’à ce que la nouvelle soit prête."
+      }
     },
     "storage": {
       "used": "{{size}} utilisés",
@@ -237,7 +257,7 @@
     "notFoundTitle": "Enregistrement introuvable",
     "notFoundBody": "Il a peut-être été mis à la corbeille. Revenez à la bibliothèque.",
     "noTranscriptTitle": "Pas encore de transcription",
-    "noTranscriptBody": "L’audio est enregistré sur votre appareil. La transcription arrivera avec une prochaine version.",
+    "noTranscriptBody": "L’audio est enregistré sur votre appareil. Vous pouvez le transcrire maintenant.",
     "transcribing": "Transcription en cours",
     "transcribingDetail": "Cela peut prendre quelques minutes. Vous pouvez quitter cet écran.",
     "issue": {
@@ -261,13 +281,20 @@
     },
     "cloudRequired": {
       "title": "Cloud requis pour cette langue",
-      "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). La transcription cloud sera proposée dans une prochaine version."
-    }
+      "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). Elle demande la transcription cloud.",
+      "action": "En savoir plus"
+    },
+    "transcribe": "Transcrire",
+    "queued": "En attente de transcription",
+    "queuedDetail": "Les enregistrements sont transcrits un par un, du plus ancien au plus récent.",
+    "paused": "Transcription en pause",
+    "pausedDetail": "L’enregistrement passe en premier. La transcription reprendra où elle s’était arrêtée dès qu’il sera terminé."
   },
   "actions": {
     "rename": "Renommer",
     "trash": "Mettre à la corbeille",
-    "exportNote": "L’export arrivera dans une prochaine version."
+    "exportNote": "L’export arrivera dans une prochaine version.",
+    "changeLanguage": "Changer la langue de transcription"
   },
   "rename": {
     "title": "Renommer l’enregistrement",
@@ -276,5 +303,19 @@
     "hint": "{{max}} caractères au plus.",
     "tooLong": "{{max}} caractères au plus : raccourcissez le titre.",
     "confirm": "Renommer"
+  },
+  "transcription": {
+    "notification": {
+      "title": "Transcription en cours",
+      "starting": "Préparation de la transcription…",
+      "progress": "{{percent}} % transcrits",
+      "channel": "Transcription"
+    },
+    "cloudDialog": {
+      "title": "Transcrire en {{language}} ?",
+      "body": "Aucun moteur sur l’appareil ne transcrit cette langue ({{language}}). Elle demande la transcription cloud, qui arrivera dans une prochaine version de Tolitoli. D’ici là, vos enregistrements restent sur votre appareil, intacts.",
+      "confirm": "Choisir une autre langue",
+      "close": "Fermer"
+    }
   }
 }

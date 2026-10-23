@@ -2,6 +2,7 @@ import { settingsStorage as Storage } from '@/features/settings/storage';
 import { i18next } from '@/i18n';
 
 import { recoverAtLaunch } from '../recording/recordingController';
+import { startTranscription } from '../transcription/transcription';
 import { getLibrary, openLibrary } from './library';
 
 /** Language the title index was built in: its date words depend on it. */
@@ -29,7 +30,8 @@ export function keepTitleIndexInLanguage(): void {
 
 /**
  * Launch order (docs/plans/step-2.md): database open and migrated, recordings recovered
- * and reconciled, then the trash purge — at launch and nowhere else.
+ * and reconciled, then the trash purge — at launch and nowhere else — and the transcription
+ * queue, which resumes what was queued or cut while running (step 3).
  */
 export async function startLibrary(): Promise<void> {
   await openLibrary();
@@ -37,4 +39,5 @@ export async function startLibrary(): Promise<void> {
   await recoverAtLaunch();
   const purged = getLibrary().purgeExpiredTrash();
   if (purged.length > 0) console.log('[library] purged', purged.join(', '));
+  startTranscription();
 }

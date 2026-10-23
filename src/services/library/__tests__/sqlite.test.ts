@@ -343,6 +343,30 @@ describe('SqliteLibraryRepository: transcript drafts (step 3)', () => {
     expect(repository.pendingTranscriptions()).toEqual([]);
   });
 
+  it('lists the transcriptions that waited for the model', () => {
+    const { repository } = transcribing();
+    repository.failTranscription('rec', 'model-missing');
+    expect(repository.failedTranscriptions('model-missing')).toEqual(['rec']);
+    expect(repository.failedTranscriptions('failed')).toEqual([]);
+    repository.retryTranscription('rec');
+    expect(repository.failedTranscriptions('model-missing')).toEqual([]);
+  });
+
+  it('gives a language to a recording that needs the cloud, never over a transcript', () => {
+    const { repository } = setup();
+    repository.createRecording({ id: 'rec', createdAt: new Date(T0).toISOString() });
+    repository.finalizeRecording('rec', FINAL);
+    repository.assignTranscriptionLanguage('rec', 'wo');
+    expect(repository.get('rec')).toMatchObject({ state: 'audio', language: 'wo' });
+    expect(repository.pendingTranscriptions()).toEqual([]);
+
+    repository.queueTranscription('rec', { language: 'fr', engine: 'local', model: 'tiny' });
+    repository.startTranscription('rec');
+    repository.completeTranscription('rec', { quality: 'medium' });
+    repository.assignTranscriptionLanguage('rec', 'zu');
+    expect(repository.get('rec')).toMatchObject({ state: 'transcribed', language: 'fr' });
+  });
+
   it('refuses a draft outside a transcription under way', () => {
     const { repository } = setup();
     repository.createRecording({ id: 'rec', createdAt: new Date(T0).toISOString() });

@@ -32,7 +32,19 @@
     },
     "model": {
       "body": "Wàccel ko ngir bind ci biir jumtukaay bi ({{size}}, wifi rekk).",
-      "download": "Wàcce"
+      "download": "Wàcce",
+      "waitingWifi": {
+        "title": "Mi ngi xaar wifi",
+        "body": "Modelu bind bi ({{size}}) dina wàcc bu nga duggee ci wifi.",
+        "action": "Jëfandikoo internet bu telefon"
+      },
+      "failed": {
+        "title": "Wàcce modelu bi dafa taxaw",
+        "integrity": "Benn dosi bu wàcc menginul ak bu njëkk bi: far nañu ko te jëfandikoowuñu ko.",
+        "network": "Connexion bi dafa dog. Wàcce bi dina dellu fa mu taxawoon.",
+        "action": "Jéemaatal"
+      },
+      "verifying": "Mi ngi saytu modelu bi"
     },
     "storage": {
       "manage": "Toppatoo bérab bi"
@@ -54,7 +66,15 @@
       "cloudRequired": "soxla na cloud",
       "optionA11y": "Làkku bind : {{language}}",
       "qualityLocal": "Kalite ci biir jumtukaay bi: {{quality}}",
-      "cloudRequiredLong": "Amul masin ci biir jumtukaay bi: cloud soxla na"
+      "cloudRequiredLong": "Amul masin ci biir jumtukaay bi: cloud soxla na",
+      "cloudBanner": {
+        "title": "Làkk wii dafa soxla bind ci cloud",
+        "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Say yëgle dañuy des, te bindagul leen leegi."
+      },
+      "forRecording": {
+        "title": "Làkku yëgle bii",
+        "hint": "Dinañu defaat bind bi ci làkk wi nga tànn. Bu yàgg bi dina des ba bu bees bi pare."
+      }
     },
     "storage": {
       "used": "{{size}} lañu jëfandikoo",
@@ -227,7 +247,7 @@
     "notFoundTitle": "Duñu gis bind bi",
     "notFoundBody": "Xéj na ñu ko yobu ci mbalit mi. Dellul ci bibliotek bi.",
     "noTranscriptTitle": "Amul bind bu jóge ci baat ba leegi",
-    "noTranscriptBody": "Baat bi denc nañu ko ci sa jumtukaay. Bind bi dina ñëw ci beneen sumb.",
+    "noTranscriptBody": "Kàddu gi denc nañu ko ci sa jumtukaay. Mën nga ko bind leegi.",
     "transcribing": "Bind bi mi ngi dox",
     "transcribingDetail": "Mën na yàgg ay simili. Mën nga génn ci xët wii.",
     "issue": {
@@ -251,13 +271,20 @@
     },
     "cloudRequired": {
       "title": "Làkk wii dafa soxla cloud",
-      "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Bind ci cloud dina ñëw ci beneen sumb."
-    }
+      "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Dafa soxla bind ci cloud.",
+      "action": "Xam ci lu ëpp"
+    },
+    "transcribe": "Bind",
+    "queued": "Mi ngi xaar ñu bind ko",
+    "queuedDetail": "Yëgle yi ñu ngi leen di bind benn-benn, bu yàgg bi jëkk.",
+    "paused": "Bind bi dafa taxaw ab diir",
+    "pausedDetail": "Yëgle bi moo jëkk. Bind bi dina dellu fa mu taxawoon su yëgle bi jeexee."
   },
   "actions": {
     "rename": "Soppi tur",
     "trash": "Yobu ci mbalit mi",
-    "exportNote": "Yónnee dina ñëw ci beneen sumb."
+    "exportNote": "Yónnee dina ñëw ci beneen sumb.",
+    "changeLanguage": "Soppi làkku bind bi"
   },
   "rename": {
     "title": "Soppi turu bind bi",
@@ -266,5 +293,19 @@
     "hint": "{{max}} araf rekk.",
     "tooLong": "{{max}} araf rekk : gàttal tur bi.",
     "confirm": "Soppi tur"
+  },
+  "transcription": {
+    "notification": {
+      "title": "Mi ngi bind",
+      "starting": "Mi ngi waajal bind bi…",
+      "progress": "{{percent}} % bind nañu ko",
+      "channel": "Bind"
+    },
+    "cloudDialog": {
+      "title": "Bind ci {{language}} ?",
+      "body": "Amul masin ci biir jumtukaay bi buy bind làkk wii ({{language}}). Dafa soxla bind ci cloud, di ñëw ci beneen sumbu Tolitoli. Ba noppi, say yëgle dañuy des ci sa jumtukaay, ñu mat sëkk.",
+      "confirm": "Tànn beneen làkk",
+      "close": "Tëj"
+    }
   }
 }

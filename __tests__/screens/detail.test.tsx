@@ -4,6 +4,12 @@ import { I18nManager, StyleSheet } from 'react-native';
 
 import RecordingScreen from '../../app/recording/[id]';
 import { library, setDemoDataEnabled } from '@/features/library/library';
+import { LOCAL_MODEL } from '@/features/transcription/model';
+import {
+  localQualityFor,
+  requiresCloud,
+  TRANSCRIPTION_LANGUAGES,
+} from '@/services/transcription/languages';
 import { MAX_TITLE_LENGTH } from '@/features/library/RecordingActions';
 import { i18next } from '@/i18n';
 
@@ -83,7 +89,10 @@ describe('Recording Detail', () => {
     expect(screen.getByLabelText('Français · Échec')).toBeOnTheScreen();
     await userEvent.setup().press(screen.getByRole('button', { name: 'Réessayer' }));
     expect(screen.queryByText('La transcription a échoué')).toBeNull();
-    expect(screen.getByRole('progressbar', { name: 'Transcription en cours' })).toBeOnTheScreen();
+    // Back in the queue, it waits its turn (step 3).
+    expect(
+      screen.getByRole('progressbar', { name: 'En attente de transcription' }),
+    ).toBeOnTheScreen();
   });
 
   it('says why a recording is not transcribed', async () => {
@@ -154,6 +163,86 @@ describe('Recording actions', () => {
     await user.press(screen.getByRole('button', { name: 'Mettre à la corbeille' }));
     expect(library.listTrash().map((item) => item.id)).toEqual(['demo-lecture']);
     expect(router.back).toHaveBeenCalled();
+  });
+});
+
+/** A real recording (not a demo item), finalised on the device. */
+async function realRecording(id: string) {
+  await setDemoDataEnabled(false);
+  library.createRecording({ id, createdAt: new Date().toISOString() });
+  library.finalizeRecording(id, {
+    audioPath: `${id}.m4a`,
+    audioSize: 1,
+    audioFormat: 'm4a',
+    durationMs: 60_000,
+    recovered: false,
+  });
+}
+
+describe('Recording Detail, transcription (step 3)', () => {
+  it.each([
+    ['fr', 'Cloud requis pour cette langue', 'Transcrire en Wolof ?'],
+    ['ar', i18next.getFixedT('ar')('detail.cloudRequired.title'), 'النسخ بلغة Wolof؟'],
+  ])(
+    'says in %s that a language without a local engine needs the cloud: no empty transcript, no error',
+    async (language, banner, dialog) => {
+      await i18next.changeLanguage(language);
+      await realRecording('rec');
+      library.assignTranscriptionLanguage('rec', 'wo');
+      await open('rec');
+      expect(screen.getByText(banner)).toBeOnTheScreen();
+      expect(screen.queryByText(i18next.t('detail.noTranscriptTitle'))).toBeNull();
+      expect(screen.queryByText(i18next.t('detail.issue.failed.title'))).toBeNull();
+      const user = userEvent.setup();
+      await user.press(
+        screen.getByRole('button', { name: i18next.t('detail.cloudRequired.action') }),
+      );
+      expect(screen.getByRole('header', { name: dialog })).toBeOnTheScreen();
+      await user.press(
+        screen.getByRole('button', { name: i18next.t('transcription.cloudDialog.confirm') }),
+      );
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/settings/transcription-language',
+        params: { recording: 'rec' },
+      });
+    },
+  );
+
+  it.each(['fr', 'ar'])(
+    'never shows a transcribed language without its quality, in %s',
+    async (language) => {
+      await i18next.changeLanguage(language);
+      for (const entry of TRANSCRIPTION_LANGUAGES.filter((l) => !requiresCloud(l.code))) {
+        await realRecording(entry.code);
+        library.queueTranscription(entry.code, {
+          language: entry.code,
+          engine: 'local',
+          model: LOCAL_MODEL,
+        });
+        library.startTranscription(entry.code);
+        library.saveDraft(entry.code, { startMs: 0, endMs: 1000, text: 'Texte' }, 1000);
+        library.completeTranscription(entry.code, {
+          quality: localQualityFor(entry.code, LOCAL_MODEL),
+        });
+        const view = await open(entry.code);
+        const quality = i18next.t(`quality.${localQualityFor(entry.code, LOCAL_MODEL)!}`);
+        expect(
+          screen.getByLabelText(
+            i18next.t('quality.withLanguage', { language: entry.nativeName, quality }),
+          ),
+        ).toBeOnTheScreen();
+        view.unmount();
+      }
+    },
+  );
+
+  it('transcribes a recording on demand, in the language of the settings', async () => {
+    await realRecording('rec');
+    await open('rec');
+    await userEvent.setup().press(screen.getByRole('button', { name: 'Transcrire' }));
+    // Queued in French; without a model in Jest, the queue says so at once.
+    expect(library.get('rec')).toMatchObject({ language: 'fr', issue: 'model-missing' });
+    expect(screen.getByText('Modèle de transcription absent')).toBeOnTheScreen();
   });
 });
 

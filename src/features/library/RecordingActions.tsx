@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +7,11 @@ import { ActionSheet, Dialog, TextField } from '@/ui';
 
 import { itemTitle } from './display';
 import { library } from './library';
+
+/** The transcription language picker, for one recording: its transcript is redone (step 3). */
+export function openLanguagePicker(id: string): void {
+  router.push({ pathname: '/settings/transcription-language', params: { recording: id } });
+}
 
 /** Long enough for a meeting name, short enough for two lines of a card. */
 export const MAX_TITLE_LENGTH = 120;
@@ -23,7 +29,8 @@ export type RecordingActionsProps = {
 
 /**
  * Actions on a recording, from the Detail's more button or a long press on a card:
- * rename, then trash behind a Dialog (guide ActionSheet). Export is absent until step 4.
+ * rename, change the transcription language (the only way back from an hour recorded in the
+ * wrong one), then trash behind a Dialog (guide ActionSheet). Export is absent until step 4.
  */
 export function RecordingActions({
   item,
@@ -71,6 +78,19 @@ export function RecordingActions({
               setStage('rename');
             },
           },
+          // Real recordings only: a demo item has no audio to transcribe.
+          ...(item.audioPath && !item.demo
+            ? [
+                {
+                  label: t('actions.changeLanguage'),
+                  icon: 'languages' as const,
+                  onPress: () => {
+                    close();
+                    openLanguagePicker(item.id);
+                  },
+                },
+              ]
+            : []),
           {
             label: t('actions.trash'),
             icon: 'trash-2',

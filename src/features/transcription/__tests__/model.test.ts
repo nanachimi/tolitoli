@@ -10,6 +10,7 @@ describe('local model store', () => {
   it('ignores the simulated "ready" of step 1c: the real model is still missing', () => {
     Storage.setItemSync('model.status', 'ready');
     jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
       const { useModel, readyModel } = require('../model');
       expect(useModel.getState()).toMatchObject({ status: 'missing', progress: 0 });
       expect(readyModel()).toBeNull();
@@ -18,6 +19,7 @@ describe('local model store', () => {
 
   it('announces the real size of the model', () => {
     jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
       const { MODEL_BYTES, LOCAL_MODEL } = require('../model');
       expect(MODEL_BYTES).toBe(modelBytes(LOCAL_MODEL));
     });

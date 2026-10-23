@@ -1,5 +1,5 @@
 import { screen, userEvent } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { I18nManager } from 'react-native';
 
 import AboutScreen from '../../app/settings/about';
@@ -16,7 +16,8 @@ import {
   useTranscriptionLanguage,
 } from '@/features/settings/transcriptionLanguage';
 import { i18next } from '@/i18n';
-import { TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
+import { LOCAL_MODEL } from '@/features/transcription/model';
+import { localQualityFor, TRANSCRIPTION_LANGUAGES } from '@/services/transcription/languages';
 
 import { hardCodedTexts, usePseudoLocale } from '../../src/ui/__tests__/support';
 import { renderScreen } from './renderScreen';
@@ -24,6 +25,7 @@ import { renderScreen } from './renderScreen';
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn() },
   useFocusEffect: () => {},
+  useLocalSearchParams: jest.fn(() => ({})),
 }));
 jest.mock('@/features/library/storage', () => ({
   itemBytes: () => 0,
@@ -38,6 +40,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   jest.restoreAllMocks();
+  jest.mocked(useLocalSearchParams).mockReturnValue({});
   jest.mocked(freeBytes).mockReturnValue(8 * 1024 ** 3);
   jest.mocked(router.push).mockClear();
   await setDemoDataEnabled(false);
@@ -46,7 +49,9 @@ afterEach(async () => {
 describe('Settings groups', () => {
   it('summarises the transcription language with its quality, or that it needs the cloud', () => {
     const t = i18next.t;
-    expect(transcriptionLanguageSummary('sw', t)).toBe('Kiswahili · brouillon');
+    expect(transcriptionLanguageSummary('en', t)).toBe(
+      `English · ${t(`quality.${localQualityFor('en', LOCAL_MODEL)!}`)}`,
+    );
     expect(transcriptionLanguageSummary('wo', t)).toBe('Wolof · cloud requis');
   });
 
@@ -81,14 +86,69 @@ describe('Transcription language screen', () => {
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(TRANSCRIPTION_LANGUAGES.length);
     expect(screen.getByRole('radio', { name: 'Langue de transcription : Français' })).toBeChecked();
+    // The quality of the model the app downloads, from languages.ts (never written by hand here).
+    const english = localQualityFor('en', LOCAL_MODEL)!;
     expect(
-      screen.getByRole('radio', { name: 'Langue de transcription : Lingála' }).props
+      screen.getByRole('radio', { name: 'Langue de transcription : English' }).props
         .accessibilityHint,
-    ).toBe('Qualité sur l’appareil : moyenne');
+    ).toBe(`Qualité sur l’appareil : ${i18next.t(`quality.${english}`)}`);
     expect(
       screen.getByRole('radio', { name: 'Langue de transcription : Wolof' }).props
         .accessibilityHint,
     ).toBe('Aucun moteur sur l’appareil : cloud requis');
+  });
+
+  it.each([
+    ['fr', 'Cette langue demande la transcription cloud', 'Transcrire en Wolof ?'],
+    ['ar', 'تحتاج هذه اللغة إلى النسخ السحابي', 'النسخ بلغة Wolof؟'],
+  ])(
+    'says in %s that a language without a local engine needs the cloud, and why',
+    async (language, banner, dialog) => {
+      await i18next.changeLanguage(language);
+      await renderScreen(<TranscriptionLanguageScreen />);
+      expect(screen.queryByText(banner)).toBeNull();
+      const user = userEvent.setup();
+      await user.press(screen.getByRole('radio', { name: /Wolof/ }));
+      expect(useTranscriptionLanguage.getState().code).toBe('wo');
+      expect(screen.getByText(banner)).toBeOnTheScreen();
+      await user.press(
+        screen.getByRole('button', { name: i18next.t('detail.cloudRequired.action') }),
+      );
+      expect(screen.getByRole('header', { name: dialog })).toBeOnTheScreen();
+      expect(
+        screen.getByText(i18next.t('transcription.cloudDialog.body', { language: 'Wolof' })),
+      ).toBeOnTheScreen();
+    },
+  );
+
+  it.each(['ig', 'pcm', 'zu', 'lg', 'wo'])(
+    'shows the cloud banner for %s, never a quality',
+    async (code) => {
+      setTranscriptionLanguage(code as 'wo');
+      await renderScreen(<TranscriptionLanguageScreen />);
+      expect(screen.getByText('Cette langue demande la transcription cloud')).toBeOnTheScreen();
+    },
+  );
+
+  it('redoes one recording in another language, and goes back', async () => {
+    await setDemoDataEnabled(false);
+    library.createRecording({ id: 'rec', createdAt: new Date().toISOString() });
+    library.finalizeRecording('rec', {
+      audioPath: 'rec.m4a',
+      audioSize: 1,
+      audioFormat: 'm4a',
+      durationMs: 60_000,
+      recovered: false,
+    });
+    jest.mocked(useLocalSearchParams).mockReturnValue({ recording: 'rec' });
+    await renderScreen(<TranscriptionLanguageScreen />);
+    expect(screen.getByRole('header', { name: 'Langue de cet enregistrement' })).toBeOnTheScreen();
+    await userEvent.setup().press(screen.getByRole('radio', { name: /Deutsch/ }));
+    // Queued in German; the queue runs at once and, without a model in Jest, says so.
+    expect(library.get('rec')).toMatchObject({ language: 'de', issue: 'model-missing' });
+    // The setting for new recordings is not touched.
+    expect(useTranscriptionLanguage.getState().code).toBe('fr');
+    expect(router.back).toHaveBeenCalled();
   });
 
   it('keeps the choice, independent of the interface language', async () => {

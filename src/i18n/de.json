@@ -33,7 +33,19 @@
     },
     "model": {
       "body": "Laden Sie es herunter, um auf dem Gerät zu transkribieren ({{size}}, nur WLAN).",
-      "download": "Herunterladen"
+      "download": "Herunterladen",
+      "waitingWifi": {
+        "title": "Warten auf WLAN",
+        "body": "Das Transkriptionsmodell ({{size}}) wird heruntergeladen, sobald Sie mit einem WLAN verbunden sind.",
+        "action": "Mobile Daten verwenden"
+      },
+      "failed": {
+        "title": "Download des Modells unterbrochen",
+        "integrity": "Eine heruntergeladene Datei stimmte nicht mit dem Original überein: Sie wurde gelöscht, ohne verwendet zu werden.",
+        "network": "Die Verbindung wurde unterbrochen. Der Download wird dort fortgesetzt, wo er stehen geblieben ist.",
+        "action": "Erneut versuchen"
+      },
+      "verifying": "Modell wird geprüft"
     },
     "storage": {
       "manage": "Speicher verwalten"
@@ -55,7 +67,15 @@
       "cloudRequired": "Cloud erforderlich",
       "optionA11y": "Transkriptionssprache: {{language}}",
       "qualityLocal": "Qualität auf dem Gerät: {{quality}}",
-      "cloudRequiredLong": "Keine Erkennung auf dem Gerät: Cloud erforderlich"
+      "cloudRequiredLong": "Keine Erkennung auf dem Gerät: Cloud erforderlich",
+      "cloudBanner": {
+        "title": "Diese Sprache braucht die Cloud-Transkription",
+        "body": "Keine Engine auf diesem Gerät transkribiert diese Sprache ({{language}}). Ihre Aufnahmen bleiben erhalten, vorerst ohne Transkript."
+      },
+      "forRecording": {
+        "title": "Sprache dieser Aufnahme",
+        "hint": "Das Transkript wird in der gewählten Sprache neu erstellt. Das alte bleibt sichtbar, bis das neue fertig ist."
+      }
     },
     "storage": {
       "used": "{{size}} belegt",
@@ -232,7 +252,7 @@
     "notFoundTitle": "Aufnahme nicht gefunden",
     "notFoundBody": "Sie wurde vielleicht in den Papierkorb verschoben. Kehren Sie zur Bibliothek zurück.",
     "noTranscriptTitle": "Noch keine Transkription",
-    "noTranscriptBody": "Der Ton ist auf Ihrem Gerät gespeichert. Die Transkription kommt mit einer späteren Version.",
+    "noTranscriptBody": "Die Audiodatei ist auf Ihrem Gerät gespeichert. Sie können sie jetzt transkribieren.",
     "transcribing": "Wird transkribiert",
     "transcribingDetail": "Das kann einige Minuten dauern. Sie können diesen Bildschirm verlassen.",
     "issue": {
@@ -256,13 +276,20 @@
     },
     "cloudRequired": {
       "title": "Diese Sprache erfordert die Cloud",
-      "body": "Keine Erkennung auf dem Gerät transkribiert diese Sprache ({{language}}). Die Cloud-Transkription kommt in einer späteren Version."
-    }
+      "body": "Keine Engine auf diesem Gerät transkribiert diese Sprache ({{language}}). Sie braucht die Cloud-Transkription.",
+      "action": "Mehr erfahren"
+    },
+    "transcribe": "Transkribieren",
+    "queued": "Wartet auf Transkription",
+    "queuedDetail": "Aufnahmen werden nacheinander transkribiert, die älteste zuerst.",
+    "paused": "Transkription pausiert",
+    "pausedDetail": "Die Aufnahme hat Vorrang. Die Transkription läuft dort weiter, wo sie stand, sobald die Aufnahme endet."
   },
   "actions": {
     "rename": "Umbenennen",
     "trash": "In den Papierkorb",
-    "exportNote": "Der Export kommt in einer späteren Version."
+    "exportNote": "Der Export kommt in einer späteren Version.",
+    "changeLanguage": "Transkriptionssprache ändern"
   },
   "rename": {
     "title": "Aufnahme umbenennen",
@@ -271,5 +298,19 @@
     "hint": "Höchstens {{max}} Zeichen.",
     "tooLong": "Höchstens {{max}} Zeichen: Kürzen Sie den Titel.",
     "confirm": "Umbenennen"
+  },
+  "transcription": {
+    "notification": {
+      "title": "Transkription läuft",
+      "starting": "Transkription wird vorbereitet …",
+      "progress": "{{percent}} % transkribiert",
+      "channel": "Transkription"
+    },
+    "cloudDialog": {
+      "title": "Auf {{language}} transkribieren?",
+      "body": "Keine Engine auf diesem Gerät transkribiert diese Sprache ({{language}}). Sie braucht die Cloud-Transkription, die in einer künftigen Version von Tolitoli kommt. Bis dahin bleiben Ihre Aufnahmen unverändert auf Ihrem Gerät.",
+      "confirm": "Andere Sprache wählen",
+      "close": "Schließen"
+    }
   }
 }

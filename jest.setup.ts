@@ -103,3 +103,15 @@ jest.mock('expo-network', () => ({
   getNetworkStateAsync: jest.fn(async () => ({ type: 'WIFI', isConnected: true })),
   addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
 }));
+
+// The local native module (decoding, encoding, transcription service) is not in Jest.
+jest.mock('./modules/audio-encoder', () => ({
+  AudioEncoder: {
+    encodeToM4a: jest.fn(() => Promise.reject(new Error('AudioEncoder is not available in Jest'))),
+    decodePcm: jest.fn(() => Promise.reject(new Error('AudioEncoder is not available in Jest'))),
+    startTranscriptionService: jest.fn(() => Promise.resolve()),
+    updateTranscriptionService: jest.fn(() => Promise.resolve()),
+    stopTranscriptionService: jest.fn(() => Promise.resolve()),
+    addListener: jest.fn(() => ({ remove: jest.fn() })),
+  },
+}));

@@ -121,11 +121,36 @@ function Notices() {
           kind="alert"
           title={t('detail.issue.modelMissing.title')}
           body={t('library.model.body', { size: size(MODEL_BYTES) })}
-          action={{ label: t('library.model.download'), onPress: startModelDownload }}
+          action={{ label: t('library.model.download'), onPress: () => startModelDownload() }}
         />
-      ) : model.status === 'downloading' ? (
+      ) : model.status === 'waiting-wifi' ? (
+        // Wi-Fi only by default: our markets pay dearly for mobile data.
+        <Banner
+          kind="interrupted"
+          icon="wifi-off"
+          title={t('library.model.waitingWifi.title')}
+          body={t('library.model.waitingWifi.body', { size: size(MODEL_BYTES) })}
+          action={{
+            label: t('library.model.waitingWifi.action'),
+            onPress: () => startModelDownload({ mobileData: true }),
+          }}
+        />
+      ) : model.status === 'failed' ? (
+        <Banner
+          kind="alert"
+          title={t('library.model.failed.title')}
+          body={t(
+            model.failure === 'integrity'
+              ? 'library.model.failed.integrity'
+              : 'library.model.failed.network',
+          )}
+          action={{ label: t('library.model.failed.action'), onPress: () => startModelDownload() }}
+        />
+      ) : model.status === 'downloading' || model.status === 'verifying' ? (
         <ProgressBar
-          label={t('onboarding.model.progress')}
+          label={t(
+            model.status === 'verifying' ? 'library.model.verifying' : 'onboarding.model.progress',
+          )}
           value={model.progress}
           detail={t('onboarding.model.detail', {
             done: size(MODEL_BYTES * model.progress),

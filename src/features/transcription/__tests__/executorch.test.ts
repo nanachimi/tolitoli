@@ -7,9 +7,11 @@ type Mocks = { setTelemetryEnabled: jest.Mock; download: jest.Mock };
 function loadAdapter(): Mocks & typeof import('../executorch') {
   let loaded!: Mocks & typeof import('../executorch');
   jest.isolateModules(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
     const mocks = require('react-native-executorch') as Mocks;
     mocks.setTelemetryEnabled.mockClear();
     mocks.download.mockReset();
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- fresh module registry
     const adapter = require('../executorch') as typeof import('../executorch');
     loaded = { ...adapter, ...mocks };
   });

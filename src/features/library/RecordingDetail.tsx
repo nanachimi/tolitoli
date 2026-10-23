@@ -28,9 +28,15 @@ import {
 } from '@/ui/format/display';
 
 import { expoFs, recordingsRoot } from '../recording/expoFs';
+import { CloudRequiredDialog } from '../transcription/CloudRequiredDialog';
+import {
+  retryRecordingTranscription,
+  transcribeRecording,
+  useRecorderBusy,
+} from '../transcription/transcription';
 import { itemTitle } from './display';
 import { useLibrary } from './library';
-import { RecordingActions } from './RecordingActions';
+import { openLanguagePicker, RecordingActions } from './RecordingActions';
 
 /** The final file's URI, when it is on disk. */
 function audioUriOf(item: LibraryItem): string | null {
@@ -109,8 +115,9 @@ function Loaded({
 }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const library = useLibrary();
   const [menu, setMenu] = useState(false);
+  const [cloudDialog, setCloudDialog] = useState(false);
+  const recorderBusy = useRecorderBusy();
   const now = useMemo(() => new Date(), []);
   const title = itemTitle(item, now, i18n.language, t);
   const durationMs = item.durationMs ?? 0;
@@ -177,7 +184,7 @@ function Loaded({
               item.issue === 'failed'
                 ? {
                     label: t('detail.issue.failed.action'),
-                    onPress: () => library.retryTranscription(item.id),
+                    onPress: () => retryRecordingTranscription(item.id),
                   }
                 : undefined
             }
@@ -187,14 +194,31 @@ function Loaded({
             kind="alert"
             title={t('detail.cloudRequired.title')}
             body={t('detail.cloudRequired.body', { language: language.nativeName })}
+            action={{
+              label: t('detail.cloudRequired.action'),
+              onPress: () => setCloudDialog(true),
+            }}
           />
         ) : null}
 
         {item.state === 'transcribing' ? (
+          // Waiting its turn, paused for a recording (which always comes first), or running.
           <ProgressBar
-            label={t('detail.transcribing')}
+            label={t(
+              !item.waiting
+                ? 'detail.transcribing'
+                : recorderBusy
+                  ? 'detail.paused'
+                  : 'detail.queued',
+            )}
             value={item.progress}
-            detail={t('detail.transcribingDetail')}
+            detail={t(
+              !item.waiting
+                ? 'detail.transcribingDetail'
+                : recorderBusy
+                  ? 'detail.pausedDetail'
+                  : 'detail.queuedDetail',
+            )}
             state="running"
           />
         ) : null}
@@ -237,6 +261,16 @@ function Loaded({
               tone="welcoming"
               title={t('detail.noTranscriptTitle')}
               body={t('detail.noTranscriptBody')}
+              action={
+                item.audioPath && !item.demo
+                  ? {
+                      label: t('detail.transcribe'),
+                      onPress: () => {
+                        if (transcribeRecording(item.id) === 'cloud-required') setCloudDialog(true);
+                      },
+                    }
+                  : undefined
+              }
             />
           </View>
         ) : null}
@@ -261,6 +295,15 @@ function Loaded({
         visible={menu}
         onClose={() => setMenu(false)}
         onTrashed={onBack}
+      />
+      <CloudRequiredDialog
+        visible={cloudDialog}
+        language={language?.nativeName ?? ''}
+        onClose={() => setCloudDialog(false)}
+        onChooseLanguage={() => {
+          setCloudDialog(false);
+          openLanguagePicker(item.id);
+        }}
       />
     </View>
   );
