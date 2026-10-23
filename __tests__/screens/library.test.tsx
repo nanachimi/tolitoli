@@ -77,13 +77,14 @@ describe('Library', () => {
     ).toBeOnTheScreen();
   });
 
-  it('says on the card that a transcription failed', async () => {
+  it('shows on the card that a transcription failed', async () => {
     // The list renders its first rows only: newer cards are trashed to bring this one up.
     for (const id of ['demo-meeting', 'demo-transcribing', 'demo-lecture', 'demo-recovered']) {
       library.trash(id);
     }
     await renderScreen(<LibraryScreen />);
     expect(screen.getByRole('button', { name: /transcription en échec$/ })).toBeOnTheScreen();
+    expect(screen.getByText('Français · Échec', { includeHiddenElements: true })).toBeTruthy();
   });
 
   it('opens a recording', async () => {

@@ -166,7 +166,8 @@
     "medium": "متوسطة",
     "draft": "مسودة",
     "busy": "جارٍ النسخ…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "فشل"
   },
   "common": {
     "back": "رجوع",

@@ -158,7 +158,8 @@
     "medium": "среднее",
     "draft": "черновик",
     "busy": "Расшифровка…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Ошибка"
   },
   "common": {
     "back": "Назад",

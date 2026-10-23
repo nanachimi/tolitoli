@@ -154,7 +154,8 @@
     "medium": "moyenne",
     "draft": "brouillon",
     "busy": "Transcription…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Échec"
   },
   "common": {
     "back": "Retour",

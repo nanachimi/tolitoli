@@ -150,7 +150,8 @@
     "medium": "mittel",
     "draft": "Entwurf",
     "busy": "Transkription …",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Fehlgeschlagen"
   },
   "common": {
     "back": "Zurück",

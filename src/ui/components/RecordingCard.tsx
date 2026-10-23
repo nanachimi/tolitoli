@@ -6,13 +6,14 @@ import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
 import { QualityChip, type Quality } from './QualityChip';
 
-export type RecordingCardState = 'audio' | 'transcribing' | 'transcribed' | 'synced';
+export type RecordingCardState = 'audio' | 'transcribing' | 'transcribed' | 'synced' | 'failed';
 
 const STATE_ICON: Record<RecordingCardState, IconName> = {
   audio: 'mic',
   transcribing: 'clock',
   transcribed: 'file-text',
   synced: 'cloud',
+  failed: 'alert-triangle',
 };
 
 export type RecordingCardProps = {
@@ -69,7 +70,10 @@ export function RecordingCard({
         },
       ]}
     >
-      <Icon name={STATE_ICON[recording.state]} color="ink-muted" />
+      <Icon
+        name={STATE_ICON[recording.state]}
+        color={recording.state === 'failed' ? 'danger' : 'ink-muted'}
+      />
       <View style={[styles.text, { gap: theme.space['space-1'] }]}>
         <AppText variant="heading" numberOfLines={2}>
           {recording.title}
@@ -79,7 +83,13 @@ export function RecordingCard({
             {`${recording.time} · ${recording.duration}`}
           </AppText>
           {recording.state === 'transcribing' ? <QualityChip quality="busy" /> : null}
-          {recording.quality && recording.state !== 'transcribing' ? (
+          {/* A failure shows to the eye, not only to screen readers (guide RecordingCard). */}
+          {recording.state === 'failed' ? (
+            <QualityChip language={recording.language} quality="failed" />
+          ) : null}
+          {recording.quality &&
+          recording.state !== 'transcribing' &&
+          recording.state !== 'failed' ? (
             <QualityChip language={recording.language} quality={recording.quality} />
           ) : null}
           {recording.recovered ? (

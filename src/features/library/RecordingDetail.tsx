@@ -138,6 +138,8 @@ function Loaded({
         {/* The quality is shown once there is a transcript, as on the Library card. */}
         {item.state === 'transcribing' ? (
           <QualityChip quality="busy" />
+        ) : item.state === 'failed' ? (
+          <QualityChip language={language?.nativeName} quality="failed" />
         ) : item.state === 'transcribed' && item.quality && language ? (
           <QualityChip language={language.nativeName} quality={item.quality} />
         ) : null}

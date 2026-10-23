@@ -69,6 +69,7 @@ describe('Recording Detail', () => {
   it('offers to retry a failed transcription', async () => {
     await open('demo-failed');
     expect(screen.getByText('La transcription a échoué')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Français · Échec')).toBeOnTheScreen();
     await userEvent.setup().press(screen.getByRole('button', { name: 'Réessayer' }));
     expect(screen.queryByText('La transcription a échoué')).toBeNull();
     expect(screen.getByRole('progressbar', { name: 'Transcription en cours' })).toBeOnTheScreen();

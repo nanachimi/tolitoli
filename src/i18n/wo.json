@@ -146,7 +146,8 @@
     "medium": "diggu-diggu",
     "draft": "bind bu njëkk",
     "busy": "Mi ngi bind…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Antuwul"
   },
   "common": {
     "back": "Dellu",

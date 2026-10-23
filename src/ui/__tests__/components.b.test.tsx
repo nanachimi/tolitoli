@@ -79,6 +79,17 @@ describe('QualityChip', () => {
     expect(flat(screen.getByText(text)).color).toBe(ink);
   });
 
+  it('failed says "Échec" in danger, after the language when it is known', async () => {
+    await renderScreen(<QualityChip language="Français" quality="failed" />);
+    expect(flat(screen.getByText('Français · Échec')).color).toBe(light.danger);
+    expect(screen.getByTestId('icon-alert-triangle', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('failed reads "Échec" alone when the language is unknown', async () => {
+    await renderScreen(<QualityChip quality="failed" />);
+    expect(screen.getByLabelText('Échec')).toBeOnTheScreen();
+  });
+
   it('busy reads "Transcription…"', async () => {
     await renderScreen(<QualityChip quality="busy" />);
     expect(screen.getByText('Transcription…')).toBeOnTheScreen();
@@ -105,6 +116,20 @@ describe('RecordingCard', () => {
     expect(screen.getByLabelText('Carte')).toBeOnTheScreen();
     expect(screen.getByText('09:31 · 1 h 12', { includeHiddenElements: true })).toBeTruthy();
     expect(screen.getByText('Récupéré', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('shows a failure to the eye: danger icon and an "Échec" chip', async () => {
+    await renderScreen(
+      <RecordingCard
+        recording={{ ...recording, state: 'failed', language: 'Français', recovered: false }}
+        accessibilityLabel="Carte"
+      />,
+    );
+    const icons = screen.getAllByTestId('icon-alert-triangle', { includeHiddenElements: true });
+    // The state icon, then the chip's.
+    expect(icons).toHaveLength(2);
+    expect(JSON.stringify(icons[0])).toContain(light.danger);
+    expect(screen.getByText('Français · Échec', { includeHiddenElements: true })).toBeTruthy();
   });
 
   it('has no chevron while there is nowhere to go, one when it opens something', async () => {

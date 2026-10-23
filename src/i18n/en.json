@@ -150,7 +150,8 @@
     "medium": "fair",
     "draft": "draft",
     "busy": "Transcribing…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "Failed"
   },
   "common": {
     "back": "Back",

@@ -146,7 +146,8 @@
     "medium": "一般",
     "draft": "草稿",
     "busy": "正在转写…",
-    "withLanguage": "{{language}} · {{quality}}"
+    "withLanguage": "{{language}} · {{quality}}",
+    "failed": "失败"
   },
   "common": {
     "back": "返回",

@@ -64,12 +64,12 @@ export const SEARCH_DEBOUNCE_MS = 250;
 /** `formatted`: a date written by Intl (data), not "Aujourd'hui" or "Hier". */
 type Section = { key: number; title: string; formatted: boolean; data: LibraryItem[] };
 
-/** A failed transcription keeps the audio-only icon; the Detail says why. */
+/** The Detail says why a transcription failed and offers to retry. */
 const CARD_STATE: Record<LibraryItem['state'], RecordingCardState> = {
   audio: 'audio',
   transcribing: 'transcribing',
   transcribed: 'transcribed',
-  failed: 'audio',
+  failed: 'failed',
 };
 
 function Card({
