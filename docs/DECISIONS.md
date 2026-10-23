@@ -378,6 +378,7 @@ En arabe, l'ordre est le même, avec les textes alignés à droite ([capture](ca
     - alerte « le micro semble coupé » (D-023) : vérifier ce que l'iPhone fournit à l'app quand le micro est pris.
     - module `modules/audio-encoder` côté iOS (`AVAudioFile`, D-021) : écrit mais jamais compilé ni exécuté. À vérifier : conversion WAV → `.m4a`, durée contrôlée, libération des WAV ;
     - textes de permission iOS rangés sous la clé `ios` des fichiers `src/i18n/native/*.json` (D-025) : présents dans les 7 `InfoPlist.strings`.
+  - Étape 2 (D-036) : lecture expo-audio (arrêt au démontage et en arrière-plan), FTS5 et repliement de recherche, kv-store dans `tolitoli.db`, recherche par date en arabe.
   - Étape 1c (D-031) : chaque écran (onboarding, Bibliothèque, Détail, Réglages et sous-écrans, Corbeille) en clair, sombre, arabe et police maximale ; VoiceOver sur la carte, le lecteur (`adjustable`) et la feuille d'actions ; routes protégées : aucun lien `tolitoli://` n'ouvre l'app avant le consentement.
   - Étape 3 : à compléter à l'ouverture de l'étape 3 (transcription locale, critère iPhone 13).
 - **Conséquences** :
@@ -679,3 +680,56 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - pour reprendre le temps perdu, **react-native-executorch entre dans la build native de l'étape 2**, sans y être utilisé, pour que l'étape 3 n'ait pas à lancer une seconde build. Le plan de l'étape 2 le justifie et vérifie qu'il ne casse ni le démarrage à froid ni la taille de l'APK.
 - **Conséquences** : CLAUDE.md (« Objectif et ordre des étapes ») est mis à jour ; la règle des deux sessions parallèles de « Méthode de travail » ne s'applique plus que si l'organisation change à nouveau.
 - **Ouverture de l'étape 2** : branche `step-2-library`, partie de la tête de `step-1c-interface` en attendant la fusion de la PR #5. Elle sera rebasée sur `main` après cette fusion. `npx expo install --fix` : « Dependencies are up to date », rien à commiter.
+
+## D-036 — Étape 2 : base locale, lecture réelle, vérifications sur l'A05
+
+- **Date / étape** : 2026-10-23, étape 2 (plan `docs/plans/step-2.md`, validé par le propriétaire avec ses corrections). Branche `step-2-library`.
+- **Livré** :
+  - base SQLite `tolitoli.db` (drizzle) : `recordings` avec l'état `recording → local → queued → uploading → verifying → synced | error`, `segments`, `outbox`, et FTS5. Une migration, un test ; chaque transition est testée ;
+  - dépôt SQLite derrière l'interface de 1c, toutes les écritures en transaction avec `outbox` ; API de transcription prête pour l'étape 3 ;
+  - corbeille de 30 jours, purgée au lancement seulement, dans l'ordre marque → fichiers → ligne ; les deux morts en route sont testées ;
+  - réglages dans `tolitoli.db`, recopiés de l'ancien fichier, qui est conservé ; base de démonstration séparée (`tolitoli-demo.db`) ;
+  - lecture réelle par expo-audio ; diagnostic FTS ; brouillons Play Store (`docs/store/`).
+- **Build de développement `7ff8b5e8`** (expo-audio, executorch et ses dépendances pairs) : terminée.
+  - **Test de fumée sur l'A05** : démarrage à froid sans ANR ni erreur. Captures `docs/captures/step-2/smoke-7ff8b5e8-{onboarding,bibliotheque,reglages}.png`.
+  - Sur l'émulateur, ANR au premier démarrage, mais la build `1af57476` fait la même chose dans les mêmes conditions (18 à 25 s avant la première bibliothèque native, rendu logiciel). C'est donc l'émulateur, pas la build.
+- **Executorch, critères du propriétaire** :
+  - **taille livrée par Play à l'A05** (bundletool 1.18.3, `get-size total` avec la fiche matérielle de l'A05, AAB du profil `size-check`) : **26,6 Mo avec executorch, 21,3 Mo sans, soit +5,3 Mo**, sous le seuil de 15 Mo. Builds `7b354200` (avec) et `76a2544d` (sans, branche locale jamais poussée) ;
+  - **démarrage à froid en release** sur l'A05 (APK preview, `am start -W`, compilation `speed-profile` identique, cinq essais, médiane) : **906 ms avec, 880 ms sans, soit +26 ms (+3 %)**, sans ANR. Builds `0471f29f` et `f2356683`. Le +15 % mesuré sur le dev client ne se retrouve pas en release ;
+  - executorch ne charge aucune bibliothèque native au démarrage. Il n'existe qu'en arm64 et x86_64 : pas de transcription locale sur un appareil 32 bits, à traiter en étape 3 ;
+  - **executorch reste dans la build.**
+- **Permissions nouvelles dans l'APK**, toutes « normales » :
+  - `ACCESS_WIFI_STATE`, `WAKE_LOCK` et `DOWNLOAD_WITHOUT_NOTIFICATION` (react-native-blob-util) ;
+  - `MODIFY_AUDIO_SETTINGS` (expo-audio, sans service de lecture en arrière-plan) ;
+  - `BIND_GET_INSTALL_REFERRER_SERVICE`, origine à identifier.
+
+  Celles à retirer de la production sont listées dans `docs/store/README.md`.
+
+- **Recherche** :
+  - repliement `foldForSearch` à côté de `languages.ts`, plus `unicode61 remove_diacritics 2` ;
+  - **diagnostic FTS sur l'A05** : français, wolof (« naata », « nangu »), lingala (« mbote ») et chinois (讨论, 预算) OK. `unicode61` seul ne trouve pas le chinois au milieu d'une phrase ; le repli `LIKE` le trouve (capture `d036-diagnostic-fts-a05.png`). Schéma inchangé ;
+  - coût du repli : **28 ms** sur environ 100 000 segments (200 enregistrements d'une heure), contre 15 ms en FTS (`search.bench.test.ts`, sur demande). Pas d'index trigram ;
+  - **recherche par date** (propriétaire, option 1) : l'index des titres contient le titre affiché et les mots de la date dans la langue de l'interface. Il est reconstruit au changement de langue, et au lancement si la langue a changé ou si l'index est incomplet. Sur l'appareil, une première installation simulée (clé et index retirés de la base, copie de sauvegarde gardée) a reconstruit les 26 lignes au démarrage à froid ;
+  - **faux positif connu** : « 23 oct » trouve aussi un enregistrement du 22 octobre à 10:23, parce que l'heure se découpe en deux mots, « 10 » et « 23 » (capture `d036-recherche-23-oct.png`). Correctif proposé au propriétaire : garder « 10:23 » et « 23/10 » en un seul mot dans l'index des titres (option `tokenchars` du tokenizer, nouvelle migration). En attente de sa décision ;
+  - la capture `d036-recherche-23-oct-index-incomplet.png` montre l'index incomplet laissé par des rechargements à chaud du dev client, avant le garde-fou.
+- **Réglages et données sur l'A05** :
+  - la recopie du kv a conservé la langue, et l'ancien fichier est intact ;
+  - ce téléphone n'avait jamais accepté le consentement (l'onboarding date de 1c et n'avait tourné que sur l'émulateur) : **je l'ai validé moi-même dans l'app**, ce que le propriétaire sait ;
+  - les 24 enregistrements de l'étape 1 sont importés, aucun supprimé ;
+  - pendant les mesures, l'ancien binaire `1af57476` a chargé le JavaScript actuel par Metro, d'où une erreur « Cannot find native module 'ExpoAudio' » sans conséquence ;
+  - un appui physique a ouvert l'écran système des infos du clavier Samsung : je n'y ai pas touché.
+- **Point g (corbeille)**, sur l'enregistrement de test `cc48745d` : jours restants affichés, restauration, appui long puis Dialog, vidage. Le contrôle `adb` confirme que son dossier et son fichier ont disparu ; `e7e7ac5a` est intact. Captures `d036-corbeille-*`, `d036-appui-long.png`, `d036-dialogue-*`. Une capture de travail, qui montrait par erreur le menu du dev client, a été écrasée par la bonne.
+- **Enregistrement `e7e7ac5a`** (23 oct. 15:32, 1 min 51) : coupé pendant la capture, puis **correctement récupéré** au lancement suivant (m4a de 900 Ko, marqué « récupéré »). La coupure vient très probablement de mon commit du bouton rond à 15:34 : Metro l'a poussé dans l'app pendant que le propriétaire enregistrait. **Règle pour la suite** : ne pas modifier le code servi par Metro pendant que le propriétaire utilise le dev client.
+- **Corrections après le test du propriétaire** :
+  - **bouton rond unique** (guide RecordButton) : enregistrer, pause, reprise ; Arrêter est un bouton secondaire sous le rond ; la bannière ne porte plus « Reprendre » (guides Banner et README). Vérifié sur l'A05 : pendant la pause, le chrono reste figé à 00:00:33 sur deux captures prises à 4 s d'écart, et le point est grisé (`d036-bouton-rond-*`) ;
+  - **fichier audio contrôlé par ffprobe** (9.0.2) sur l'enregistrement de test : AAC-LC, 16 000 Hz, mono, échelle de temps 1/16 000, 518 144 échantillons, soit 32,384 s (`mdhd` et `mvhd` concordent). En-tête juste, prêt pour Whisper à l'étape 3 ;
+  - **lecture a** : la position affichée vient du lecteur, sans compteur ; un test le garantit ;
+  - **lecture b** : sous Android, `remove()` d'expo-audio laisse ExoPlayer jouer. La libération fait maintenant pause, `remove()` puis `release()`, avec une pause au passage en arrière-plan. Sur l'A05 (dev client), le lecteur disparaît après le retour, mais seulement **environ 5,5 s plus tard**, à cause du retard du fil JS (point c) ;
+  - **lecture c, en attente** : mesure indicative sur le dev client, avec la trace activée dans le bundle (`EXPO_PUBLIC_PLAYBACK_TRACE=1`). Un rendu du Détail prend **230 à 260 ms**, dont environ 115 ms pour le seul lecteur. **Les événements arrivent toutes les 260 ms au lieu de 100** : une file se forme, et la position affichée prend de plus en plus de retard (environ 3 s d'écart toutes les 2 s de lecture). C'est l'explication du « chrono deux fois trop lent ». **La mesure sur une build de release reste à faire** : le quota de builds du plan gratuit EAS est épuisé jusqu'au 1er novembre (le propriétaire passe au plan Starter). Selon sa consigne, la PR de l'étape 2 ne l'attend pas. Le correctif sera une PR séparée : liste mémoïsée, segment actif à 250 ms, barre par valeur animée, et formatages (dates, durées, pluriels) sortis du rendu par mise à jour.
+- **Organisation** :
+  - les commits « base de démo » et « branchements » n'en font qu'un, parce qu'ils modifient le même chemin d'ouverture ;
+  - le commit du guide RecordButton (C1) et celui du `.easignore` étaient déjà poussés quand les guides Banner et README, puis `build/` dans `.gitignore`, ont été demandés : ils les suivent dans des commits séparés ;
+  - `.easignore` : l'archive EAS est passée de 1,0 Go (avec `build/`) à quelques Mo ;
+  - un commit (`b73c38c`, étape 1c) avait été fait avec des tests rouges : CLAUDE.md impose depuis les codes de sortie.
+- **Point ouvert** : le cahier prévoit une base chiffrée au repos (SQLCipher, possible dans expo-sqlite avec `useSQLCipher`), absent du plan de l'étape 2. Les brouillons de `docs/store/` ne le promettent pas. À décider avant la soumission.
+- **Dette iOS** (D-022) : expo-audio, FTS5 et le kv-store dans `tolitoli.db`, `writingDirection` des segments, recherche par date en arabe sur iPhone.

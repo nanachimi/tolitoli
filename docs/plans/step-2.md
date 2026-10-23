@@ -184,7 +184,15 @@ L'interface reste celle de 1c : `list`, `get`, `segments`, `search`, `rename`, `
 
 ## Lecture réelle (`src/features/player/expoAudioEngine.ts`)
 
-- `ExpoAudioPlaybackEngine implements PlaybackEngine` : `createAudioPlayer`, `play`, `pause`, `seekTo`, `setPlaybackRate`, l'événement `playbackStatusUpdate` (intervalle demandé : 100 ms, pour le surlignage du segment), puis `remove()` à la libération.
+- `ExpoAudioPlaybackEngine implements PlaybackEngine` : `createAudioPlayer`, `play`, `pause`, `seekTo`, `setPlaybackRate`, l'événement `playbackStatusUpdate`. **La position affichée est toujours celle que rapporte le lecteur**, jamais un compteur.
+- **Libération (amendé, voir Corrections 3b)** : au démontage du Détail, au retour arrière et au passage en arrière-plan, le lecteur est mis en pause, désabonné, puis libéré par `release()` de l'objet partagé. Sous Android, `remove()` seul n'arrête pas ExoPlayer. La 1.0 n'a pas de lecture en arrière-plan.
+- **Rendu (amendé, voir Corrections 3c)** : la mise à jour du lecteur ne re-rend plus l'écran entier.
+  - La barre de progression et le temps du lecteur passent par une valeur animée.
+  - La liste des segments est mémoïsée.
+  - Le segment actif est recalculé toutes les 250 ms au plus.
+
+  L'ancienne règle, « 100 ms pour tout », est abandonnée.
+
 - `createEngine` (`usePlayback.ts`) choisit expo-audio quand le fichier existe, l'horloge simulée sinon (démo, en développement).
 - Tests : la logique de position, de vitesse et de fin reste couverte par l'interface. Le moteur expo-audio est testé avec un module simulé, et **vérifié sur le téléphone** : c'est de l'audio.
 
@@ -208,6 +216,55 @@ L'interface reste celle de 1c : `list`, `get`, `segments`, `search`, `rename`, `
 8. `play recordings with expo-audio`.
 9. `add the FTS diagnostic`, puis les vérifications sur l'appareil et l'émulateur, D-036 et `docs/plans/step-2.md`.
 10. `draft the Play Store submission documents` (`docs/store/`, brouillons marqués « À faire relire par un juriste ») : politique de confidentialité, formulaire « sécurité des données », texte de la déclaration du service de premier plan micro, script de la vidéo de démonstration de 30 s. Puis la PR.
+
+## Corrections (test du propriétaire sur l'A05, 23 octobre)
+
+Ce qu'a établi le diagnostic, en lecture seule :
+
+- l'enregistrement de test est correct en base (`local`, 32,2 s, 262 Ko, m4a) ;
+- « 23 oct » ne trouve rien parce qu'un enregistrement sans titre n'a rien dans `recordings_fts`, et que sa date n'est indexée nulle part ;
+- **la position affichée vient bien du lecteur** : `onStatus` lit `currentTime × 1000`, et expo-audio Android envoie toujours un état complet. Il n'y a aucun compteur côté JS : le chrono deux fois trop lent n'est donc pas une accumulation ;
+- **le son qui continue** : sous Android, `player.remove()` retire seulement le lecteur de la liste du module. Il n'arrête pas ExoPlayer, qui n'est libéré qu'au `release()` de l'objet partagé, ou quand le ramasse-miettes JS le collecte. Notre `release()` n'appelle que `remove()`, et rien ne réagit au passage en arrière-plan.
+
+1. **Bouton rond unique (écran Enregistrement).**
+   - Le guide `RecordButton.md` et son aperçu, modifiés hors de ma session, font foi : je les relis et je les commite à part.
+   - `RecordButton.mode` devient `record | pause | resume` : un disque `accent` plein, avec l'icône `mic`, puis `pause`, puis `mic`. Plus de carré « stop ».
+   - Arrêter devient un `Button` secondaire libellé sous le rond, visible en cours d'enregistrement comme en pause. Les boutons Pause et Reprendre latéraux disparaissent.
+   - D-023 reste en vigueur : pendant un appel, le rond en mode `resume` est désactivé, avec la bannière qui explique pourquoi.
+   - En pause, le point du Timer cesse de pulser et le chrono se fige. Je le vérifie, et je corrige si besoin.
+   - Libellés d'accessibilité : « Enregistrer », « Mettre en pause », « Reprendre l'enregistrement », en 7 langues.
+   - Tests : mode et icône par état, libellés, Arrêter sous le rond, pulsation arrêtée et chrono figé en pause, reprise refusée pendant un appel, pseudo-locale, arabe.
+   - Captures : enregistrement en cours, et en pause.
+2. **Recherche par date (option 1).**
+   - `recordings_fts.title_search` contient, pour chaque enregistrement, le titre affiché (saisi, ou par défaut) plus des jetons de date tirés de `created_at` dans la langue d'interface : jour, mois abrégé, mois en toutes lettres, année, formes numériques (jour/mois, mois en chiffres), heure. Le tout passe par `foldForSearch`.
+   - La construction de ce texte est une fonction pure, injectée dans le dépôt, qui reste ainsi sans i18n.
+   - `foldForSearch` replie aussi les chiffres arabo-indiens vers les chiffres latins, avec ses tests.
+   - `reindexTitles(language)` reconstruit l'index des titres, une ligne par enregistrement, en une transaction. Il tourne au changement de langue d'interface, et au lancement si la langue indexée (kv `search.titlesLanguage`) diffère de la langue courante, ce qui couvre le redémarrage d'une bascule RTL.
+   - Tests, en français et en arabe, un par forme : « 23 oct », « octobre », « 23/10 », « 2026 », l'heure, le titre par défaut, un titre saisi, les chiffres arabo-indiens. Plus : la reconstruction au changement de langue, aucune entrée en double après un renommage, et rien qui reste après la purge.
+   - Capture : la recherche « 23 oct ».
+3. **Lecture, dans cet ordre, et sans travail de performance avant a et b.**
+   - **a. Position venue du lecteur.** Le code le fait déjà (voir le diagnostic). Deux tests pour le garantir : la position suit `currentTime` même quand les événements arrivent espacés, et `createEngine` ne prend jamais l'horloge simulée quand un fichier existe. Si la mesure de c ne montre pas de retard des événements, je reviens vers toi avant de chercher ailleurs.
+   - **b. Arrêt et libération.**
+     - `ExpoAudioPlaybackEngine.release()` fait `pause()`, retire l'abonnement, puis appelle `release()` de l'objet partagé, en gardant `remove()`.
+     - `usePlayback` libère au démontage du Détail, et met en pause au passage en arrière-plan (`AppState`), sans reprise automatique au retour.
+     - Tests : montage puis démontage (pause et libération), passage en arrière-plan (pause), retour au premier plan (rien ne repart).
+   - **Avant c, vérifier le fichier lui-même** : l'enregistrement de test est extrait de l'appareil et passé à ffprobe. Je relève la durée déclarée, la fréquence d'échantillonnage, le nombre de canaux et l'échelle de temps du conteneur. Un en-tête faux de notre encodeur expliquerait un temps qui ne s'écoule pas au bon rythme ; c'est aussi un prérequis de l'étape 3, Whisper attend du 16 kHz. Résultat noté dans D-036, quel qu'il soit.
+   - **c. Saturation du fil JS**, mesurée sur une build preview. La preuve directe est l'**intervalle réel entre deux événements `playbackStatusUpdate`**, pas seulement la dérive du chrono. Si les événements arrivent à l'heure et que le chrono dérive quand même, je te le dis avant de corriger.
+     - Avant correctif : sur `0471f29f`, déjà construite avec le code actuel, je relève le chrono affiché contre l'horloge réelle et le délai entre l'appui sur Pause et le changement d'icône.
+     - Si la saturation est confirmée : la liste des segments et l'en-tête sont mémoïsés ; le segment actif est recalculé au plus toutes les 250 ms ; la barre de progression et le temps du lecteur passent par une `Animated.Value` alimentée par le moteur, sans rendu React à chaque mise à jour. Le rafraîchissement natif n'est pas ralenti.
+     - Tests : nombre de rendus de la liste pendant une lecture simulée, et surlignage qui suit la position.
+     - Après correctif : nouvelle preview, mêmes relevés.
+     - Capture : le lecteur en cours de lecture.
+4. **Pause et « … » inertes pendant la lecture** : ce sont des symptômes du fil bloqué, sans correctif propre. Je les revérifie sur la preview après 3, et je te signale celui qui résisterait.
+
+**Commits de correction**, à la suite de ceux déjà faits (jusqu'à `77d8e40`, mesure de la recherche) et avant D-036 et la PR :
+
+- C1. `step-2: sync design guides with implemented behaviour` (RecordButton.md et son aperçu)
+- C2. `step-2: one round button records, pauses and resumes`
+- C3. `step-2: index the displayed title and the date for search`
+- C4. `step-2: stop and release playback when leaving the Detail` (3a et 3b)
+- C5. `step-2: keep the playback tick from re-rendering the Detail` (3c, si la mesure le confirme)
+- Puis l'ancien point 9 : `record decision D-036 and the device checks`, qui inclut le point g, le démarrage des deux previews, la taille de livraison et les captures après correction. Enfin le rebasage sur `main` et la PR.
 
 ## Vérification
 
