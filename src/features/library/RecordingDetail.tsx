@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Profiler, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 
+import { PLAYBACK_TRACE, traceRender } from '@/features/player/playbackTrace';
 import { usePlayback } from '@/features/player/usePlayback';
 import { joinPath } from '@/services/audio/fs';
 import type { LibraryItem, Segment, TranscriptionIssue } from '@/services/library';
@@ -84,7 +85,17 @@ export function RecordingDetail({ id, onBack }: RecordingDetailProps) {
     );
   }
   // A new engine per recording: the key resets the player when the split pane switches.
-  return <Loaded key={item.id} item={item} segments={library.segments(id)} onBack={onBack} />;
+  const detail = (
+    <Loaded key={item.id} item={item} segments={library.segments(id)} onBack={onBack} />
+  );
+  // Release measurement only (EXPO_PUBLIC_PLAYBACK_TRACE): how long each render takes.
+  return PLAYBACK_TRACE ? (
+    <Profiler id="detail" onRender={traceRender}>
+      {detail}
+    </Profiler>
+  ) : (
+    detail
+  );
 }
 
 function Loaded({

@@ -31,6 +31,13 @@
         "buildType": "app-bundle"
       }
     },
+    "preview-trace": {
+      "extends": "preview",
+      "env": {
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_PLAYBACK_TRACE": "1"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "channel": "production",

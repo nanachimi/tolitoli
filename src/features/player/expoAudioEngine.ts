@@ -2,6 +2,8 @@ import { createAudioPlayer, type AudioPlayer, type AudioStatus } from 'expo-audi
 
 import type { PlaybackEngine, PlaybackStatus } from '@/services/playback';
 
+import { traceStatus, traceTap } from './playbackTrace';
+
 /** Often enough for the active segment to follow the voice (guide TranscriptSegment). */
 export const STATUS_INTERVAL_MS = 100;
 
@@ -28,11 +30,13 @@ export class ExpoAudioPlaybackEngine implements PlaybackEngine {
   play(): void {
     // Played to the end: start again from the beginning, as the simulated clock does.
     if (this.snapshot.positionMs >= this.snapshot.durationMs) this.seek(0);
+    traceTap('play');
     this.player.play();
     this.update({ playing: true });
   }
 
   pause(): void {
+    traceTap('pause');
     this.player.pause();
     this.update({ playing: false });
   }
@@ -67,6 +71,7 @@ export class ExpoAudioPlaybackEngine implements PlaybackEngine {
   }
 
   private onStatus(status: AudioStatus): void {
+    traceStatus(Math.round(status.currentTime * 1000), status.playing);
     const durationMs =
       status.duration > 0 ? Math.round(status.duration * 1000) : this.snapshot.durationMs;
     if (status.didJustFinish) {
