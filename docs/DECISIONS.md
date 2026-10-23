@@ -696,7 +696,13 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **Executorch, critères du propriétaire** :
   - **taille livrée par Play à l'A05** (bundletool 1.18.3, `get-size total` avec la fiche matérielle de l'A05, AAB du profil `size-check`) : **26,6 Mo avec executorch, 21,3 Mo sans, soit +5,3 Mo**, sous le seuil de 15 Mo. Builds `7b354200` (avec) et `76a2544d` (sans, branche locale jamais poussée) ;
   - **démarrage à froid en release** sur l'A05 (APK preview, `am start -W`, compilation `speed-profile` identique, cinq essais, médiane) : **906 ms avec, 880 ms sans, soit +26 ms (+3 %)**, sans ANR. Builds `0471f29f` et `f2356683`. Le +15 % mesuré sur le dev client ne se retrouve pas en release ;
-  - executorch ne charge aucune bibliothèque native au démarrage. Il n'existe qu'en arm64 et x86_64 : pas de transcription locale sur un appareil 32 bits, à traiter en étape 3 ;
+  - executorch ne charge aucune bibliothèque native au démarrage. Il n'existe qu'en arm64 et x86_64. Sans garde-fou, un appareil 32 bits installerait l'app et planterait au premier chargement d'executorch (`ETInstaller` lève une `RuntimeException` quand sa bibliothèque manque) ;
+  - **appareils 32 bits, décision du propriétaire : option A pour la 1.0** (exclure). En production, `reactNativeArchitectures=arm64-v8a,x86_64` (plugin `plugins/withArchitectures.js`), si bien que Play exclut de lui-même les appareils 32 bits, y compris les Android Go en 32 bits sur processeur 64 bits. Les profils de développement et de preview gardent toutes les architectures. Ses raisons :
+    - personne n'a de chiffre fiable sur ce parc (aucune source publique par pays ; estimations de développeurs contradictoires, de 9 % à plus de 60 %) ; le vrai chiffre est gratuit au premier envoi d'AAB ;
+    - sur un Android Go à 1 ou 2 Go de mémoire, Whisper serait inutilisable, et l'option B donnerait jusqu'à l'étape 8 une app qui ne transcrit rien ;
+    - A est réversible, B ne l'est pas.
+  - **Obligation au premier envoi d'AAB** : relever dans le catalogue d'appareils de la Play Console le nombre de modèles exclus par l'architecture, et le noter dans ce fichier. C'est ce chiffre qui décidera de la 1.1 ;
+  - **voie de l'option B, si la 1.1 rouvre le 32 bits** : étendre `requiresCloud` (`languages.ts`) à l'appareil, avec un indicateur natif « 64 bits » et un import d'executorch réservé aux appareils 64 bits. C'est exactement le chemin des cinq langues sans moteur local : « cette langue demande le cloud » devient aussi « cet appareil demande le cloud » ;
   - **executorch reste dans la build.**
 - **Permissions nouvelles dans l'APK**, toutes « normales » :
   - `ACCESS_WIFI_STATE`, `WAKE_LOCK` et `DOWNLOAD_WITHOUT_NOTIFICATION` (react-native-blob-util) ;
@@ -705,9 +711,10 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
     - Chaîne : `react-native-executorch` 0.10.6 → `react-native-device-info` 15.0.2 (dépendance directe d'executorch, que son `package.json` dit réservée à son « API legacy ») → `com.android.installreferrer:installreferrer:1.1.2` (ligne 59 de `android/build.gradle` de device-info). Le manifeste de cette AAR (Google Maven, vérifié) déclare `com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE`.
     - Ce qu'elle fait : le constructeur de `RNDeviceModule` ouvre une connexion au service « Install Referrer » du Play Store et range le référent d'installation dans les `SharedPreferences`. Rien n'est envoyé par le réseau, mais c'est une donnée d'attribution lue sans raison.
     - Quand : seulement si le module natif est instancié. Seule l'API legacy d'executorch importe device-info (`legacy/src/constants/modelRegistry.js`, pour `isEmulatorSync`). L'API principale, dont `useSpeechToText` prévu pour l'étape 3, ne l'importe pas, et Tolitoli n'importe pas encore executorch.
-    - Elle ne sert à rien à Tolitoli. **Proposition : la retirer avant la soumission**, plutôt que la déclarer dans le formulaire « sécurité des données ». Deux moyens, qui demandent une build et une modification de la configuration native, à valider par le propriétaire :
-      - `tools:node="remove"` sur la permission, comme pour les permissions de blob-util ;
-      - en plus, exclure `com.android.installreferrer` de Gradle : device-info charge ces classes par réflexion et se passe d'elles proprement.
+    - Elle ne sert à rien à Tolitoli. **Décision du propriétaire : la retirer, pas la déclarer.** Tolitoli n'a aucune raison de savoir d'où vient son installation. Deux moyens, combinés :
+      - `android.blockedPermissions` dans `app.config.ts`, qui écrit `tools:node="remove"` sur la permission ;
+      - le plugin `plugins/withoutInstallReferrer.js`, qui exclut `com.android.installreferrer` de Gradle. device-info charge ces classes par réflexion et s'en passe sans erreur.
+    - Vérifié sur la configuration (`expo config --type introspect`). **Reste à vérifier sur l'APK de la prochaine build native**, où ces changements sont groupés. La liste complète des permissions du manifeste final sera alors consignée ici. C'est elle, et non `app.config.ts`, qui sert de base au formulaire « sécurité des données ».
 
   Celles à retirer de la production sont listées dans `docs/store/README.md`.
 

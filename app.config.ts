@@ -60,6 +60,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    // Install attribution, from a dependency of executorch's legacy API: unused (D-036).
+    blockedPermissions: ['com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE'],
   },
   plugins: [
     'expo-router',
@@ -92,6 +94,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-navigation-bar', { enforceContrast: false }],
     // Recording notification shows the Tolitoli mark, not a generic microphone (D-023).
     './plugins/withNotificationIcons',
+    './plugins/withoutInstallReferrer',
+    // 64-bit only in production (D-036): executorch has no 32-bit build.
+    ...(VARIANT === 'production'
+      ? [['./plugins/withArchitectures', ['arm64-v8a', 'x86_64']] as [string, string[]]]
+      : []),
     [
       'expo-splash-screen',
       {
