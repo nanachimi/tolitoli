@@ -14,3 +14,18 @@
 | 25–30 s | Bibliothèque : le nouvel enregistrement en tête                                           | L'audio est conservé sur l'appareil                                     |
 
 À ne pas montrer : aucun appel téléphonique (même factice), aucune autre app, aucun nom de contact, aucun réglage système qui révèle le compte Google de l'appareil.
+
+## Transcription (service `dataSync`, étape 3)
+
+> Vidéo jointe à la déclaration du service de premier plan `dataSync`
+> ([service-premier-plan-transcription.md](service-premier-plan-transcription.md)), si la Play
+> Console la demande. Mêmes règles : A05, build de production, aucune donnée personnelle (texte lu
+> par l'équipe).
+
+| Temps   | À l'écran                                                              | Ce que la vidéo montre                                  |
+| ------- | ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| 0–5 s   | Bibliothèque : un enregistrement vient d'être arrêté, « en cours »     | La transcription démarre après un enregistrement arrêté |
+| 5–12 s  | Volet des notifications : « Transcription en cours » et sa progression | La notification visible pendant toute la transcription  |
+| 12–20 s | Écran éteint quelques secondes, puis rallumé : la progression a avancé | La transcription continue écran éteint, sans réseau     |
+| 20–26 s | Mode avion visible dans la barre d'état, progression qui avance        | Le traitement est local                                 |
+| 26–30 s | Fin : la notification disparaît, le texte s'affiche dans le Détail     | Le service s'arrête dès que la file est vide            |

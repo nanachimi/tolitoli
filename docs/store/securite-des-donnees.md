@@ -24,6 +24,14 @@
 
 **Traitement éphémère ?** À cocher seulement si Intron et Deepgram confirment par écrit qu'ils ne conservent pas l'audio (encore à lire après connexion à leurs consoles, cahier des charges).
 
+## Téléchargement du modèle de transcription
+
+- Le modèle Whisper (233 Mo pour tiny, 399 Mo pour base) se télécharge une fois depuis **Hugging Face Inc. (États-Unis)**, dont le CDN est servi par **Amazon Web Services** (`us.aws.cdn.hf.co`). Aucune donnée de l'utilisateur n'est envoyée : seuls l'adresse IP et l'agent HTTP sont vus par l'hébergeur, comme pour tout téléchargement.
+- La mesure d'audience de react-native-executorch (un POST vers `ai.swmansion.com` à chaque téléchargement, active par défaut) est **désactivée** par l'app. Un test automatisé le vérifie (étape 3).
+- Reste une requête HEAD de « compteur de téléchargements » vers `huggingface.co`, l'hébergeur lui-même. Elle ne porte aucune donnée de l'utilisateur.
+- **Point à faire confirmer par le juriste** : selon la définition de Google, l'adresse IP vue par un hébergeur lors d'un téléchargement n'est pas une donnée « collectée » par l'app.
+- **L'hébergement en propre** (Cloudflare R2 ou Supabase Storage) se décide avant la production (D-037). Ce paragraphe sera alors revu.
+
 ## Pratiques de sécurité
 
 - Données en transit chiffrées : oui.

@@ -3,12 +3,13 @@
 > **À faire relire par un juriste.** Brouillons de l'étape 2, à reprendre avant le test fermé
 > (semaine 3 du plan accéléré). Rien ici n'est définitif.
 
-| Document                                                           | Pour                                                | État                |
-| ------------------------------------------------------------------ | --------------------------------------------------- | ------------------- |
-| [politique-de-confidentialite.md](politique-de-confidentialite.md) | URL publique exigée par la Play Console             | Brouillon, à relire |
-| [securite-des-donnees.md](securite-des-donnees.md)                 | Formulaire « Sécurité des données »                 | Brouillon, à relire |
-| [service-premier-plan-micro.md](service-premier-plan-micro.md)     | Déclaration du service de premier plan `microphone` | Brouillon, à relire |
-| [video-demonstration.md](video-demonstration.md)                   | Vidéo de 30 s jointe à la déclaration               | Script              |
+| Document                                                                       | Pour                                                                       | État                |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ------------------- |
+| [politique-de-confidentialite.md](politique-de-confidentialite.md)             | URL publique exigée par la Play Console                                    | Brouillon, à relire |
+| [securite-des-donnees.md](securite-des-donnees.md)                             | Formulaire « Sécurité des données »                                        | Brouillon, à relire |
+| [service-premier-plan-micro.md](service-premier-plan-micro.md)                 | Déclaration du service de premier plan `microphone`                        | Brouillon, à relire |
+| [service-premier-plan-transcription.md](service-premier-plan-transcription.md) | Déclaration du service de premier plan `dataSync` (transcription, étape 3) | Brouillon, à relire |
+| [video-demonstration.md](video-demonstration.md)                               | Vidéos jointes aux deux déclarations                                       | Script              |
 
 Faits vérifiés sur lesquels ils reposent (build de développement `7ff8b5e8`, D-036) :
 

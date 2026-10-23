@@ -17,7 +17,7 @@ Tolitoli enregistre les conversations que **vous** démarrez, les transcrit et l
 
 **Sur votre appareil, toujours.** Les enregistrements audio, leurs transcriptions, leurs titres et vos réglages sont stockés dans l'espace privé de l'app sur votre téléphone, protégé par le chiffrement de l'appareil fourni par Android. Ils ne sont accessibles qu'à Tolitoli.
 
-**Transcription sur l'appareil.** La transcription locale (modèle Whisper) fonctionne sans réseau. Le modèle se télécharge une fois, depuis [hébergeur du modèle], en wifi par défaut ; ce téléchargement ne transmet aucune de vos données.
+**Transcription sur l'appareil.** La transcription locale (modèle Whisper) fonctionne sans réseau. Le modèle se télécharge une fois, en wifi par défaut, depuis Hugging Face Inc. (États-Unis), dont les fichiers sont servis par le réseau de diffusion d'Amazon Web Services (AWS). Comme pour tout téléchargement, Hugging Face et AWS voient l'adresse IP de votre téléphone et le nom technique du logiciel qui télécharge ; ce téléchargement ne transmet aucune de vos données, ni enregistrement, ni texte, ni identifiant. Tolitoli désactive la mesure d'audience que la bibliothèque de transcription (react-native-executorch) envoie par défaut à son éditeur à chaque téléchargement. L'app vérifie l'empreinte de chaque fichier téléchargé avant de l'utiliser.
 
 **Transcription dans le cloud, seulement si vous l'activez.** Le cloud est désactivé par défaut. Si vous l'activez pour un enregistrement, une copie de l'audio est envoyée, après son enregistrement sur l'appareil, à notre serveur (Supabase, [région]), qui la transmet au service de transcription :
 
