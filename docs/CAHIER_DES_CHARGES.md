@@ -342,6 +342,83 @@ Le risque principal n'est pas technique : une app d'enregistrement de conversati
 
 **Confidentialité comme argument** : le mode local, sans compte, est une promesse forte à mettre en avant dans la fiche des stores et le formulaire de confidentialité (« les données ne quittent pas l'appareil sauf activation explicite »).
 
+## Vision long terme : de l'enregistreur à l'organiseur
+
+Tolitoli 1.0 est un enregistreur qui transcrit. Ce n'est pas la finalité du produit : c'est sa couche de capture. On parle — une conversation de famille, un appel, un mémo de trente secondes — l'app transcrit, puis en extrait ce qui engage le calendrier : un rendez-vous, une échéance, une tâche, une activité qui revient chaque semaine. Les messages qu'on lui partage depuis une autre app alimentent la même extraction. Le résultat se consulte sur le téléphone, sur le web, et sur une tablette accrochée dans l'entrée ou la cuisine.
+
+L'extraction est le lien entre les deux axes. La transcription n'est pas une fin en soi, elle est la matière première : tout ce qui se décide sur l'axe enregistrement doit donc rester compatible avec un texte structuré, horodaté, attribué à un locuteur et rattaché à une langue. C'est déjà le cas du schéma de l'étape 2.
+
+### Les espaces
+
+Un espace est un périmètre de partage. Le ménage en est l'exemple principal — un couple le partage — mais le modèle est plus général que le foyer : une colocation, une fratrie qui s'occupe d'un parent âgé, une association.
+
+- Chaque personne a un compte nommé et un espace personnel ; rien n'est partagé par défaut.
+- Un espace se rejoint sur invitation. Ses membres voient ce qui y est partagé, et rien d'autre.
+- **Le partage se décide par type de données, jamais en bloc** : partager ses rendez-vous avec le ménage sans y partager ses dépenses doit être possible.
+- **Une même donnée peut être partagée vers plusieurs espaces** sans être dupliquée : un rendez-vous médical visible du conjoint et de la fratrie reste un seul rendez-vous.
+
+Ce modèle n'est pas un foyer mais un graphe : des personnes, des espaces, et une règle de partage par type. Il remplace l'idée d'un « compte famille » et doit être posé avant la première synchronisation réelle, parce qu'il détermine le schéma serveur et les politiques RLS.
+
+| Type de donnée | Exemple | Partage typique |
+| --- | --- | --- |
+| Enregistrement et transcription | Une réunion, un mémo | Personnel par défaut ; partagé à la demande |
+| Message partagé | Le SMS de l'école, envoyé à Tolitoli depuis l'app Messages | Personnel ; seule l'information extraite est partagée |
+| Rendez-vous | Un contrôle technique, un rendez-vous médical | Ménage, parfois plusieurs espaces |
+| Période | Vacances scolaires, congés, déplacement | Ménage |
+| Activité récurrente | Judo le mercredi, piano le samedi | Ménage |
+| Tâche et échéance | Rappeler le plombier, facture à payer avant le 30 | Ménage ou personnel |
+| Liste | Les courses, une liste de voyage | Ménage |
+
+### L'extraction
+
+L'extraction tourne **sur l'appareil et par défaut**. C'est ce qui permet à la promesse de confidentialité de tenir : la transcription d'une conversation de famille n'a pas à quitter le téléphone pour qu'une course en sorte. Un modèle serveur, plus précis, viendra plus tard et restera **désactivé jusqu'à activation explicite**, sur le même principe que la transcription cloud : l'utilisateur sait ce qu'il allume et pourquoi.
+
+Conséquence : l'extraction locale doit être conçue pour une précision moyenne et une correction facile. Tout élément extrait est une **proposition** que l'utilisateur confirme, corrige ou rejette d'un geste, jamais une écriture silencieuse dans son agenda. Une proposition rejetée n'est pas reproposée.
+
+### Les surfaces
+
+| Surface | Rôle | Particularités |
+| --- | --- | --- |
+| Téléphone | Capture et consultation | La surface principale ; tout commence ici |
+| Web | Consultation et saisie confortable | Planification de la semaine, budget, mise au propre |
+| Tablette murale | Tableau de bord du foyer | Affichage, saisie tactile (cocher, ajouter), et micro |
+
+La tablette murale affiche la journée, les tâches et les listes, et accepte la saisie tactile — cocher une tâche, ajouter une course. **Le micro y est possible mais jamais actif par défaut** : il s'active explicitement dans les règles de l'espace, et quand il écoute, l'indicateur d'enregistrement est visible à distance, lisible depuis l'autre bout de la pièce. Un appareil posé dans un lieu de vie n'a pas droit à l'ambiguïté qu'on tolérerait sur un téléphone tenu en main.
+
+### Les sources
+
+La voix n'est pas la seule entrée. Une grande partie de ce qui remplit un calendrier familial arrive par écrit : le SMS de l'école qui annonce une sortie, le courriel du garage qui propose un créneau, le message qui décale un anniversaire. Tolitoli lit ces messages comme il lit une transcription — à condition qu'on les lui donne. Deux entrées, pas davantage :
+
+1. **La voix** — conversations enregistrées, mémos, appels transcrits. La source d'origine, et la seule qui soit entièrement entre nos mains.
+2. **Le partage depuis une autre app** — la feuille de partage du système : on sélectionne un SMS, un message de messagerie, un courriel, on l'envoie à Tolitoli, qui en tire une proposition. Aucune permission à demander, aucune règle de magasin à franchir, et l'utilisateur choisit exactement ce qu'il donne.
+
+**Ce qui n'est pas prévu, et pourquoi.** Lire automatiquement les SMS, les boîtes courriel ou les messageries est écarté, pour la même raison que l'enregistrement d'appels : les plateformes l'interdisent, ou l'encadrent au point de le rendre inatteignable pour une app comme celle-ci. Sur Android, `READ_SMS` est une permission restreinte que Google Play réserve à l'application de messagerie par défaut. Les messageries privées, WhatsApp en tête, n'exposent aucune interface permettant à une app tierce de lire les conversations d'un utilisateur ; le seul contournement, le service d'écoute des notifications Android, ne voit que ce qui s'affiche à l'instant où ça s'affiche, jamais l'historique, et son usage est lui aussi encadré. Les périmètres de lecture de Gmail sont des *restricted scopes* soumis à une vérification annuelle payante. Sur iOS, aucun de ces accès n'existe, à aucune condition. Ne pas le proposer, ne pas l'implémenter, ne pas l'annoncer.
+
+Une adresse de transfert propre à chaque utilisateur, où faire suivre un courriel créerait une proposition, a été envisagée puis écartée : elle suppose un serveur qui reçoit du courrier, et la feuille de partage couvre déjà le besoin. Elle pourra s'ajouter plus tard sans rien changer au reste.
+
+### Le calendrier
+
+Tolitoli a son propre calendrier, et il en est la source de vérité. Ce n'est pas un pont vers le calendrier du système : c'est là que vivent les rendez-vous, les périodes — vacances scolaires, congés, déplacements — et les activités récurrentes, affichés par personne et par espace. L'import depuis le calendrier du téléphone et l'export vers lui restent possibles, mais optionnels et réversibles ; perdre l'un ne doit jamais faire perdre l'autre.
+
+**Rien n'entre dans ce calendrier sans un geste de l'utilisateur.** Tout ce que l'extraction produit arrive dans une file de propositions, accompagné du passage d'origine qui l'a produite, pour qu'on juge sur pièce : « Judo le mercredi à 17 h, à partir du 5 novembre », et sous cette ligne la phrase du message dont elle est tirée. On accepte, on corrige, ou on rejette. Une proposition rejetée n'est jamais représentée. Aucune écriture silencieuse, jamais, même quand l'extraction paraît certaine.
+
+### Ce que cette vision change
+
+Rien avant la 1.0 : le périmètre des six semaines est inchangé, et le schéma local de l'étape 2 reste valable — rendez-vous, tâches et propositions seront des tables nouvelles, pas des modifications de l'existant. Au-delà, cinq déplacements :
+
+- Le « résumé et points d'action par IA » quitte la V2 : l'extraction devient le cœur du produit et doit être prototypée tôt, même grossièrement. Si elle n'est pas fiable, le reste ne tient pas.
+- Les comptes nommés et la synchronisation cessent d'être un confort de la 1.1 pour devenir structurels : un espace partagé suppose plusieurs personnes et plusieurs écrans.
+- Le web entre dans la feuille de route, où il ne figurait pas.
+- La règle « local d'abord » s'étend à l'extraction, ce qui la rend plus difficile à tenir techniquement mais plus forte comme argument.
+- Les entrées écrites passent uniquement par la feuille de partage du système. C'est l'utilisateur qui donne le message : cela règle d'un coup la question des permissions, celle des règles de magasin, et celle du contrôle.
+
+### Questions ouvertes
+
+- Quel modèle d'extraction tient sur un appareil d'entrée de gamme, et avec quelle qualité mesurée sur du français et du wolof conversationnels ?
+- Qu'arrive-t-il à une donnée partagée vers plusieurs espaces quand un membre la modifie, ou la retire d'un seul espace ?
+- La tablette murale est-elle une app Android installée ou une page web en plein écran ?
+- L'organiseur est-il inclus dans l'abonnement de transcription, ou une offre distincte ?
+
 ## Plan de développement avec Claude Code
 
 Dix étapes, chacune livrant quelque chose de testable sur un vrai téléphone. Pour chaque étape, la méthode est la même dans Claude Code : ouvrir une session, demander un plan détaillé (mode plan), le relire, puis laisser implémenter ; terminer par les critères de fin avant de passer à la suivante. Le fichier `CLAUDE.md` et ce document sont le contexte permanent du projet.
