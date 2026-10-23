@@ -16,6 +16,8 @@ describe('foldForSearch', () => {
     // Arabic-Indic and Eastern Arabic-Indic (Persian) digits become Latin ones.
     ['٢٣/١٠/٢٠٢٦', '23/10/2026'],
     ['۲۳ ۱۰', '23 10'],
+    // The direction marks of an Arabic date go, so the date stays one word.
+    ['٢٣\u200f/١٠\u200f/٢٠٢٦', '23/10/2026'],
   ])('%s → %s', (text, folded) => {
     expect(foldForSearch(text)).toBe(folded);
   });

@@ -685,12 +685,15 @@ function audioFormatOf(finalFile: string | null): 'm4a' | 'wav' | null {
   return finalFile.toLowerCase().endsWith('.wav') ? 'wav' : 'm4a';
 }
 
-/** Every word as a prefix, all required: `"mbo"* "na"*`. */
+/** Every word as a prefix, all required: `"mbo"* "na"*`; a stray ":" or "/" at its ends goes. */
 export function ftsQuery(folded: string): string {
   return (
     folded
-      // Spaces and punctuation; no \p{L}, which Hermes may not support.
-      .split(/[\s.,;:!?¡¿«»"“”„()[\]{}<>\-–—/\\…·*]+/)
+      // Spaces and punctuation; no \p{L}, which Hermes may not support. ":" and "/" stay
+      // inside a word: the title index keeps "10:23" and "23/10" whole (migration 0002),
+      // and the transcript index reads such a word as a phrase of its parts.
+      .split(/[\s.,;!?¡¿«»"“”„()[\]{}<>\-–—\\…·*]+/)
+      .map((word) => word.replace(/^[:/]+|[:/]+$/g, ''))
       .filter(Boolean)
       .map((word) => `"${word.replace(/"/g, '""')}"*`)
       .join(' ')

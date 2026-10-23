@@ -29,8 +29,12 @@ export const SEARCH_FOLDS: Readonly<Record<string, string>> = {
 
 const FOLD_PATTERN = new RegExp(`[${Object.keys(SEARCH_FOLDS).join('')}]`, 'g');
 
+/** Direction marks Intl puts in Arabic dates ("٢٣‏/١٠‏/٢٠٢٦"): invisible, they would split words. */
+const BIDI_MARKS = /[\u200e\u200f\u061c\u202a-\u202e\u2066-\u2069]/g;
+
 export function foldForSearch(text: string): string {
   return text
+    .replace(BIDI_MARKS, '')
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()

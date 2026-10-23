@@ -32,6 +32,13 @@ function withRecordings() {
   return repository;
 }
 
+/** Plus the day before at 10:23, which « 23 oct » used to find through the minutes of its time. */
+function withEve() {
+  const repository = withRecordings();
+  repository.createRecording({ id: 'eve', createdAt: new Date(2026, 9, 22, 10, 23).toISOString() });
+  return repository;
+}
+
 const ids = (items: { id: string }[]) => items.map((item) => item.id).sort();
 
 afterEach(async () => {
@@ -62,6 +69,17 @@ describe('search by what the Library shows, in French', () => {
     expect(withRecordings().search('24 oct')).toEqual([]);
   });
 
+  it.each([
+    ['10:23', ['eve']],
+    ['22/10', ['eve']],
+    ['22/10/2026', ['eve']],
+    // A time and a numeric date are one word each in the title index (migration 0002).
+    ['23 oct', ['titled', 'untitled']],
+    ['23', ['titled', 'untitled']],
+  ])('« %s », with a recording of 22 October at 10:23', (query, expected) => {
+    expect(ids(withEve().search(query))).toEqual(expected);
+  });
+
   it('keeps one index row per recording after a rename', () => {
     const repository = withRecordings();
     repository.rename('titled', 'Autre titre');
@@ -86,6 +104,15 @@ describe('search by what the Library shows, in Arabic', () => {
     await i18next.changeLanguage('ar');
     const repository = withRecordings();
     expect(ids(repository.search(query))).toEqual(expected);
+  });
+
+  it.each([
+    ['١٠:٢٣', ['eve']],
+    ['٢٢/١٠', ['eve']],
+    ['٢٣ أكتوبر', ['titled', 'untitled']],
+  ])('« %s », with a recording of 22 October at 10:23', async (query, expected) => {
+    await i18next.changeLanguage('ar');
+    expect(ids(withEve().search(query))).toEqual(expected);
   });
 });
 

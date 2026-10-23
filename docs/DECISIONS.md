@@ -710,7 +710,12 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - **diagnostic FTS sur l'A05** : français, wolof (« naata », « nangu »), lingala (« mbote ») et chinois (讨论, 预算) OK. `unicode61` seul ne trouve pas le chinois au milieu d'une phrase ; le repli `LIKE` le trouve (capture `d036-diagnostic-fts-a05.png`). Schéma inchangé ;
   - coût du repli : **28 ms** sur environ 100 000 segments (200 enregistrements d'une heure), contre 15 ms en FTS (`search.bench.test.ts`, sur demande). Pas d'index trigram ;
   - **recherche par date** (propriétaire, option 1) : l'index des titres contient le titre affiché et les mots de la date dans la langue de l'interface. Il est reconstruit au changement de langue, et au lancement si la langue a changé ou si l'index est incomplet. Sur l'appareil, une première installation simulée (clé et index retirés de la base, copie de sauvegarde gardée) a reconstruit les 26 lignes au démarrage à froid ;
-  - **faux positif connu** : « 23 oct » trouve aussi un enregistrement du 22 octobre à 10:23, parce que l'heure se découpe en deux mots, « 10 » et « 23 » (capture `d036-recherche-23-oct.png`). Correctif proposé au propriétaire : garder « 10:23 » et « 23/10 » en un seul mot dans l'index des titres (option `tokenchars` du tokenizer, nouvelle migration). En attente de sa décision ;
+  - **faux positif corrigé** : « 23 oct » trouvait aussi un enregistrement du 22 octobre à 10:23, parce que l'heure se découpait en deux mots, « 10 » et « 23 » (capture `d036-recherche-23-oct.png`).
+    - Correctif retenu par le propriétaire : la migration `0002_title_tokenchars` reconstruit `recordings_fts` avec `tokenchars ':/'`. « 10:23 » et « 23/10/2026 » y restent chacun un seul mot.
+    - `ftsQuery` garde `:` et `/` dans les mots de la requête. `foldForSearch` retire les marques de direction que `Intl` insère dans les dates arabes.
+    - `segments_fts` ne change pas : dans une transcription, « : » et « / » doivent continuer à séparer les mots.
+    - La migration laisse l'index des titres vide. Le garde-fou `titleIndexIsComplete` le reconstruit au lancement suivant.
+    - Un test Jest prouve toute la chaîne : base peuplée sous 0001, application de 0002, index vide, séquence de démarrage, puis chaque enregistrement retrouvé par sa date (`titleIndexUpgrade.test.ts`). Ce test échoue si l'on retire le garde-fou ;
   - la capture `d036-recherche-23-oct-index-incomplet.png` montre l'index incomplet laissé par des rechargements à chaud du dev client, avant le garde-fou.
 - **Réglages et données sur l'A05** :
   - la recopie du kv a conservé la langue, et l'ancien fichier est intact ;

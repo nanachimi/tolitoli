@@ -102,6 +102,34 @@ const MIGRATION_TESTS: Record<string, () => void> = {
     client.prepare(`delete from recordings_fts where rowid = ?`).run(rowid);
     expect(titles()).toHaveLength(0);
   },
+  '0002_title_tokenchars': () => {
+    const { client } = testDatabase();
+    insertRecording(client, 'a');
+    const rowid = (
+      client.prepare(`select rowid from recordings where id = 'a'`).get() as {
+        rowid: number;
+      }
+    ).rowid;
+    client
+      .prepare(`insert into recordings_fts (rowid, title_search) values (?, ?)`)
+      .run(rowid, 'enregistrement du 22 oct. 10:23 22/10/2026');
+    const titles = (query: string) =>
+      client.prepare(`select rowid from recordings_fts where recordings_fts match ?`).all(query)
+        .length;
+    // Times and numeric dates are one word in the title index…
+    expect(titles('"10:23"')).toBe(1);
+    expect(titles('"22/10"*')).toBe(1);
+    expect(titles('"23"*')).toBe(0);
+    // …but not in transcripts, where ":" and "/" still separate words.
+    client
+      .prepare(
+        `insert into segments (id, recording_id, start_ms, end_ms, text, search_text) values (?, ?, ?, ?, ?, ?)`,
+      )
+      .run('s1', 'a', 0, 1000, 'rendez-vous à 10:23', 'rendez-vous a 10:23');
+    expect(
+      client.prepare(`select rowid from segments_fts where segments_fts match '"23"'`).all(),
+    ).toHaveLength(1);
+  },
 };
 
 describe('migrations', () => {
