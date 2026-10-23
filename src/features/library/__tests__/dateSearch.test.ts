@@ -103,6 +103,23 @@ describe('the title index follows the interface language', () => {
     jest.restoreAllMocks();
   });
 
+  it('rebuilds at launch when the index lacks rows, even in the right language', async () => {
+    await i18next.changeLanguage('fr');
+    const repository = withRecordings();
+    Storage.setItemSync(TITLES_LANGUAGE_STORAGE_KEY, 'fr');
+    jest.spyOn(library, 'getLibrary').mockReturnValue(repository);
+    // What the A05 showed after development reloads: key set, index empty.
+    repository.reindexTitles();
+    expect(repository.titleIndexIsComplete()).toBe(true);
+    const reindex = jest.spyOn(repository, 'reindexTitles');
+    keepTitleIndexInLanguage();
+    expect(reindex).not.toHaveBeenCalled();
+    jest.spyOn(repository, 'titleIndexIsComplete').mockReturnValue(false);
+    keepTitleIndexInLanguage();
+    expect(reindex).toHaveBeenCalledTimes(1);
+    jest.restoreAllMocks();
+  });
+
   it('rebuilds at launch when the index was built in another language', async () => {
     await i18next.changeLanguage('fr');
     const repository = withRecordings();

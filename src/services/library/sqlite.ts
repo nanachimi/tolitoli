@@ -563,6 +563,15 @@ export class SqliteLibraryRepository implements LibraryRepository {
     return this.options.describeForSearch?.(entry) ?? entry.title ?? '';
   }
 
+  /** One title index row per recording still there: false asks for a rebuild. */
+  titleIndexIsComplete(): boolean {
+    const indexed = this.db.all<{ n: number }>(sql`select count(*) as n from recordings_fts`);
+    const expected = this.db.all<{ n: number }>(
+      sql`select count(*) as n from recordings where purged_at is null`,
+    );
+    return (indexed[0]?.n ?? 0) === (expected[0]?.n ?? 0);
+  }
+
   /**
    * Rebuilds the title index, one row per recording, in one transaction: the date words
    * depend on the interface language (called when it changes, and at launch if needed).

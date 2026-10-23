@@ -12,9 +12,15 @@ function reindexTitles(language: string): void {
   Storage.setItemSync(TITLES_LANGUAGE_STORAGE_KEY, language);
 }
 
-/** The index follows the interface language: at launch if it changed, and on every change. */
+/**
+ * The index follows the interface language: at launch if it changed or if it lacks rows
+ * (a launch cut short, or a development reload), and on every change of language.
+ */
 export function keepTitleIndexInLanguage(): void {
-  if (Storage.getItemSync(TITLES_LANGUAGE_STORAGE_KEY) !== i18next.language) {
+  if (
+    Storage.getItemSync(TITLES_LANGUAGE_STORAGE_KEY) !== i18next.language ||
+    !getLibrary().titleIndexIsComplete()
+  ) {
     reindexTitles(i18next.language);
   }
   i18next.off('languageChanged', reindexTitles);
