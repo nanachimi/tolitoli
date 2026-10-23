@@ -28,6 +28,13 @@ jest.mock('expo-sqlite/kv-store', () => {
   return { __esModule: true, default: Storage, Storage, SQLiteStorage };
 });
 
+// The native player is not in Jest; screens only reach it for a recording with a file.
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => {
+    throw new Error('expo-audio is not available in Jest: mock it in the test');
+  }),
+}));
+
 jest.mock('expo-localization', () => ({
   getLocales: jest.fn(() => [{ languageTag: 'fr-FR', languageCode: 'fr' }]),
 }));

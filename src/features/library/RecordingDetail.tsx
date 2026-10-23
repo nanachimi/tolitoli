@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 
 import { usePlayback } from '@/features/player/usePlayback';
+import { joinPath } from '@/services/audio/fs';
 import type { LibraryItem, Segment, TranscriptionIssue } from '@/services/library';
 import { findTranscriptionLanguage, requiresCloud } from '@/services/transcription/languages';
 import {
@@ -25,9 +26,17 @@ import {
   formatTime,
 } from '@/ui/format/display';
 
+import { expoFs, recordingsRoot } from '../recording/expoFs';
 import { itemTitle } from './display';
 import { useLibrary } from './library';
 import { RecordingActions } from './RecordingActions';
+
+/** The final file's URI, when it is on disk. */
+function audioUriOf(item: LibraryItem): string | null {
+  if (!item.audioPath) return null;
+  const path = joinPath(recordingsRoot(), item.audioPath);
+  return expoFs.exists(path) ? path : null;
+}
 
 /** Room kept above the active segment when the transcript follows the player. */
 const FOLLOW_OFFSET = 96;
@@ -94,7 +103,10 @@ function Loaded({
   const now = useMemo(() => new Date(), []);
   const title = itemTitle(item, now, i18n.language, t);
   const durationMs = item.durationMs ?? 0;
-  const playback = usePlayback(durationMs);
+  const audioUri = audioUriOf(item);
+  // A recording plays its file; a demo item (development only) runs the simulated clock.
+  const playable = durationMs > 0 && (audioUri !== null || (__DEV__ && item.demo));
+  const playback = usePlayback(durationMs, audioUri);
   const position = playback.status.positionMs;
 
   const scroll = useRef<ScrollViewInstance>(null);
@@ -218,7 +230,7 @@ function Loaded({
           </View>
         ) : null}
       </ScrollView>
-      {durationMs > 0 ? (
+      {playable ? (
         <View style={styles.player}>
           <Player
             positionMs={position}

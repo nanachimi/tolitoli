@@ -4,6 +4,8 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import { SimulatedPlaybackEngine, type PlaybackEngine } from '@/services/playback';
 import { PLAYBACK_RATES } from '@/ui';
 
+import { ExpoAudioPlaybackEngine } from './expoAudioEngine';
+
 /** The chosen rate is kept between playbacks (guide Player). */
 export const PLAYBACK_RATE_STORAGE_KEY = 'player.rate';
 
@@ -12,14 +14,18 @@ export function storedRate(): number {
   return (PLAYBACK_RATES as readonly number[]).includes(rate) ? rate : 1;
 }
 
-/** Simulated until the next native build adds expo-audio (docs/plans/step-1c.md). */
-function createEngine(durationMs: number): PlaybackEngine {
+/**
+ * expo-audio for a recording with its file; the simulated clock only for the demo items
+ * of a development build, which have no audio (docs/plans/step-2.md).
+ */
+export function createEngine(durationMs: number, audioUri: string | null): PlaybackEngine {
+  if (audioUri) return new ExpoAudioPlaybackEngine(audioUri, durationMs, storedRate());
   return new SimulatedPlaybackEngine({ durationMs, rate: storedRate() });
 }
 
 /** One engine per recording, released when the screen goes. */
-export function usePlayback(durationMs: number) {
-  const [engine] = useState(() => createEngine(durationMs));
+export function usePlayback(durationMs: number, audioUri: string | null) {
+  const [engine] = useState(() => createEngine(durationMs, audioUri));
   useEffect(() => () => engine.release(), [engine]);
   const status = useSyncExternalStore(
     (listener) => engine.subscribe(listener),
