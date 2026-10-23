@@ -2,6 +2,6 @@
   "name": "audio-encoder",
   "version": "0.1.0",
   "private": true,
-  "description": "Encodes the PCM WAV files of a recording into one AAC .m4a (D-021).",
+  "description": "Encodes a recording into one AAC .m4a (D-021), decodes it to PCM for Whisper and runs the transcription foreground service (step 3).",
   "main": "index.ts"
 }
