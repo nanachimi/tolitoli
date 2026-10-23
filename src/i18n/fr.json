@@ -71,7 +71,8 @@
     "dev": {
       "demo": "Données de démonstration",
       "demoOn": "Base de démonstration active (tolitoli-demo.db). La base réelle n’est pas touchée.",
-      "demoOff": "Base réelle active (tolitoli.db) : vos vrais enregistrements."
+      "demoOff": "Base réelle active (tolitoli.db) : vos vrais enregistrements.",
+      "ftsRun": "Lancer le diagnostic de recherche"
     }
   },
   "record": {

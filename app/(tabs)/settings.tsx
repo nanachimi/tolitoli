@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { router, type Href } from 'expo-router';
-import { useRef, type RefObject } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View, type HostInstance } from 'react-native';
 
@@ -9,7 +9,7 @@ import { totalBytes } from '@/features/library/storage';
 import { useTranscriptionLanguage } from '@/features/settings/transcriptionLanguage';
 import { useReturnFocus } from '@/features/settings/useReturnFocus';
 import { findTranscriptionLanguage } from '@/services/transcription/languages';
-import { AppText, OptionGroup, OptionRow, Screen, space, TAB_SCREEN_EDGES } from '@/ui';
+import { AppText, Button, OptionGroup, OptionRow, Screen, space, TAB_SCREEN_EDGES } from '@/ui';
 import { formatBytes, type Translate } from '@/ui/format/display';
 
 import { interfaceLanguageOptions } from '../settings/interface-language';
@@ -117,10 +117,35 @@ export default function SettingsScreen() {
             <AppText testID="i18n-data" variant="timestamp" color="ink-muted">
               {pluralDiagnostic(i18n.language)}
             </AppText>
+            <FtsDiagnostic />
           </View>
         ) : null}
       </ScrollView>
     </Screen>
+  );
+}
+
+/** Runs the FTS checks of the step 2 plan with the device's own SQLite (D-036). */
+function FtsDiagnostic() {
+  const { t } = useTranslation();
+  const [result, setResult] = useState<string | null>(null);
+  const run = async () => {
+    try {
+      const { deviceFtsDiagnostic } = await import('@/features/library/ftsDiagnostic');
+      setResult(await deviceFtsDiagnostic());
+    } catch (error) {
+      setResult(`FTS diagnostic failed: ${String(error)}`);
+    }
+  };
+  return (
+    <View style={styles.diagnostic}>
+      <Button variant="secondary" label={t('settings.dev.ftsRun')} onPress={() => void run()} />
+      {result ? (
+        <AppText testID="i18n-data" variant="timestamp" color="ink-muted">
+          {result}
+        </AppText>
+      ) : null}
+    </View>
   );
 }
 
@@ -142,5 +167,6 @@ const styles = StyleSheet.create({
   content: { padding: space['space-4'], paddingTop: space['space-8'], gap: space['space-2'] },
   title: { marginBottom: space['space-4'] },
   hint: { marginBottom: space['space-6'] },
+  diagnostic: { gap: space['space-2'], alignItems: 'flex-start' },
   dev: { marginTop: space['space-2'], gap: space['space-2'] },
 });

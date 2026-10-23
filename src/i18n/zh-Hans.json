@@ -69,7 +69,8 @@
     "dev": {
       "demo": "演示数据",
       "demoOn": "演示数据库已启用（tolitoli-demo.db）。真实数据库不受影响。",
-      "demoOff": "真实数据库已启用（tolitoli.db）：您的真实录音。"
+      "demoOff": "真实数据库已启用（tolitoli.db）：您的真实录音。",
+      "ftsRun": "运行搜索诊断"
     }
   },
   "record": {

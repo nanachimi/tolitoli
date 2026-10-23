@@ -69,7 +69,8 @@
     "dev": {
       "demo": "Done yu wone",
       "demoOn": "Bàaasu wone bi mi ngi dox (tolitoli-demo.db). Bàaasu dëgg bi du ñu ko laal.",
-      "demoOff": "Bàaasu dëgg bi mi ngi dox (tolitoli.db) : say bind yu dëgg."
+      "demoOff": "Bàaasu dëgg bi mi ngi dox (tolitoli.db) : say bind yu dëgg.",
+      "ftsRun": "Tàmbali saytu seet bi"
     }
   },
   "record": {

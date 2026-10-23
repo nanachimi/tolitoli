@@ -70,7 +70,8 @@
     "dev": {
       "demo": "Demo data",
       "demoOn": "Demo database active (tolitoli-demo.db). The real database is not touched.",
-      "demoOff": "Real database active (tolitoli.db): your real recordings."
+      "demoOff": "Real database active (tolitoli.db): your real recordings.",
+      "ftsRun": "Run the search diagnostic"
     }
   },
   "record": {

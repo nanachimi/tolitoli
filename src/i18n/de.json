@@ -70,7 +70,8 @@
     "dev": {
       "demo": "Demodaten",
       "demoOn": "Demo-Datenbank aktiv (tolitoli-demo.db). Die echte Datenbank bleibt unberührt.",
-      "demoOff": "Echte Datenbank aktiv (tolitoli.db): Ihre echten Aufnahmen."
+      "demoOff": "Echte Datenbank aktiv (tolitoli.db): Ihre echten Aufnahmen.",
+      "ftsRun": "Suchdiagnose starten"
     }
   },
   "record": {
