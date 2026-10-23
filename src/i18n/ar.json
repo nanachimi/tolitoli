@@ -332,7 +332,7 @@
   "transcription": {
     "notification": {
       "title": "جارٍ النسخ",
-      "starting": "جارٍ تجهيز النسخ…",
+      "running": "على جهازك، دون شبكة",
       "progress": "تم نسخ {{percent}}٪",
       "channel": "النسخ"
     },

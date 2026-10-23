@@ -28,7 +28,10 @@ export interface TranscriptionStore {
     segment: { startMs: number; endMs: number; text: string } | null,
     cursorMs: number,
   ): void;
-  reportTranscriptionProgress(id: string, progress: number): void;
+  /** 0–1, or null when the length of the audio is unknown (indeterminate, never a frozen 0 %). */
+  reportTranscriptionProgress(id: string, progress: number | null): void;
+  /** The length the decoder produced, for a recording whose length was unknown. */
+  recordDuration(id: string, durationMs: number): void;
   completeTranscription(id: string, result: { quality: Quality | null }): void;
   failTranscription(id: string, issue: TranscriptionIssue): void;
 }
@@ -163,16 +166,21 @@ export class TranscriptionQueue {
     let cursorMs = store.transcriptionCheckpoint(id).cursorMs;
     const startedAt = Date.now();
     this.deps.log?.('start', id, language, model, 'from', cursorMs, 'of', job.durationMs);
+    // Without a known length, no percentage: the decoder tells the real one at the end.
+    const totalMs = job.durationMs && job.durationMs > 0 ? job.durationMs : null;
     const progress = (ms: number) => {
-      if (job.durationMs) store.reportTranscriptionProgress(id, ms / job.durationMs);
+      if (totalMs) store.reportTranscriptionProgress(id, ms / totalMs);
     };
-    progress(cursorMs);
+    if (totalMs) progress(cursorMs);
+    else store.reportTranscriptionProgress(id, null);
+    let decodedMs = cursorMs;
 
     for (;;) {
       this.checkSuspended();
       const pcm = await this.deps.pcm.read(path, cursorMs, WINDOW_MS);
       this.checkSuspended();
       const endMs = cursorMs + samplesToMs(pcm.length);
+      decodedMs = Math.max(decodedMs, endMs);
       const last = pcm.length < msToSamples(WINDOW_MS);
       const spans = (await this.deps.detector.detect(pcm)).map((span) => ({
         startMs: cursorMs + span.startMs,
@@ -196,6 +204,7 @@ export class TranscriptionQueue {
       progress(cursorMs);
       if (last) break;
     }
+    if (!totalMs) store.recordDuration(id, Math.round(decodedMs));
     store.completeTranscription(id, { quality: this.deps.qualityFor(language, model) });
     this.deps.log?.('done', id, 'in', Date.now() - startedAt, 'ms for', job.durationMs, 'ms');
   }

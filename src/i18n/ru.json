@@ -322,7 +322,7 @@
   "transcription": {
     "notification": {
       "title": "Идёт расшифровка",
-      "starting": "Подготовка расшифровки…",
+      "running": "На устройстве, без сети",
       "progress": "Расшифровано {{percent}} %",
       "channel": "Расшифровка"
     },

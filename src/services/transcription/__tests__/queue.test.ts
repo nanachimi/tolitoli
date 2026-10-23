@@ -71,7 +71,13 @@ async function until(condition: () => boolean): Promise<void> {
   expect(condition()).toBe(true);
 }
 
-function setup(options: { durationMs: number; speech: SpeechSpan[]; model?: string | null }) {
+function setup(options: {
+  durationMs: number;
+  speech: SpeechSpan[];
+  model?: string | null;
+  /** The length the library knows; undefined means the real one, null an unknown one. */
+  knownDurationMs?: number | null;
+}) {
   const { db } = testDatabase();
   const make = () =>
     new SqliteLibraryRepository({
@@ -128,7 +134,8 @@ function setup(options: { durationMs: number; speech: SpeechSpan[]; model?: stri
       audioPath: `${id}.m4a`,
       audioSize: 1,
       audioFormat: 'm4a',
-      durationMs: options.durationMs,
+      durationMs:
+        options.knownDurationMs === undefined ? options.durationMs : options.knownDurationMs,
       recovered: false,
     });
     store.queueTranscription(id, { language: 'fr', engine: 'local', model: 'tiny' });
@@ -270,6 +277,39 @@ describe('TranscriptionQueue', () => {
     expect(store.get('broken')).toMatchObject({ state: 'failed', issue: 'failed' });
     expect(store.segments('broken')).toEqual([]);
     expect(store.get('fine')?.state).toBe('transcribed');
+  });
+
+  it('runs without a known length: no frozen percentage, and the decoded length recorded', async () => {
+    const { store, queue, add } = setup({
+      durationMs: 130_000,
+      speech: [
+        { startMs: 2000, endMs: 6000 },
+        { startMs: 125_000, endMs: 128_000 },
+      ],
+      knownDurationMs: null,
+    });
+    add('rec');
+    const progress: (number | null)[] = [];
+    const report = store.reportTranscriptionProgress.bind(store);
+    store.reportTranscriptionProgress = (id, value) => {
+      progress.push(value);
+      report(id, value);
+    };
+    expect(store.get('rec')?.durationMs).toBeNull();
+    const q = queue();
+    q.start();
+    await q.idle();
+    expect(progress).toEqual([null]);
+    expect(texts(store, 'rec')).toEqual(['w1', 'w2']);
+    expect(store.get('rec')).toMatchObject({ state: 'transcribed', durationMs: 130_000 });
+  });
+
+  it('shows an indeterminate transcription, never 0 %, while the length is unknown', () => {
+    const { store, add } = setup({ durationMs: 10_000, speech: [], knownDurationMs: null });
+    add('rec');
+    store.startTranscription('rec');
+    store.reportTranscriptionProgress('rec', null);
+    expect(store.get('rec')?.progress).toBeUndefined();
   });
 
   it('reports its activity for the foreground service', async () => {

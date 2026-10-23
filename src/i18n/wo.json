@@ -307,7 +307,7 @@
   "transcription": {
     "notification": {
       "title": "Mi ngi bind",
-      "starting": "Mi ngi waajal bind bi…",
+      "running": "Ci sa jumtukaay, soxlaalul internet",
       "progress": "{{percent}} % bind nañu ko",
       "channel": "Bind"
     },

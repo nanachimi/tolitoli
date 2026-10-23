@@ -376,6 +376,19 @@ export class SqliteLibraryRepository implements LibraryRepository {
       .map((row) => row.id);
   }
 
+  /** A length found by decoding, for a recording that had none; a known one is kept. */
+  recordDuration(id: string, durationMs: number): void {
+    const row = this.requireRow(id);
+    if (row.durationMs !== null || durationMs <= 0) return;
+    this.write((tx) => {
+      tx.update(recordings)
+        .set({ durationMs, updatedAt: this.nowMs() })
+        .where(eq(recordings.id, id))
+        .run();
+      this.log(tx, 'recording', id, 'update', { durationMs });
+    });
+  }
+
   /** Back in the queue, drafts and cursor kept: it resumes where it stopped (step 3). */
   suspendTranscription(id: string): void {
     this.moveTranscription(id, 'suspend', {});
@@ -418,11 +431,14 @@ export class SqliteLibraryRepository implements LibraryRepository {
     };
   }
 
-  /** Progress only: no transition, no outbox entry (nothing to synchronise). */
-  reportTranscriptionProgress(id: string, progress: number): void {
+  /**
+   * Progress only: no transition, no outbox entry (nothing to synchronise). Null when the
+   * length of the audio is unknown: the screens show an indeterminate bar.
+   */
+  reportTranscriptionProgress(id: string, progress: number | null): void {
     this.db
       .update(recordings)
-      .set({ transcriptionProgress: Math.min(1, Math.max(0, progress)) })
+      .set({ transcriptionProgress: progress === null ? null : Math.min(1, Math.max(0, progress)) })
       .where(eq(recordings.id, id))
       .run();
     this.emit();

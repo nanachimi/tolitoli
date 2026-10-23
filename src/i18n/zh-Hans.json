@@ -307,7 +307,7 @@
   "transcription": {
     "notification": {
       "title": "正在转写",
-      "starting": "正在准备转写…",
+      "running": "在您的设备上进行，无需网络",
       "progress": "已转写 {{percent}}%",
       "channel": "转写"
     },

@@ -104,8 +104,9 @@ const store: TranscriptionStore = {
   saveDraft: (id, segment, cursorMs) => library.saveDraft(id, segment, cursorMs),
   reportTranscriptionProgress: (id, progress) => {
     library.reportTranscriptionProgress(id, progress);
-    void updateNotification(progress);
+    if (progress !== null) void updateNotification(progress);
   },
+  recordDuration: (id, durationMs) => library.recordDuration(id, durationMs),
   completeTranscription: (id, result) => library.completeTranscription(id, result),
   failTranscription: (id, issue) => library.failTranscription(id, issue),
 };
@@ -121,7 +122,7 @@ function notificationTexts(progress: number | null) {
     title: i18next.t('transcription.notification.title'),
     body:
       progress === null
-        ? i18next.t('transcription.notification.starting')
+        ? i18next.t('transcription.notification.running')
         : i18next.t('transcription.notification.progress', { percent: Math.floor(progress * 100) }),
     channel: i18next.t('transcription.notification.channel'),
   };

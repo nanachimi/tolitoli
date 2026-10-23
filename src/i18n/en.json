@@ -312,7 +312,7 @@
   "transcription": {
     "notification": {
       "title": "Transcribing",
-      "starting": "Getting the transcription ready…",
+      "running": "On your device, no network needed",
       "progress": "{{percent}}% transcribed",
       "channel": "Transcription"
     },

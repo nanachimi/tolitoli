@@ -317,7 +317,7 @@
   "transcription": {
     "notification": {
       "title": "Transcription en cours",
-      "starting": "Préparation de la transcription…",
+      "running": "Sur votre appareil, sans réseau",
       "progress": "{{percent}} % transcrits",
       "channel": "Transcription"
     },

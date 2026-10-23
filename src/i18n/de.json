@@ -312,7 +312,7 @@
   "transcription": {
     "notification": {
       "title": "Transkription läuft",
-      "starting": "Transkription wird vorbereitet …",
+      "running": "Auf Ihrem Gerät, ohne Netzwerk",
       "progress": "{{percent}} % transkribiert",
       "channel": "Transkription"
     },
