@@ -70,8 +70,9 @@
     },
     "dev": {
       "demo": "Données de démonstration",
-      "demoOn": "Activées. Des enregistrements fictifs, jamais écrits sur l’appareil.",
-      "demoOff": "Désactivées. Seuls vos vrais enregistrements apparaissent."
+      "demoOn": "Base de démonstration active (tolitoli-demo.db). La base réelle n’est pas touchée.",
+      "demoOff": "Base réelle active (tolitoli.db) : vos vrais enregistrements.",
+      "ftsRun": "Lancer le diagnostic de recherche"
     }
   },
   "record": {
@@ -80,7 +81,6 @@
     "title": "Enregistrement",
     "consentReminder": "Informez les personnes présentes que vous enregistrez.",
     "pause": "Pause",
-    "resume": "Reprendre",
     "stop": "Arrêter",
     "status": {
       "preparing": "Préparation…",
@@ -93,7 +93,6 @@
     },
     "interruption": {
       "title": "Enregistrement interrompu",
-      "resume": "Reprendre l’enregistrement",
       "waitBody": "Vous pourrez reprendre à la fin de l’appel.",
       "callEndedTitle": "Appel terminé",
       "callEndedBody": "Ce qui précède l’appel est conservé.",
@@ -126,7 +125,9 @@
       "title": "Le micro semble coupé",
       "body": "Une autre application utilise peut-être le micro."
     },
-    "stopA11y": "Arrêter l’enregistrement"
+    "stopA11y": "Arrêter l’enregistrement",
+    "pauseA11y": "Mettre en pause",
+    "resumeA11y": "Reprendre l’enregistrement"
   },
   "dev": {
     "title": "Diagnostic (développement)",
@@ -222,7 +223,11 @@
     "confirmEmptyTitle": "Vider la corbeille ?",
     "confirmEmptyBody": "Les enregistrements de la corbeille seront supprimés définitivement. Cette action est irréversible.",
     "confirmTitle": "Mettre à la corbeille ?",
-    "confirmBody": "« {{title}} » restera 30 jours dans la corbeille, d’où vous pourrez le restaurer."
+    "confirmBody": "« {{title}} » restera 30 jours dans la corbeille, d’où vous pourrez le restaurer.",
+    "daysLeft_one": "Supprimé définitivement dans {{count}} jour",
+    "daysLeft_many": "Supprimé définitivement dans {{count}} de jours",
+    "daysLeft_other": "Supprimé définitivement dans {{count}} jours",
+    "purgeNext": "Supprimé définitivement au prochain lancement"
   },
   "detail": {
     "moreActions": "Autres actions",

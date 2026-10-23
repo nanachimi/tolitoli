@@ -6,7 +6,7 @@ import AboutScreen from '../../app/settings/about';
 import StorageScreen from '../../app/settings/storage';
 import TranscriptionLanguageScreen from '../../app/settings/transcription-language';
 import SettingsScreen, { transcriptionLanguageSummary } from '../../app/(tabs)/settings';
-import TrashScreen from '../../app/trash';
+import TrashScreen, { trashDaysLeft } from '../../app/trash';
 import { library, setDemoDataEnabled } from '@/features/library/library';
 import { freeBytes } from '@/features/library/storage';
 import { ACTIVE_PROFILE } from '@/services/audio/activeProfile';
@@ -36,12 +36,11 @@ beforeEach(async () => {
   setTranscriptionLanguage('fr');
 });
 
-afterEach(() => {
+afterEach(async () => {
   jest.restoreAllMocks();
   jest.mocked(freeBytes).mockReturnValue(8 * 1024 ** 3);
   jest.mocked(router.push).mockClear();
-  for (const item of library.listTrash()) library.restore(item.id);
-  setDemoDataEnabled(false);
+  await setDemoDataEnabled(false);
 });
 
 describe('Settings groups', () => {
@@ -138,8 +137,7 @@ describe('Storage screen', () => {
   });
 
   it('asks before emptying the trash', async () => {
-    setDemoDataEnabled(true);
-    // Emptying hides the item for the whole session: the other tests use other items.
+    await setDemoDataEnabled(true);
     library.trash('demo-failed');
     await renderScreen(<StorageScreen />);
     const user = userEvent.setup();
@@ -153,13 +151,29 @@ describe('Storage screen', () => {
 });
 
 describe('Trash screen', () => {
+  it('says how many days are left before the purge', () => {
+    const now = new Date(2026, 9, 23, 12);
+    const trashed = (daysAgo: number) =>
+      new Date(now.getTime() - daysAgo * 86_400_000).toISOString();
+    expect(trashDaysLeft(trashed(0), now)).toBe(30);
+    expect(trashDaysLeft(trashed(29.5), now)).toBe(1);
+    expect(trashDaysLeft(trashed(31), now)).toBeLessThanOrEqual(0);
+  });
+
+  it('shows the days left on each trashed recording', async () => {
+    await setDemoDataEnabled(true);
+    library.trash('demo-market');
+    await renderScreen(<TrashScreen />);
+    expect(screen.getByText('Supprimé définitivement dans 30 jours')).toBeOnTheScreen();
+  });
+
   it('is quietly empty', async () => {
     await renderScreen(<TrashScreen />);
     expect(screen.getByText('Corbeille vide', { exact: false })).toBeOnTheScreen();
   });
 
   it('restores a trashed recording', async () => {
-    setDemoDataEnabled(true);
+    await setDemoDataEnabled(true);
     library.trash('demo-market');
     const title = library.listTrash()[0]!.title!;
     await renderScreen(<TrashScreen />);
@@ -184,7 +198,7 @@ describe.each([
   ['About', AboutScreen],
 ])('%s screen under pseudo-localization', (_name, Component) => {
   it('renders no hard-coded string', async () => {
-    setDemoDataEnabled(true);
+    await setDemoDataEnabled(true);
     library.trash('demo-market');
     await usePseudoLocale();
     await renderScreen(<Component />);

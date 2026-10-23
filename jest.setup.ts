@@ -1,13 +1,39 @@
-// In-memory stand-in for expo-sqlite's synchronous key-value store.
+// In-memory stand-in for expo-sqlite's synchronous key-value store, one map per file.
 jest.mock('expo-sqlite/kv-store', () => {
-  const store = new Map<string, string>();
-  const Storage = {
-    getItemSync: (key: string) => store.get(key) ?? null,
-    setItemSync: (key: string, value: string) => void store.set(key, value),
-    clearSync: () => store.clear(),
-  };
-  return { __esModule: true, default: Storage, Storage };
+  const files = new Map<string, Map<string, string>>();
+  class SQLiteStorage {
+    private readonly store: Map<string, string>;
+    constructor(name: string) {
+      this.store = files.get(name) ?? new Map();
+      files.set(name, this.store);
+    }
+    getItemSync(key: string) {
+      return this.store.get(key) ?? null;
+    }
+    setItemSync(key: string, value: string) {
+      this.store.set(key, value);
+    }
+    removeItemSync(key: string) {
+      return this.store.delete(key);
+    }
+    getAllKeysSync() {
+      return [...this.store.keys()];
+    }
+    clearSync() {
+      this.store.clear();
+      return true;
+    }
+  }
+  const Storage = new SQLiteStorage('ExpoSQLiteStorage');
+  return { __esModule: true, default: Storage, Storage, SQLiteStorage };
 });
+
+// The native player is not in Jest; screens only reach it for a recording with a file.
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => {
+    throw new Error('expo-audio is not available in Jest: mock it in the test');
+  }),
+}));
 
 jest.mock('expo-localization', () => ({
   getLocales: jest.fn(() => [{ languageTag: 'fr-FR', languageCode: 'fr' }]),
@@ -36,4 +62,15 @@ jest.mock('expo-router', () => {
         };
       }, [effect]),
   };
+});
+
+// Screens read the library: every test gets a fresh in-memory database, the real one or
+// the demo one as the development switch says (src/features/library/library.ts).
+/* eslint-disable import/first */
+import { openTestLibrary } from './src/db/__tests__/testLibrary';
+import { openLibrary, setLibraryOpener } from './src/features/library/library';
+
+setLibraryOpener(async (choice) => openTestLibrary(choice));
+beforeEach(async () => {
+  await openLibrary();
 });

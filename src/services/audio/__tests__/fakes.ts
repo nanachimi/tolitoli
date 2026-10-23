@@ -44,6 +44,16 @@ export class MemoryFs implements Fs {
     this.deleted.push(path);
     this.files.delete(path);
   }
+  removeTree(path: string) {
+    const prefix = `${path}/`;
+    for (const file of [...this.files.keys()]) {
+      if (file.startsWith(prefix)) this.remove(file);
+    }
+    for (const dir of [...this.dirs]) {
+      if (dir === path || dir.startsWith(prefix)) this.dirs.delete(dir);
+    }
+    this.deleted.push(path);
+  }
 }
 
 /** Audio stand-in: a file is "readable" unless its content is CORRUPT; duration = length × 1000. */

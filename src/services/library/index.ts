@@ -1,2 +1,10 @@
 export * from './types';
-export { normalise, SimulatedLibraryRepository, type SimulatedLibraryOptions } from './simulated';
+export {
+  ftsQuery,
+  SqliteLibraryRepository,
+  TRASH_RETENTION_DAYS,
+  type FinalizeInput,
+  type LibraryDatabase,
+  type SqliteLibraryOptions,
+  type TranscriptSegment,
+} from './sqlite';

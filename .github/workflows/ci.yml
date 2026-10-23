@@ -21,7 +21,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # executorch's native libraries are for the app build (EAS), not for Jest (D-035).
       - run: npm ci
+        env:
+          RNET_SKIP_DOWNLOAD: '1'
 
       - name: Typecheck
         run: npm run typecheck

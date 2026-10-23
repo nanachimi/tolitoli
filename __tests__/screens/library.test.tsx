@@ -35,18 +35,17 @@ jest.mock('@/ui/layout/useLayoutMode', () => ({
 
 beforeEach(async () => {
   await i18next.changeLanguage('fr');
-  setDemoDataEnabled(true);
+  await setDemoDataEnabled(true);
   useModel.setState({ status: 'ready', progress: 1 });
 });
 
-afterEach(() => {
+afterEach(async () => {
   cancelModelDownload();
   jest.mocked(freeBytes).mockReturnValue(8 * GB);
   jest.useRealTimers();
   jest.mocked(router.push).mockClear();
   jest.mocked(layout.useLayoutMode).mockReturnValue('single');
-  for (const item of library.listTrash()) library.restore(item.id);
-  setDemoDataEnabled(false);
+  await setDemoDataEnabled(false);
 });
 
 async function search(text: string) {
@@ -57,7 +56,7 @@ async function search(text: string) {
 
 describe('Library', () => {
   it('welcomes a first launch and says what to do', async () => {
-    setDemoDataEnabled(false);
+    await setDemoDataEnabled(false);
     await renderScreen(<LibraryScreen />);
     expect(screen.getByLabelText(/Appuyez sur Enregistrer pour commencer/)).toBeOnTheScreen();
     // Nothing to search yet.
@@ -161,7 +160,7 @@ describe('Library notices', () => {
   it('has no hard-coded text in its notices (pseudo-locale)', async () => {
     useModel.setState({ status: 'missing', progress: 0 });
     jest.mocked(freeBytes).mockReturnValue(10 * 1024 * 1024);
-    setDemoDataEnabled(false);
+    await setDemoDataEnabled(false);
     await usePseudoLocale();
     await renderScreen(<LibraryScreen />);
     expect(hardCodedTexts()).toEqual([]);

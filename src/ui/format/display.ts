@@ -72,6 +72,29 @@ export function formatShortDate(date: Date, now: Date, language: string): string
   );
 }
 
+/**
+ * Search words for a recording's date, so that what the user sees is what they can search
+ * (owner, step 2): day, month abbreviated and in full, month number, year, time, and the
+ * locale's numeric date. "23 oct", "octobre", "23/10" and "2026" all find it.
+ */
+export function dateSearchWords(date: Date, language: string): string {
+  const day = String(date.getDate());
+  const month = String(date.getMonth() + 1);
+  const words = [
+    day,
+    pad(date.getDate()),
+    month,
+    pad(date.getMonth() + 1),
+    String(date.getFullYear()),
+    `${pad(date.getHours())}:${pad(date.getMinutes())}`,
+    format(date, language, { month: 'short' }),
+    format(date, language, { month: 'long' }),
+    format(date, language, { day: 'numeric', month: 'numeric', year: 'numeric' }),
+    formatTime(date, language),
+  ];
+  return words.filter((word): word is string => Boolean(word)).join(' ');
+}
+
 function startOfDay(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 }

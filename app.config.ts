@@ -60,6 +60,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    // Install attribution, from a dependency of executorch's legacy API: unused (D-036).
+    blockedPermissions: ['com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE'],
   },
   plugins: [
     'expo-router',
@@ -85,10 +87,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         androidFSStopWithTask: false,
       },
     ],
+    // Playback only (step 2): foreground, no media-playback service to declare on Play, and
+    // no permission of its own; recording stays with react-native-audio-api (D-020).
+    ['expo-audio', { recordAudioAndroid: false, enableBackgroundPlayback: false }],
     // Android navigation bar follows the theme (D-015); background colour APIs were removed in v56.
     ['expo-navigation-bar', { enforceContrast: false }],
     // Recording notification shows the Tolitoli mark, not a generic microphone (D-023).
     './plugins/withNotificationIcons',
+    './plugins/withoutInstallReferrer',
+    // 64-bit only in production (D-036): executorch has no 32-bit build.
+    ...(VARIANT === 'production'
+      ? [['./plugins/withArchitectures', ['arm64-v8a', 'x86_64']] as [string, string[]]]
+      : []),
     [
       'expo-splash-screen',
       {

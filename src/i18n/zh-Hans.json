@@ -68,8 +68,9 @@
     },
     "dev": {
       "demo": "演示数据",
-      "demoOn": "已开启。虚构录音，从不写入设备。",
-      "demoOff": "已关闭。只显示您的真实录音。"
+      "demoOn": "演示数据库已启用（tolitoli-demo.db）。真实数据库不受影响。",
+      "demoOff": "真实数据库已启用（tolitoli.db）：您的真实录音。",
+      "ftsRun": "运行搜索诊断"
     }
   },
   "record": {
@@ -78,7 +79,6 @@
     "title": "录音",
     "consentReminder": "请告知在场人员你正在录音。",
     "pause": "暂停",
-    "resume": "继续",
     "stop": "停止",
     "status": {
       "preparing": "正在准备…",
@@ -91,7 +91,6 @@
     },
     "interruption": {
       "title": "录音已中断",
-      "resume": "继续录音",
       "waitBody": "通话结束后即可继续。",
       "callEndedTitle": "通话已结束",
       "callEndedBody": "通话之前的内容均已保存。",
@@ -124,7 +123,9 @@
       "title": "麦克风似乎已断开",
       "body": "可能有其他应用正在使用麦克风。"
     },
-    "stopA11y": "停止录音"
+    "stopA11y": "停止录音",
+    "pauseA11y": "暂停",
+    "resumeA11y": "继续录音"
   },
   "dev": {
     "title": "诊断（开发）",
@@ -214,7 +215,9 @@
     "confirmEmptyTitle": "清空回收站？",
     "confirmEmptyBody": "回收站中的录音将被永久删除，此操作无法撤销。",
     "confirmTitle": "移到回收站？",
-    "confirmBody": "“{{title}}”将在回收站保留 30 天，期间可以恢复。"
+    "confirmBody": "“{{title}}”将在回收站保留 30 天，期间可以恢复。",
+    "daysLeft_other": "{{count}} 天后永久删除",
+    "purgeNext": "下次启动时永久删除"
   },
   "detail": {
     "moreActions": "更多操作",

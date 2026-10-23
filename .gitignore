@@ -52,3 +52,6 @@ coverage/
 *.keystore
 credentials.json
 google-services*.json
+
+# Local APKs, AABs, raw captures and logs (over 2 GB); curated captures go to docs/captures/
+/build/

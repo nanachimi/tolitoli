@@ -48,7 +48,7 @@ Lucide, trait `stroke-icon` (1,75 px), extrémités rondes, taille `icon-md`. Le
 ## États et mouvement
 
 - Enregistrement en cours : point `accent` qui pulse lentement (1,2 s, opacité 1 → 0,4), chrono `timer`, jauge de niveau `LevelMeter`. Rien d'autre ne bouge.
-- Interruption (appel) : `Banner` sur `accent-soft` avec `phone-off`, sans bouton tant que l'appel dure, puis « Reprendre l'enregistrement ».
+- Interruption (appel) : `Banner` sur `accent-soft` avec `phone-off`, sans bouton — ni pendant l'appel, ni après. La reprise se fait par le bouton rond, qui redevient actif à la fin de l'appel ; la bannière dit seulement ce qui se passe.
 - Transcription en cours : chip « Transcription… » avec `clock`, texte qui apparaît par segments, sans animation.
 - Transitions d'écran : celles du système. Réduction des animations activée dans le système → le point ne pulse plus.
 

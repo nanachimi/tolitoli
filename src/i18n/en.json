@@ -69,8 +69,9 @@
     },
     "dev": {
       "demo": "Demo data",
-      "demoOn": "On. Fictional recordings, never written to the device.",
-      "demoOff": "Off. Only your real recordings appear."
+      "demoOn": "Demo database active (tolitoli-demo.db). The real database is not touched.",
+      "demoOff": "Real database active (tolitoli.db): your real recordings.",
+      "ftsRun": "Run the search diagnostic"
     }
   },
   "record": {
@@ -79,7 +80,6 @@
     "title": "Recording",
     "consentReminder": "Tell the people present that you are recording.",
     "pause": "Pause",
-    "resume": "Resume",
     "stop": "Stop",
     "status": {
       "preparing": "Getting ready…",
@@ -92,7 +92,6 @@
     },
     "interruption": {
       "title": "Recording interrupted",
-      "resume": "Resume recording",
       "waitBody": "You can resume once the call ends.",
       "callEndedTitle": "Call ended",
       "callEndedBody": "Everything before the call is kept.",
@@ -125,7 +124,9 @@
       "title": "The microphone seems cut off",
       "body": "Another app may be using the microphone."
     },
-    "stopA11y": "Stop recording"
+    "stopA11y": "Stop recording",
+    "pauseA11y": "Pause",
+    "resumeA11y": "Resume recording"
   },
   "dev": {
     "title": "Diagnostics (development)",
@@ -218,7 +219,10 @@
     "confirmEmptyTitle": "Empty the trash?",
     "confirmEmptyBody": "The recordings in the trash will be deleted for good. This cannot be undone.",
     "confirmTitle": "Move to trash?",
-    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it."
+    "confirmBody": "“{{title}}” will stay in the trash for 30 days, where you can restore it.",
+    "daysLeft_one": "Deleted for good in {{count}} day",
+    "daysLeft_other": "Deleted for good in {{count}} days",
+    "purgeNext": "Deleted for good at the next launch"
   },
   "detail": {
     "moreActions": "More actions",

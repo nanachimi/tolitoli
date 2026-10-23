@@ -1,51 +1,85 @@
-import Storage from 'expo-sqlite/kv-store';
 import { create } from 'zustand';
 
-import { SimulatedLibraryRepository } from '@/services/library';
+import { settingsStorage as Storage } from '@/features/settings/storage';
+import type { SqliteLibraryRepository } from '@/services/library';
 
-import { useRecordingStore } from '../recording/useRecordingStore';
+import type { LibraryDatabaseChoice } from './database';
 
-/** Development switch for the demo set; ignored (and hidden) in production builds. */
-export const DEMO_DATA_STORAGE_KEY = 'dev.demoData';
+/** Which library database is open; `demo` is honoured in development builds only. */
+export const LIBRARY_DATABASE_STORAGE_KEY = 'dev.libraryDatabase';
 
-function readDemoFlag(): boolean {
-  return __DEV__ && Storage.getItemSync(DEMO_DATA_STORAGE_KEY) === 'on';
-}
+export type LibraryOpener = (choice: LibraryDatabaseChoice) => Promise<SqliteLibraryRepository>;
 
-let demoEnabled = readDemoFlag();
+// Loaded on first use, so that Jest (which installs its own opener) never loads expo-sqlite.
+let opener: LibraryOpener = async (choice) =>
+  (await import('./database')).openLibraryDatabase(choice);
 
-/**
- * The app's library, simulated until step 2 brings SQLite: step 1 recordings from
- * the manifests (read only), plus the demo set in development.
- */
-export const library = new SimulatedLibraryRepository({
-  readManifests: () => useRecordingStore.getState().recordings,
-  demoEnabled: () => demoEnabled,
-  now: () => new Date(),
-});
+let current: SqliteLibraryRepository | null = null;
+let unsubscribe: (() => void) | null = null;
 
 /** Bumped on every library change, so screens re-read the repository. */
-export const useLibraryVersion = create<{ version: number }>(() => ({ version: 0 }));
+export const useLibraryVersion = create<{ version: number; ready: boolean }>(() => ({
+  version: 0,
+  ready: false,
+}));
 
-library.subscribe(() => useLibraryVersion.setState((state) => ({ version: state.version + 1 })));
-// New or recovered recordings come from the recording store's manifest list.
-useRecordingStore.subscribe((state, previous) => {
-  if (state.recordings !== previous.recordings) library.emit();
+function bump(): void {
+  useLibraryVersion.setState((state) => ({ version: state.version + 1 }));
+}
+
+export function activeLibraryDatabase(): LibraryDatabaseChoice {
+  return __DEV__ && Storage.getItemSync(LIBRARY_DATABASE_STORAGE_KEY) === 'demo' ? 'demo' : 'real';
+}
+
+/** Tests open in-memory databases instead of files (jest.setup.ts). */
+export function setLibraryOpener(next: LibraryOpener): void {
+  opener = next;
+}
+
+function install(repository: SqliteLibraryRepository): void {
+  unsubscribe?.();
+  current = repository;
+  unsubscribe = repository.subscribe(bump);
+  useLibraryVersion.setState((state) => ({ version: state.version + 1, ready: true }));
+}
+
+/** At launch, before any screen reads the library (app/_layout.tsx). */
+export async function openLibrary(): Promise<SqliteLibraryRepository> {
+  const repository = await opener(activeLibraryDatabase());
+  install(repository);
+  return repository;
+}
+
+export function getLibrary(): SqliteLibraryRepository {
+  if (!current) throw new Error('The library is not open yet (openLibrary at launch)');
+  return current;
+}
+
+/**
+ * The open library, whichever database it is on; it follows a switch to the demo
+ * database without the callers holding on to the old one.
+ */
+export const library = new Proxy({} as SqliteLibraryRepository, {
+  get(_target, key) {
+    const repository = getLibrary();
+    const value: unknown = Reflect.get(repository, key, repository);
+    return typeof value === 'function' ? value.bind(repository) : value;
+  },
 });
 
 export function isDemoDataEnabled(): boolean {
-  return demoEnabled;
+  return activeLibraryDatabase() === 'demo';
 }
 
-export function setDemoDataEnabled(on: boolean): void {
+/** A switch of database file, not a seeding: the real database is never written to. */
+export async function setDemoDataEnabled(on: boolean): Promise<void> {
   if (!__DEV__) return;
-  demoEnabled = on;
-  Storage.setItemSync(DEMO_DATA_STORAGE_KEY, on ? 'on' : 'off');
-  library.emit();
+  Storage.setItemSync(LIBRARY_DATABASE_STORAGE_KEY, on ? 'demo' : 'real');
+  install(await opener(on ? 'demo' : 'real'));
 }
 
 /** Re-renders the caller whenever the library changes. */
-export function useLibrary(): SimulatedLibraryRepository {
+export function useLibrary(): SqliteLibraryRepository {
   useLibraryVersion((state) => state.version);
-  return library;
+  return getLibrary();
 }

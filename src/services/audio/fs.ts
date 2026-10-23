@@ -14,6 +14,11 @@ export interface Fs {
    * whose content is in a final file already checked (D-021).
    */
   remove(path: string): void;
+  /**
+   * Deletes a directory and everything in it; nothing when it does not exist. Only the
+   * trash purge uses it, on a recording the user put in the trash (docs/plans/step-2.md).
+   */
+  removeTree(path: string): void;
 }
 
 export function joinPath(...parts: string[]): string {

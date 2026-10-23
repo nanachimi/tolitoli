@@ -1,5 +1,5 @@
 import { act, screen, userEvent } from '@testing-library/react-native';
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import { BackHandler, I18nManager } from 'react-native';
 
 import OnboardingScreen from '../../app/onboarding';

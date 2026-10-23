@@ -37,22 +37,24 @@ describe('RecordButton', () => {
     expect(haptic).toHaveBeenCalled();
   });
 
-  it('stop: 96 px raised circle ringed in accent with an accent square, no haptic', async () => {
-    const haptic = jest.spyOn(Haptics, 'impactAsync').mockResolvedValue();
-    await renderScreen(
-      <RecordButton
-        mode="stop"
-        label="Arrêter"
-        accessibilityLabel="Arrêter l’enregistrement"
-        onPress={jest.fn()}
-      />,
-    );
-    const button = screen.getByRole('button', { name: 'Arrêter l’enregistrement' });
-    expect(flat(button)).toMatchObject({ width: 96, borderColor: light.accent });
-    expect(flat(screen.getByTestId('stop-square'))).toMatchObject({ width: 32 });
-    await userEvent.setup().press(button);
-    expect(haptic).not.toHaveBeenCalled();
-  });
+  it.each([
+    ['pause', 'Mettre en pause', 'icon-pause'],
+    ['resume', 'Reprendre l’enregistrement', 'icon-mic'],
+  ] as const)(
+    '%s: the same 96 px accent disc, only the icon changes, no haptic',
+    async (mode, label, icon) => {
+      const haptic = jest.spyOn(Haptics, 'impactAsync').mockResolvedValue();
+      await renderScreen(
+        <RecordButton mode={mode} size="xl" accessibilityLabel={label} onPress={jest.fn()} />,
+      );
+      const button = screen.getByRole('button', { name: label });
+      expect(flat(button)).toMatchObject({ width: 96, height: 96, backgroundColor: light.accent });
+      expect(screen.getByTestId(icon, { includeHiddenElements: true })).toBeTruthy();
+      expect(screen.queryByTestId('stop-square', { includeHiddenElements: true })).toBeNull();
+      await userEvent.setup().press(button);
+      expect(haptic).not.toHaveBeenCalled();
+    },
+  );
 
   it('has no hard-coded text (pseudo-locale)', async () => {
     await usePseudoLocale();

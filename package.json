@@ -22,7 +22,10 @@
     "@formatjs/intl-getcanonicallocales": "^3.2.12",
     "@formatjs/intl-locale": "^5.3.12",
     "@formatjs/intl-pluralrules": "^6.3.16",
+    "drizzle-orm": "^0.45.4",
     "expo": "~58.0.17",
+    "expo-asset": "~58.0.18",
+    "expo-audio": "~58.0.10",
     "expo-constants": "~58.0.12",
     "expo-crypto": "~58.0.7",
     "expo-dev-client": "~58.0.14",
@@ -45,15 +48,23 @@
     "react-i18next": "^17.1.0",
     "react-native": "0.88.0",
     "react-native-audio-api": "^0.13.6",
+    "react-native-blob-util": "^0.25.1",
+    "react-native-executorch": "^0.10.6",
+    "react-native-executorch-expo-resource-fetcher": "^0.10.0",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "~4.30.0",
     "react-native-svg": "15.16.0",
+    "react-native-worklets": "0.13.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@testing-library/react-native": "^14.1.0",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
+    "babel-plugin-inline-import": "^3.0.0",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.4",
     "eslint-config-prettier": "^10.1.8",
@@ -63,5 +74,15 @@
     "patch-package": "^8.0.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3"
+  },
+  "react-native-executorch": {
+    "backends": [
+      "xnnpack",
+      "coreml"
+    ]
+  },
+  "allowScripts": {
+    "react-native-executorch@0.10.6": true,
+    "better-sqlite3@13.0.3": true
   }
 }

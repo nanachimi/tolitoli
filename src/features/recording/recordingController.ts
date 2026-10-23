@@ -9,7 +9,11 @@ import type { AudioFrame } from '@/services/audio/engine';
 import { fromInterruptionEvent } from '@/services/audio/interruptions';
 import { isMicSilent, nextSilentMs } from '@/services/audio/micSilence';
 import type { RecorderStatus } from '@/services/audio/recorderMachine';
-import { listRecordings } from '@/services/audio/recordingStore';
+import { joinPath } from '@/services/audio/fs';
+import { listRecordings, type RecordingManifest } from '@/services/audio/recordingStore';
+import type { FinalizeInput } from '@/services/library';
+
+import { getLibrary } from '../library/library';
 import { recoverInterruptedRecordings } from '@/services/audio/recovery';
 import { RecordingSession, type SessionSnapshot } from '@/services/audio/session';
 import { color } from '@/ui/theme/tokens';
@@ -136,6 +140,35 @@ function unlisten(): void {
   subscriptions = [];
 }
 
+/** Bytes of the final file on disk, for audio_size. */
+function finalFileSize(manifest: RecordingManifest): number | null {
+  if (!manifest.finalFile) return null;
+  const path = joinPath(recordingsRoot(), manifest.finalFile);
+  return expoFs.exists(path) ? expoFs.size(path) : null;
+}
+
+function finalizeInputOf(manifest: RecordingManifest): FinalizeInput {
+  return {
+    audioPath: manifest.finalFile,
+    audioSize: finalFileSize(manifest),
+    audioFormat: manifest.finalFile?.toLowerCase().endsWith('.wav') ? 'wav' : 'm4a',
+    durationMs: manifest.durationMs,
+    recovered: manifest.recovered,
+  };
+}
+
+/**
+ * The database follows the files, never the reverse: a failure here only delays the
+ * row, which the next launch's reconciliation writes (the audio is already on disk).
+ */
+function inLibrary(what: string, change: () => void): void {
+  try {
+    change();
+  } catch (error) {
+    log(`library ${what} failed`, String(error));
+  }
+}
+
 export function refreshRecordings(): void {
   setState({ recordings: listRecordings(expoFs, recordingsRoot()) });
 }
@@ -189,6 +222,7 @@ export async function startRecording(): Promise<StartResult> {
   try {
     const manifest = await active.start();
     log('started', manifest.id, `${Date.now() - t0}ms after tap`);
+    inLibrary('create', () => getLibrary().createRecording(manifest));
     return 'started';
   } catch (error) {
     log('start failed', String(error));
@@ -219,6 +253,9 @@ export async function stopRecording(): Promise<void> {
   try {
     const manifest = await active.stop();
     log('stopped', manifest.id, manifest.durationMs, manifest.finalFile, manifest.unreadable);
+    inLibrary('finalize', () =>
+      getLibrary().finalizeRecording(manifest.id, finalizeInputOf(manifest)),
+    );
   } catch (error) {
     log('stop failed', String(error));
     setState({ notice: 'error' });
@@ -254,4 +291,11 @@ export async function recoverAtLaunch(): Promise<void> {
     log('recovered', JSON.stringify(recovered.map((m) => [m.id, m.durationMs, m.unreadable])));
   }
   refreshRecordings();
+  // Rows left `recording` by a cut, then manifests the database has never seen (step 1).
+  const manifests = useRecordingStore.getState().recordings;
+  inLibrary('reconcile', () => getLibrary().reconcileUnfinished(manifests, finalFileSize));
+  inLibrary('import', () => {
+    const imported = getLibrary().importManifests(manifests, finalFileSize);
+    if (imported.length > 0) log('imported', imported.join(', '));
+  });
 }

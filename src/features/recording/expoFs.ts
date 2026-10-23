@@ -29,6 +29,10 @@ export const expoFs: Fs = {
     const file = new File(path);
     if (file.exists) file.delete();
   },
+  removeTree: (path) => {
+    const directory = new Directory(path);
+    if (directory.exists) directory.delete();
+  },
 };
 
 export function availableDiskSpace(): number {

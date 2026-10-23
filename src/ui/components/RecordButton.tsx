@@ -5,29 +5,33 @@ import { useTheme } from '../theme';
 import { AppText } from './AppText';
 import { Icon } from './Icon';
 
+/** The gesture that starts a recording also pauses and resumes it; only the icon changes. */
+export type RecordButtonMode = 'record' | 'pause' | 'resume';
+
 export type RecordButtonProps = {
-  mode: 'record' | 'stop';
+  mode: RecordButtonMode;
   onPress: () => void;
-  /** Caption under the button ("Arrêter"). Record has none: its word lives in the label (guide). */
+  /** `lg` in the Library bar, `xl` in the middle of the Recording screen. */
+  size?: 'lg' | 'xl';
+  /** Caption under the button; none in the app (guide RecordButton), kept for previews. */
   label?: string;
-  /** "Enregistrer" or "Arrêter l'enregistrement", never just "micro" (guide RecordButton). */
+  /** "Enregistrer", "Mettre en pause", "Reprendre l'enregistrement"; never just "micro". */
   accessibilityLabel: string;
   disabled?: boolean;
 };
 
-const SQUARE = 32;
-
-/** The two round buttons: Record on the Library (72 px), Stop on the Recording screen (96 px). */
+/** The app's one round button (guide RecordButton): an accent disc whose icon follows the mode. */
 export function RecordButton({
   mode,
   onPress,
+  size = 'lg',
   label,
   accessibilityLabel,
   disabled = false,
 }: RecordButtonProps) {
   const theme = useTheme();
   const record = mode === 'record';
-  const diameter = theme.size[record ? 'control-lg' : 'control-xl'];
+  const diameter = theme.size[size === 'xl' ? 'control-xl' : 'control-lg'];
 
   const press = () => {
     // Haptic feedback when recording starts; a device without it just records.
@@ -49,24 +53,13 @@ export function RecordButton({
             width: diameter,
             height: diameter,
             borderRadius: theme.radius['radius-pill'],
-            backgroundColor: record ? theme.color.accent : theme.color['surface-raised'],
-            borderColor: record ? 'transparent' : theme.color.accent,
+            backgroundColor: theme.color.accent,
+            borderColor: 'transparent',
+            opacity: disabled ? 0.5 : 1,
           },
         ]}
       >
-        {record ? (
-          <Icon name="mic" size="icon-lg" color="on-accent" />
-        ) : (
-          <View
-            testID="stop-square"
-            style={{
-              width: SQUARE,
-              height: SQUARE,
-              borderRadius: theme.radius['radius-sm'],
-              backgroundColor: theme.color.accent,
-            }}
-          />
-        )}
+        <Icon name={mode === 'pause' ? 'pause' : 'mic'} size="icon-lg" color="on-accent" />
       </Pressable>
       {label ? (
         <AppText

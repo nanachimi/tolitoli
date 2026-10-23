@@ -69,8 +69,9 @@
     },
     "dev": {
       "demo": "Demodaten",
-      "demoOn": "Aktiv. Fiktive Aufnahmen, nie auf das Gerät geschrieben.",
-      "demoOff": "Aus. Nur Ihre echten Aufnahmen erscheinen."
+      "demoOn": "Demo-Datenbank aktiv (tolitoli-demo.db). Die echte Datenbank bleibt unberührt.",
+      "demoOff": "Echte Datenbank aktiv (tolitoli.db): Ihre echten Aufnahmen.",
+      "ftsRun": "Suchdiagnose starten"
     }
   },
   "record": {
@@ -79,7 +80,6 @@
     "title": "Aufnahme",
     "consentReminder": "Informiere die Anwesenden, dass du aufnimmst.",
     "pause": "Pause",
-    "resume": "Fortsetzen",
     "stop": "Beenden",
     "status": {
       "preparing": "Wird vorbereitet …",
@@ -92,7 +92,6 @@
     },
     "interruption": {
       "title": "Aufnahme unterbrochen",
-      "resume": "Aufnahme fortsetzen",
       "waitBody": "Sie können nach dem Anruf fortsetzen.",
       "callEndedTitle": "Anruf beendet",
       "callEndedBody": "Alles vor dem Anruf ist gespeichert.",
@@ -125,7 +124,9 @@
       "title": "Das Mikrofon scheint stummgeschaltet",
       "body": "Vielleicht verwendet eine andere App das Mikrofon."
     },
-    "stopA11y": "Aufnahme beenden"
+    "stopA11y": "Aufnahme beenden",
+    "pauseA11y": "Pausieren",
+    "resumeA11y": "Aufnahme fortsetzen"
   },
   "dev": {
     "title": "Diagnose (Entwicklung)",
@@ -218,7 +219,10 @@
     "confirmEmptyTitle": "Papierkorb leeren?",
     "confirmEmptyBody": "Die Aufnahmen im Papierkorb werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
     "confirmTitle": "In den Papierkorb verschieben?",
-    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden."
+    "confirmBody": "„{{title}}“ bleibt 30 Tage im Papierkorb und kann dort wiederhergestellt werden.",
+    "daysLeft_one": "Endgültig gelöscht in {{count}} Tag",
+    "daysLeft_other": "Endgültig gelöscht in {{count}} Tagen",
+    "purgeNext": "Beim nächsten Start endgültig gelöscht"
   },
   "detail": {
     "moreActions": "Weitere Aktionen",

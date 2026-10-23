@@ -1,4 +1,4 @@
-<!-- @dsCard group="Actions" height=140 subtitle="barre Enregistrer (72 px) et Arrêter (96 px)" -->
+<!-- @dsCard group="Actions" height=220 subtitle="un seul rond : enregistrer, pause, reprise" -->
 <!doctype html><html><head><style data-tokens="tolitoli">
 :root{--surface:#f7f1e8;--surface-raised:#fffaf3;--surface-sunken:#efe6d9;--ink:#2a211b;--ink-muted:#6b5c50;--ink-faint:#9a8878;--hairline:#e3d7c8;--accent:#b84a24;--on-accent:#fff6ee;--accent-soft:#f6dccd;--ochre:#b8862b;--success:#1f6f66;--warning:#9a5b12;--danger:#a3281f;--focus:#1f5f8b;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-12:48px;--radius-sm:8px;--radius-md:14px;--radius-lg:22px;--radius-pill:999px;--control-md:48px;--control-lg:72px;--control-xl:96px;--icon-sm:16px;--icon-md:24px;--icon-lg:32px;--stroke-icon:1.75px;--font-display:"Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;--font-body:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;--font-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;color-scheme:light dark}
 @media (prefers-color-scheme: dark){:root:root{--surface:#1c1816;--surface-raised:#272120;--surface-sunken:#141110;--ink:#f3ebe1;--ink-muted:#b8a999;--ink-faint:#7f7164;--hairline:#3b332d;--accent:#e47d52;--on-accent:#2a1309;--accent-soft:#4a2a1d;--ochre:#d9a84c;--success:#62b5a6;--warning:#dca15a;--danger:#e5776f;--focus:#82b7e3}}
@@ -18,14 +18,17 @@ html{background:var(--surface)}body{margin:0;padding:16px;font-family:var(--font
 .ico{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 </style><style>
-body{gap:32px}
-.rec{width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-pill);border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
-.rec .ico{width:32px;height:32px}
-.stop{width:var(--control-xl);height:var(--control-xl);border-radius:var(--radius-pill);border:2px solid var(--accent);background:var(--surface-raised);color:var(--accent);display:grid;place-items:center;cursor:pointer}
-.stop .sq{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--accent)}
-.bar{width:320px;background:var(--surface-raised);border-top:1px solid var(--hairline);padding:var(--space-4) 0;display:grid;place-items:center}
-.lbl{display:flex;flex-direction:column;align-items:center;gap:var(--space-2)}.lbl span{color:var(--ink-muted)}
+body{gap:var(--space-8);align-items:flex-end}
+.col{display:flex;flex-direction:column;align-items:center;gap:var(--space-3)}
+.round{border-radius:var(--radius-pill);border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
+.round.lg{width:var(--control-lg);height:var(--control-lg)}
+.round.xl{width:var(--control-xl);height:var(--control-xl)}
+.round .ico{width:32px;height:32px}
+.bar{width:260px;background:var(--surface-raised);border-top:1px solid var(--hairline);padding:var(--space-4) 0;display:grid;place-items:center}
+.btn2{min-height:var(--control-md);padding:0 var(--space-4);border-radius:var(--radius-md);background:var(--surface-raised);color:var(--ink);border:1px solid var(--hairline);font:inherit;cursor:pointer}
+.cap{color:var(--ink-muted)}
 </style></head><body>
-<div class="bar"><button class="rec" aria-label="Enregistrer"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></button></div>
-<div class="lbl"><button class="stop" aria-label="Arrêter l'enregistrement"><span class="sq"></span></button></div>
+<div class="col"><div class="bar"><button class="round lg" aria-label="Enregistrer"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></button></div><span class="cap caption">Bibliothèque</span></div>
+<div class="col"><button class="round xl" aria-label="Mettre en pause"><svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg></button><button class="btn2 body-strong">Arrêter</button><span class="cap caption">Enregistrement en cours</span></div>
+<div class="col"><button class="round xl" aria-label="Reprendre l'enregistrement"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></button><button class="btn2 body-strong">Arrêter</button><span class="cap caption">En pause</span></div>
 </body></html>

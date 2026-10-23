@@ -1,4 +1,4 @@
-import Storage from 'expo-sqlite/kv-store';
+import { settingsStorage as Storage } from '@/features/settings/storage';
 import { DevSettings, I18nManager } from 'react-native';
 
 import { i18next, initI18n, LANGUAGE_STORAGE_KEY, setUiLanguage } from '..';
