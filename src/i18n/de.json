@@ -80,7 +80,6 @@
     "title": "Aufnahme",
     "consentReminder": "Informiere die Anwesenden, dass du aufnimmst.",
     "pause": "Pause",
-    "resume": "Fortsetzen",
     "stop": "Beenden",
     "status": {
       "preparing": "Wird vorbereitet …",
@@ -93,7 +92,6 @@
     },
     "interruption": {
       "title": "Aufnahme unterbrochen",
-      "resume": "Aufnahme fortsetzen",
       "waitBody": "Sie können nach dem Anruf fortsetzen.",
       "callEndedTitle": "Anruf beendet",
       "callEndedBody": "Alles vor dem Anruf ist gespeichert.",
@@ -126,7 +124,9 @@
       "title": "Das Mikrofon scheint stummgeschaltet",
       "body": "Vielleicht verwendet eine andere App das Mikrofon."
     },
-    "stopA11y": "Aufnahme beenden"
+    "stopA11y": "Aufnahme beenden",
+    "pauseA11y": "Pausieren",
+    "resumeA11y": "Aufnahme fortsetzen"
   },
   "dev": {
     "title": "Diagnose (Entwicklung)",

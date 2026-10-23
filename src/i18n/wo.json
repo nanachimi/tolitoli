@@ -79,7 +79,6 @@
     "title": "Dénc baat",
     "consentReminder": "Xamal ñi fi nekk ne yaa ngi dénc seen baat.",
     "pause": "Taxawal",
-    "resume": "Kontine",
     "stop": "Jeexal",
     "status": {
       "preparing": "Mu ngi waajtu…",
@@ -92,7 +91,6 @@
     },
     "interruption": {
       "title": "Dénc bi dog na",
-      "resume": "Kontine dénc bi",
       "waitBody": "Mën nga kontine bu woote bi jeexee.",
       "callEndedTitle": "Woote bi jeex na",
       "callEndedBody": "Li jiitu woote bi lépp denc nañu ko.",
@@ -125,7 +123,9 @@
       "title": "Mikro bi dafa mel ni dafa dagg",
       "body": "Xéy-na beneen aplikasioŋ mi ngi jëfandikoo mikro bi."
     },
-    "stopA11y": "Taxawal dénc bi"
+    "stopA11y": "Taxawal dénc bi",
+    "pauseA11y": "Taxawal ab diir",
+    "resumeA11y": "Delloo bind bi"
   },
   "dev": {
     "title": "Saytu (defar)",

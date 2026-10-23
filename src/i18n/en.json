@@ -80,7 +80,6 @@
     "title": "Recording",
     "consentReminder": "Tell the people present that you are recording.",
     "pause": "Pause",
-    "resume": "Resume",
     "stop": "Stop",
     "status": {
       "preparing": "Getting ready…",
@@ -93,7 +92,6 @@
     },
     "interruption": {
       "title": "Recording interrupted",
-      "resume": "Resume recording",
       "waitBody": "You can resume once the call ends.",
       "callEndedTitle": "Call ended",
       "callEndedBody": "Everything before the call is kept.",
@@ -126,7 +124,9 @@
       "title": "The microphone seems cut off",
       "body": "Another app may be using the microphone."
     },
-    "stopA11y": "Stop recording"
+    "stopA11y": "Stop recording",
+    "pauseA11y": "Pause",
+    "resumeA11y": "Resume recording"
   },
   "dev": {
     "title": "Diagnostics (development)",

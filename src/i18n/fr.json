@@ -81,7 +81,6 @@
     "title": "Enregistrement",
     "consentReminder": "Informez les personnes présentes que vous enregistrez.",
     "pause": "Pause",
-    "resume": "Reprendre",
     "stop": "Arrêter",
     "status": {
       "preparing": "Préparation…",
@@ -94,7 +93,6 @@
     },
     "interruption": {
       "title": "Enregistrement interrompu",
-      "resume": "Reprendre l’enregistrement",
       "waitBody": "Vous pourrez reprendre à la fin de l’appel.",
       "callEndedTitle": "Appel terminé",
       "callEndedBody": "Ce qui précède l’appel est conservé.",
@@ -127,7 +125,9 @@
       "title": "Le micro semble coupé",
       "body": "Une autre application utilise peut-être le micro."
     },
-    "stopA11y": "Arrêter l’enregistrement"
+    "stopA11y": "Arrêter l’enregistrement",
+    "pauseA11y": "Mettre en pause",
+    "resumeA11y": "Reprendre l’enregistrement"
   },
   "dev": {
     "title": "Diagnostic (développement)",

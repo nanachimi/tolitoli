@@ -1,4 +1,4 @@
-import { screen, userEvent } from '@testing-library/react-native';
+import { act, screen, userEvent } from '@testing-library/react-native';
 import { I18nManager, StyleSheet } from 'react-native';
 
 import LibraryScreen from '../../app/(tabs)/index';
@@ -79,19 +79,22 @@ describe('Record screen', () => {
     ).toBeOnTheScreen();
     expect(screen.getByText('Durée : 1 min')).toBeOnTheScreen();
     expect(screen.getByLabelText('Niveau sonore : 50 %')).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Pause' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Mettre en pause' })).toBeOnTheScreen();
     expect(controller.startRecording).not.toHaveBeenCalled();
   });
 
-  it('pauses, resumes and stops through the controller', async () => {
+  it('pauses and resumes with the same round button, its icon only changing', async () => {
     const user = userEvent.setup();
     setRecording({ status: 'recording' });
     await renderScreen(<RecordScreen />);
-    await user.press(screen.getByRole('button', { name: 'Pause' }));
+    expect(screen.getByTestId('icon-pause', { includeHiddenElements: true })).toBeTruthy();
+    await user.press(screen.getByRole('button', { name: 'Mettre en pause' }));
     expect(controller.pauseRecording).toHaveBeenCalled();
 
     setRecording({ status: 'paused' });
-    await user.press(await screen.findByRole('button', { name: 'Reprendre' }));
+    const resume = await screen.findByRole('button', { name: 'Reprendre l’enregistrement' });
+    expect(screen.getByTestId('icon-mic', { includeHiddenElements: true })).toBeTruthy();
+    await user.press(resume);
     expect(controller.resumeRecording).toHaveBeenCalled();
 
     await user.press(screen.getByRole('button', { name: 'Arrêter l’enregistrement' }));
@@ -121,22 +124,43 @@ describe('Record screen', () => {
     setRecording({ status: 'interrupted', resumeOffered: false, micBusy: true });
     await renderScreen(<RecordScreen />);
     expect(screen.getByText(/Vous pourrez reprendre à la fin de l’appel/)).toBeOnTheScreen();
-    expect(screen.queryByRole('button', { name: 'Reprendre l’enregistrement' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Reprendre l’enregistrement' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Arrêter l’enregistrement' })).toBeOnTheScreen();
   });
 
-  it('hides resume on a user pause while a call holds the microphone', async () => {
+  it('refuses resume on a user pause while a call holds the microphone', async () => {
     setRecording({ status: 'paused', micBusy: true });
     await renderScreen(<RecordScreen />);
-    expect(screen.queryByRole('button', { name: 'Reprendre' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Reprendre l’enregistrement' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Arrêter l’enregistrement' })).toBeOnTheScreen();
+  });
+
+  it('puts Stop under the round button as a labelled secondary button', async () => {
+    setRecording({ status: 'paused' });
+    await renderScreen(<RecordScreen />);
+    const stop = screen.getByRole('button', { name: 'Arrêter l’enregistrement' });
+    expect(screen.getByText('Arrêter', { includeHiddenElements: true })).toBeTruthy();
+    expect(stop).toBeEnabled();
+  });
+
+  it('in pause, the dot stops pulsing and the timer freezes', async () => {
+    jest.useFakeTimers();
+    setRecording({ status: 'paused', accumulatedMs: 65_000, runningSince: null });
+    await renderScreen(<RecordScreen />);
+    const dot = screen.getByTestId('timer-dot', { includeHiddenElements: true });
+    expect(StyleSheet.flatten(dot.props.style).backgroundColor).toBe(color.light['ink-muted']);
+    expect(screen.getByText('00:01:05', { includeHiddenElements: true })).toBeTruthy();
+    await act(() => jest.advanceTimersByTimeAsync(5_000));
+    expect(screen.getByText('00:01:05', { includeHiddenElements: true })).toBeTruthy();
+    expect(StyleSheet.flatten(dot.props.style).opacity).toBe(1);
+    jest.useRealTimers();
   });
 
   it('warns when the microphone seems cut, without stopping anything', async () => {
     setRecording({ status: 'recording', micSilent: true });
     await renderScreen(<RecordScreen />);
     expect(screen.getByText('Le micro semble coupé')).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Pause' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Mettre en pause' })).toBeOnTheScreen();
   });
 
   it('explains a denied microphone and links to settings', async () => {

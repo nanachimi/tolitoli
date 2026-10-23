@@ -79,7 +79,6 @@
     "title": "录音",
     "consentReminder": "请告知在场人员你正在录音。",
     "pause": "暂停",
-    "resume": "继续",
     "stop": "停止",
     "status": {
       "preparing": "正在准备…",
@@ -92,7 +91,6 @@
     },
     "interruption": {
       "title": "录音已中断",
-      "resume": "继续录音",
       "waitBody": "通话结束后即可继续。",
       "callEndedTitle": "通话已结束",
       "callEndedBody": "通话之前的内容均已保存。",
@@ -125,7 +123,9 @@
       "title": "麦克风似乎已断开",
       "body": "可能有其他应用正在使用麦克风。"
     },
-    "stopA11y": "停止录音"
+    "stopA11y": "停止录音",
+    "pauseA11y": "暂停",
+    "resumeA11y": "继续录音"
   },
   "dev": {
     "title": "诊断（开发）",

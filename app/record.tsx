@@ -38,7 +38,7 @@ function timerState(status: RecorderStatus): TimerState {
   return status === 'interrupted' ? 'interrupted' : 'paused';
 }
 
-/** The state banner under the timer: call in progress, resume offered, or mic seemingly cut. */
+/** The state banner under the timer: call in progress, call ended, or mic seemingly cut. */
 function StateBanner({ state }: { state: RecordingState }) {
   const { t } = useTranslation();
   if (state.status === 'interrupted') {
@@ -60,7 +60,7 @@ function StateBanner({ state }: { state: RecordingState }) {
         body={
           afterCall ? t('record.interruption.callEndedBody') : t('record.interruption.takenBody')
         }
-        action={{ label: t('record.interruption.resume'), onPress: () => void resumeRecording() }}
+        // The round button resumes, where the pause was (guide RecordButton): no second button.
       />
     );
   }
@@ -122,7 +122,11 @@ export default function RecordScreen() {
     );
   }
 
-  const canResume = state.status === 'paused' && !state.micBusy;
+  const busy = state.status === 'preparing' || state.status === 'stopping';
+  // After a pause, or after an interruption once the microphone is free again (D-023).
+  const canResume =
+    !state.micBusy &&
+    (state.status === 'paused' || (state.status === 'interrupted' && state.resumeOffered));
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
@@ -155,34 +159,27 @@ export default function RecordScreen() {
 
         {capturing ? (
           <View style={styles.controls}>
-            {/* Pause and Resume sit on either side of Stop, never as another round button. */}
-            <View style={styles.side}>
-              {state.status === 'recording' ? (
-                <Button
-                  label={t('record.pause')}
-                  variant="secondary"
-                  icon="pause"
-                  onPress={pauseRecording}
-                />
-              ) : null}
-            </View>
+            {/* One round button pauses and resumes, under the same thumb (guide RecordButton). */}
             <RecordButton
-              mode="stop"
+              size="xl"
+              mode={state.status === 'recording' ? 'pause' : 'resume'}
+              accessibilityLabel={t(
+                state.status === 'recording' ? 'record.pauseA11y' : 'record.resumeA11y',
+              )}
+              // No resume while a call holds the microphone (D-023): the banner says why.
+              disabled={busy || (state.status !== 'recording' && !canResume)}
+              onPress={() =>
+                state.status === 'recording' ? pauseRecording() : void resumeRecording()
+              }
+            />
+            {/* Stop is the only irreversible action: a labelled button, away from the pause. */}
+            <Button
               label={t('record.stop')}
               accessibilityLabel={t('record.stopA11y')}
-              disabled={state.status === 'preparing' || state.status === 'stopping'}
+              variant="secondary"
+              disabled={busy}
               onPress={() => void stopRecording()}
             />
-            <View style={styles.side}>
-              {canResume ? (
-                <Button
-                  label={t('record.resume')}
-                  variant="secondary"
-                  icon="play"
-                  onPress={() => void resumeRecording()}
-                />
-              ) : null}
-            </View>
           </View>
         ) : (
           <View style={styles.actions}>
@@ -199,11 +196,5 @@ const styles = StyleSheet.create({
   header: { gap: space['space-1'] },
   centered: { flex: 1, justifyContent: 'center', padding: space['space-6'], gap: space['space-4'] },
   actions: { alignItems: 'center', gap: space['space-2'] },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space['space-4'],
-  },
-  side: { flex: 1, alignItems: 'center' },
+  controls: { alignItems: 'center', gap: space['space-4'] },
 });
