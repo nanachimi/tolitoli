@@ -1,5 +1,6 @@
 import { settingsStorage as Storage } from '@/features/settings/storage';
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { AppState } from 'react-native';
 
 import { SimulatedPlaybackEngine, type PlaybackEngine } from '@/services/playback';
 import { PLAYBACK_RATES } from '@/ui';
@@ -23,10 +24,21 @@ export function createEngine(durationMs: number, audioUri: string | null): Playb
   return new SimulatedPlaybackEngine({ durationMs, rate: storedRate() });
 }
 
-/** One engine per recording, released when the screen goes. */
+/**
+ * One engine per recording, stopped and released when the Detail goes (back gesture
+ * included), paused when the app leaves the foreground: the 1.0 has no background playback.
+ */
 export function usePlayback(durationMs: number, audioUri: string | null) {
   const [engine] = useState(() => createEngine(durationMs, audioUri));
-  useEffect(() => () => engine.release(), [engine]);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') engine.pause();
+    });
+    return () => {
+      subscription.remove();
+      engine.release();
+    };
+  }, [engine]);
   const status = useSyncExternalStore(
     (listener) => engine.subscribe(listener),
     () => engine.status(),

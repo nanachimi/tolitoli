@@ -53,9 +53,16 @@ export class ExpoAudioPlaybackEngine implements PlaybackEngine {
     return () => this.listeners.delete(listener);
   }
 
+  /**
+   * Stops and frees the native player. On Android, `remove()` only takes the player out of
+   * the module's list: ExoPlayer keeps playing until the shared object is released, which
+   * the garbage collector alone would do much later (step 2 test on the A05).
+   */
   release(): void {
+    this.player.pause();
     this.subscription.remove();
     this.player.remove();
+    this.player.release();
     this.listeners.clear();
   }
 

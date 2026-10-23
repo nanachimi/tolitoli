@@ -12,6 +12,7 @@ const mockPlayer = {
   seekTo: jest.fn(async () => undefined),
   setPlaybackRate: jest.fn(),
   remove: jest.fn(),
+  release: jest.fn(),
   removeSubscription: jest.fn(),
   addListener: jest.fn((_event: string, listener: StatusListener): { remove: () => void } => {
     mockStatusListener = listener;
@@ -83,11 +84,27 @@ describe('ExpoAudioPlaybackEngine', () => {
     expect(mockPlayer.seekTo).toHaveBeenCalledWith(0);
   });
 
-  it('frees the native player on release', () => {
+  it('stops, then frees the native player on release (remove alone keeps ExoPlayer playing)', () => {
     const engine = new ExpoAudioPlaybackEngine('file:///rec.m4a', 60_000, 1);
+    engine.play();
     engine.release();
+    const order = (fn: jest.Mock) => fn.mock.invocationCallOrder.at(-1) ?? 0;
+    expect(order(mockPlayer.pause)).toBeLessThan(order(mockPlayer.release));
     expect(mockPlayer.removeSubscription).toHaveBeenCalled();
     expect(mockPlayer.remove).toHaveBeenCalled();
+    expect(mockPlayer.release).toHaveBeenCalled();
+  });
+
+  it('shows the position the player reports, even when its updates come far apart', () => {
+    const engine = new ExpoAudioPlaybackEngine('file:///rec.m4a', 60_000, 1);
+    engine.play();
+    status({ currentTime: 3, playing: true });
+    expect(engine.status().positionMs).toBe(3_000);
+    // No update for a while: nothing moves on its own, there is no counter.
+    status({ currentTime: 10, playing: true });
+    expect(engine.status().positionMs).toBe(10_000);
+    status({ currentTime: 9.5, playing: true });
+    expect(engine.status().positionMs).toBe(9_500);
   });
 });
 
@@ -103,5 +120,50 @@ describe('createEngine', () => {
 
   it('keeps the simulated clock for an item without a file (demo, development only)', () => {
     expect(createEngine(60_000, null)).toBeInstanceOf(SimulatedPlaybackEngine);
+  });
+});
+
+describe('usePlayback lifecycle', () => {
+  const { usePlayback } = jest.requireActual<typeof import('../usePlayback')>('../usePlayback');
+  const { AppState } = jest.requireActual<typeof import('react-native')>('react-native');
+  const { renderHook } = jest.requireActual<typeof import('@testing-library/react-native')>(
+    '@testing-library/react-native',
+  );
+
+  function captureAppState() {
+    const handlers: ((state: string) => void)[] = [];
+    const remove = jest.fn();
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, handler) => {
+      handlers.push(handler as (state: string) => void);
+      return { remove };
+    });
+    return { send: (state: string) => handlers.forEach((handler) => handler(state)), remove };
+  }
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('stops and releases the player when the Detail unmounts (back included)', async () => {
+    captureAppState();
+    const view = await renderHook(() => usePlayback(60_000, 'file:///rec.m4a'));
+    view.result.current.togglePlay();
+    await view.unmount();
+    expect(mockPlayer.pause).toHaveBeenCalled();
+    expect(mockPlayer.release).toHaveBeenCalled();
+  });
+
+  it('pauses when the app leaves the foreground, and does not start again on return', async () => {
+    const appState = captureAppState();
+    const view = await renderHook(() => usePlayback(60_000, 'file:///rec.m4a'));
+    view.result.current.togglePlay();
+    mockPlayer.pause.mockClear();
+    mockPlayer.play.mockClear();
+    appState.send('background');
+    expect(mockPlayer.pause).toHaveBeenCalledTimes(1);
+    appState.send('active');
+    expect(mockPlayer.play).not.toHaveBeenCalled();
+    await view.unmount();
+    expect(appState.remove).toHaveBeenCalled();
   });
 });
