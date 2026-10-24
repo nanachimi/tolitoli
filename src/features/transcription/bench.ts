@@ -181,12 +181,59 @@ async function importBenchRecording(): Promise<string> {
   return report;
 }
 
+/** A kernel file the app may read itself; null when Android refuses it. */
+function readKernel(path: string): string | null {
+  try {
+    return new File(`file://${path}`).textSync().trim();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Peak memory of the app during one run, read by the app itself in /proc/self/smaps_rollup:
+ * unplugged and locked, no adb follows the run. Sampled between steps of the work, at most
+ * every 3 s (JS timers stop with the screen).
+ */
+const peak = {
+  pssKb: 0,
+  swapKb: 0,
+  last: 0,
+  reset() {
+    this.pssKb = 0;
+    this.swapKb = 0;
+    this.last = 0;
+    this.sample();
+  },
+  sample() {
+    const now = Date.now();
+    if (now - this.last < 3000) return;
+    this.last = now;
+    const text = readKernel('/proc/self/smaps_rollup');
+    if (!text) return;
+    this.pssKb = Math.max(this.pssKb, Number(/^Pss:\s+(\d+) kB/m.exec(text)?.[1] ?? 0));
+    this.swapKb = Math.max(this.swapKb, Number(/^SwapPss:\s+(\d+) kB/m.exec(text)?.[1] ?? 0));
+  },
+  toString() {
+    return this.pssKb
+      ? `peak PSS ${Math.round(this.pssKb / 1024)} MB, swap ${Math.round(this.swapKb / 1024)} MB`
+      : 'memory unreadable';
+  },
+};
+
+/** Charging or not, level and temperature: the proof a run was on battery. */
+function power(): string {
+  const at = (name: string) => readKernel(`/sys/class/power_supply/battery/${name}`) ?? '?';
+  const temp = Number(at('temp'));
+  return `${at('status')} ${at('capacity')}% ${Number.isFinite(temp) ? (temp / 10).toFixed(1) : '?'} °C`;
+}
+
 /** The little of whisper.rn the experiment uses (its own sources fail our type check). */
 type WhisperCpp = {
   initWhisper(options: { filePath: string; useGpu?: boolean }): Promise<{
     transcribeData(
       data: ArrayBuffer,
-      options: { language?: string; maxThreads?: number },
+      options: { language?: string; maxThreads?: number; onProgress?: (progress: number) => void },
     ): { promise: Promise<{ result: string; segments: { t0: number; t1: number }[] }> };
     release(): Promise<void>;
   }>;
@@ -243,6 +290,7 @@ async function runWhisperCpp(
     const keep = pcm.subarray(0, Math.min(pcm.length, msToSamples(endMs - at)));
     parts.push(keep);
     samples += keep.length;
+    peak.sample();
     if (pcm.length < msToSamples(WINDOW_MS)) break;
   }
   // whisper.rn reads an ArrayBuffer as signed 16-bit PCM (decodePcm16, RNWhisperJSI.cpp),
@@ -266,6 +314,7 @@ async function runWhisperCpp(
     const { promise } = context.transcribeData(audio.buffer, {
       language: job.language,
       maxThreads: threads,
+      onProgress: () => peak.sample(),
     });
     const result = await promise;
     const sttMs = Date.now() - t;
@@ -311,17 +360,28 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
         }),
       );
     }
-    return reports.map((report) => report.split('\n')[0]).join('\n');
+    return reports.map((report) => report.split('\n').slice(0, 2).join('\n')).join('\n');
   } finally {
     await holdTranscriptionService(false);
     transcriptionQueue.start();
   }
 }
 
-function measureOne(kind: BenchKind, limitMinutes?: number, threads?: number): Promise<string> {
-  return kind.startsWith('cpp-')
-    ? runWhisperCpp(kind.slice(4), limitMinutes ?? 10, threads)
-    : measure(kind, limitMinutes);
+async function measureOne(
+  kind: BenchKind,
+  limitMinutes?: number,
+  threads?: number,
+): Promise<string> {
+  const before = power();
+  peak.reset();
+  const report = kind.startsWith('cpp-')
+    ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10, threads)
+    : await measure(kind, limitMinutes);
+  const conditions = `${peak.toString()}; battery ${before} → ${power()}`;
+  log(conditions);
+  await record(conditions, null);
+  const [first, ...rest] = report.split('\n');
+  return [first, conditions, ...rest].join('\n');
 }
 
 async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> {
@@ -387,6 +447,7 @@ async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> 
         if (text) characters += text.length;
         else empty += 1;
         if (job.isBench && text) texts.push(text);
+        peak.sample();
       }
       if (segments % 20 === 0) log('progress', minutes(plan.nextCursorMs), 'min');
       if (last) break;
