@@ -190,6 +190,7 @@ const BENCHES: { kind: BenchKind; minutes?: number; label: string }[] = [
   { kind: 'cpp-tiny-q8_0', minutes: 10, label: 'settings.dev.bench.cppTinyQ8' },
   { kind: 'cpp-base-q5_1', minutes: 10, label: 'settings.dev.bench.cppBaseQ5' },
   { kind: 'cpp-base-q8_0', minutes: 10, label: 'settings.dev.bench.cppBaseQ8' },
+  { kind: 'series', minutes: 10, label: 'settings.dev.bench.series' },
 ];
 
 /** Step 3 measurements on the longest recording; nothing written to the library. */

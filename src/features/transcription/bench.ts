@@ -37,7 +37,19 @@ export type BenchKind =
   | 'cpp-tiny-q5_1'
   | 'cpp-tiny-q8_0'
   | 'cpp-base-q5_1'
-  | 'cpp-base-q8_0';
+  | 'cpp-base-q8_0'
+  // All of the experiment in one tap, the phone locked screen off: executorch tiny before and
+  // after the four whisper.cpp runs, the drift of the series between the two.
+  | 'series';
+
+const SERIES: readonly BenchKind[] = [
+  'tiny',
+  'cpp-tiny-q5_1',
+  'cpp-tiny-q8_0',
+  'cpp-base-q5_1',
+  'cpp-base-q8_0',
+  'tiny',
+];
 
 const log = (...args: unknown[]) => console.log('[bench]', ...args);
 
@@ -264,13 +276,29 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
   await transcriptionQueue.idle();
   await holdTranscriptionService(true);
   try {
-    return kind.startsWith('cpp-')
-      ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10)
-      : await measure(kind, limitMinutes);
+    if (kind !== 'series') return await measureOne(kind, limitMinutes);
+    const reports: string[] = [];
+    for (const step of SERIES) {
+      await record(`start ${step}`, null);
+      reports.push(
+        await measureOne(step, limitMinutes ?? 10).catch((error: unknown) => {
+          const failure = `${step} failed: ${String(error)}`;
+          void record(failure, null);
+          return failure;
+        }),
+      );
+    }
+    return reports.map((report) => report.split('\n')[0]).join('\n');
   } finally {
     await holdTranscriptionService(false);
     transcriptionQueue.start();
   }
+}
+
+function measureOne(kind: BenchKind, limitMinutes?: number): Promise<string> {
+  return kind.startsWith('cpp-')
+    ? runWhisperCpp(kind.slice(4), limitMinutes ?? 10)
+    : measure(kind, limitMinutes);
 }
 
 async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> {
