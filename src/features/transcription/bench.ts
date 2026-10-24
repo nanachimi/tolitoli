@@ -18,7 +18,7 @@ import { nativeAudioFiles } from '@/features/recording/nativeAudioFiles';
 
 import { FsmnDetector, fetchModelFiles, WhisperLocal } from './executorch';
 import { readyModel } from './model';
-import { transcribeRecording } from './transcription';
+import { transcribeRecording, transcriptionQueue } from './transcription';
 
 /**
  * Development and preview-trace only (docs/plans/step-3.md, « Banc »): the uncertain points of
@@ -236,10 +236,25 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
   }
 }
 
-/** Runs one measurement; the report is shown on screen and logged for logcat. */
+/**
+ * Runs one measurement; the report is shown on screen and logged for logcat. The queue stops
+ * meanwhile (a transcription under way is suspended with its cursor): two engines at once
+ * would measure neither.
+ */
 export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<string> {
   if (kind === 'import') return importBenchRecording();
-  if (kind.startsWith('cpp-')) return runWhisperCpp(kind.slice(4), limitMinutes ?? 10);
+  transcriptionQueue.stop();
+  await transcriptionQueue.idle();
+  try {
+    return kind.startsWith('cpp-')
+      ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10)
+      : await measure(kind, limitMinutes);
+  } finally {
+    transcriptionQueue.start();
+  }
+}
+
+async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> {
   const job = await target();
   const endMs = limitMinutes ? Math.min(job.durationMs, limitMinutes * 60_000) : job.durationMs;
   log('start', kind, job.id, `${minutes(endMs)} of ${minutes(job.durationMs)} min`, job.language);
