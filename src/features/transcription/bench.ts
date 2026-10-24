@@ -39,16 +39,21 @@ export type BenchKind =
   | 'cpp-base-q5_1'
   | 'cpp-base-q8_0'
   // All of the experiment in one tap, the phone locked screen off: executorch tiny before and
-  // after the four whisper.cpp runs, the drift of the series between the two.
+  // after the whisper.cpp runs, the drift of the series between the two.
   | 'series';
 
-const SERIES: readonly BenchKind[] = [
-  'tiny',
-  'cpp-tiny-q5_1',
-  'cpp-tiny-q8_0',
-  'cpp-base-q5_1',
-  'cpp-base-q8_0',
-  'tiny',
+/** whisper.cpp threads: 4 unless said; the A05 has 2 fast cores and 6 slow ones. */
+const CPP_THREADS = 4;
+
+const SERIES: readonly { kind: BenchKind; threads?: number }[] = [
+  { kind: 'tiny' },
+  { kind: 'cpp-tiny-q5_1' },
+  { kind: 'cpp-tiny-q8_0' },
+  { kind: 'cpp-base-q5_1' },
+  { kind: 'cpp-base-q8_0' },
+  { kind: 'cpp-tiny-q5_1', threads: 2 },
+  { kind: 'cpp-tiny-q5_1', threads: 8 },
+  { kind: 'tiny' },
 ];
 
 const log = (...args: unknown[]) => console.log('[bench]', ...args);
@@ -215,11 +220,15 @@ async function record(report: string, text: string | null): Promise<void> {
  * decoded by the same decoder, in one buffer; whisper.cpp cuts it in 30 s windows itself.
  * The text excerpt is public-domain synthetic speech: an indication, never a quality figure.
  */
-async function runWhisperCpp(model: string, limitMinutes: number): Promise<string> {
+async function runWhisperCpp(
+  model: string,
+  limitMinutes: number,
+  threads = CPP_THREADS,
+): Promise<string> {
   const job = await target();
   const endMs = Math.min(job.durationMs, limitMinutes * 60_000);
   const modelPath = `${externalFilesDir()}/ggml-${model}.bin`;
-  log('start', `cpp-${model}`, job.id, `${minutes(endMs)} min`, job.language);
+  log('start', `cpp-${model}`, job.id, `${minutes(endMs)} min`, job.language, threads, 'threads');
 
   let t = Date.now();
   const parts: Float32Array[] = [];
@@ -251,7 +260,7 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
     t = Date.now();
     const { promise } = context.transcribeData(audio.buffer, {
       language: job.language,
-      maxThreads: 4,
+      maxThreads: threads,
     });
     const result = await promise;
     const sttMs = Date.now() - t;
@@ -259,7 +268,7 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
     const text = job.isBench ? result.result.trim().replace(/\s+/g, ' ') : '';
     const excerpt = text.slice(0, 300);
     const report =
-      `cpp-${model} on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
+      `cpp-${model} ${threads} threads on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
       `decode ${(decodeMs / 1000).toFixed(0)} s, load ${(loadMs / 1000).toFixed(1)} s; ` +
       `${result.segments.length} segments, ${result.result.length} characters; ` +
       `1 h would take about ${((total / endMs) * 60).toFixed(1)} min`;
@@ -286,10 +295,11 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
     if (kind !== 'series') return await measureOne(kind, limitMinutes);
     const reports: string[] = [];
     for (const step of SERIES) {
-      await record(`start ${step}`, null);
+      const name = step.threads ? `${step.kind} ${step.threads} threads` : step.kind;
+      await record(`start ${name}`, null);
       reports.push(
-        await measureOne(step, limitMinutes ?? 10).catch((error: unknown) => {
-          const failure = `${step} failed: ${String(error)}`;
+        await measureOne(step.kind, limitMinutes ?? 10, step.threads).catch((error: unknown) => {
+          const failure = `${name} failed: ${String(error)}`;
           void record(failure, null);
           return failure;
         }),
@@ -302,9 +312,9 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
   }
 }
 
-function measureOne(kind: BenchKind, limitMinutes?: number): Promise<string> {
+function measureOne(kind: BenchKind, limitMinutes?: number, threads?: number): Promise<string> {
   return kind.startsWith('cpp-')
-    ? runWhisperCpp(kind.slice(4), limitMinutes ?? 10)
+    ? runWhisperCpp(kind.slice(4), limitMinutes ?? 10, threads)
     : measure(kind, limitMinutes);
 }
 

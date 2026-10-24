@@ -111,7 +111,7 @@
         "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
         "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
         "cppBaseQ8": "whisper.cpp base q8_0, 10 min",
-        "series": "Serie: tiny, die vier whisper.cpp, erneut tiny (je 10 Min.)"
+        "series": "Serie: tiny, whisper.cpp (vier Modelle, dann 2 und 8 Threads), erneut tiny (je 10 Min.)"
       }
     },
     "model": {

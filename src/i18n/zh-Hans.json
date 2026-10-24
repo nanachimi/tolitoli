@@ -110,7 +110,7 @@
         "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
         "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
         "cppBaseQ8": "whisper.cpp base q8_0, 10 min",
-        "series": "系列：tiny，四个 whisper.cpp，再次 tiny（各 10 分钟）"
+        "series": "系列：tiny，whisper.cpp（四个模型，再 2 和 8 线程），再次 tiny（各 10 分钟）"
       }
     },
     "model": {
