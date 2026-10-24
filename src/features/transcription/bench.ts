@@ -26,7 +26,17 @@ import { transcribeRecording } from './transcription';
  * to the library; transcripts are counted, never logged (they are someone's conversation).
  */
 
-export type BenchKind = 'decode' | 'vad' | 'tiny' | 'base' | 'import';
+export type BenchKind =
+  | 'decode'
+  | 'vad'
+  | 'tiny'
+  | 'base'
+  | 'import'
+  // whisper.cpp (whisper.rn), quantised: the one-day experiment of 24 October (D-037, Reprise).
+  | 'cpp-tiny-q5_1'
+  | 'cpp-tiny-q8_0'
+  | 'cpp-base-q5_1'
+  | 'cpp-base-q8_0';
 
 const log = (...args: unknown[]) => console.log('[bench]', ...args);
 
@@ -54,6 +64,7 @@ async function target() {
   if (!durationMs) throw new Error(`No length for ${item.id}`);
   return {
     id: item.id,
+    isBench: item.title === BENCH_TITLE,
     path,
     durationMs,
     language: isTranscriptionLanguageCode(item.language) ? item.language : 'fr',
@@ -147,9 +158,88 @@ async function importBenchRecording(): Promise<string> {
   return report;
 }
 
+/** The little of whisper.rn the experiment uses (its own sources fail our type check). */
+type WhisperCpp = {
+  initWhisper(options: { filePath: string; useGpu?: boolean }): Promise<{
+    transcribeData(
+      data: ArrayBuffer,
+      options: { language?: string; maxThreads?: number },
+    ): { promise: Promise<{ result: string; segments: { t0: number; t1: number }[] }> };
+    release(): Promise<void>;
+  }>;
+};
+
+function whisperCpp(): WhisperCpp {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded only by this bench; whisper.rn exports `./*` only, hence the index by name
+  return require('whisper.rn/index') as WhisperCpp;
+}
+
+/** The app's external files directory, where adb puts the bench file and the ggml models. */
+function externalFilesDir(): string {
+  const ready = readyModel();
+  if (!ready) throw new Error('No executorch model: the external files directory is found from it');
+  return ready.paths.whisper.replace(/\/react-native-executorch\/[^/]+$/, '');
+}
+
+/**
+ * whisper.cpp on the same audio as executorch: the first minutes of the bench recording,
+ * decoded by the same decoder, in one buffer; whisper.cpp cuts it in 30 s windows itself.
+ * The text excerpt is public-domain synthetic speech: an indication, never a quality figure.
+ */
+async function runWhisperCpp(model: string, limitMinutes: number): Promise<string> {
+  const job = await target();
+  const endMs = Math.min(job.durationMs, limitMinutes * 60_000);
+  const modelPath = `${externalFilesDir()}/ggml-${model}.bin`;
+  log('start', `cpp-${model}`, job.id, `${minutes(endMs)} min`, job.language);
+
+  let t = Date.now();
+  const parts: Float32Array[] = [];
+  let samples = 0;
+  for (let at = 0; at < endMs; at += WINDOW_MS) {
+    const pcm = await read(job.path, at);
+    const keep = pcm.subarray(0, Math.min(pcm.length, msToSamples(endMs - at)));
+    parts.push(keep);
+    samples += keep.length;
+    if (pcm.length < msToSamples(WINDOW_MS)) break;
+  }
+  const audio = new Float32Array(samples);
+  let offset = 0;
+  for (const part of parts) {
+    audio.set(part, offset);
+    offset += part.length;
+  }
+  const decodeMs = Date.now() - t;
+
+  t = Date.now();
+  const context = await whisperCpp().initWhisper({ filePath: modelPath, useGpu: false });
+  const loadMs = Date.now() - t;
+  try {
+    t = Date.now();
+    const { promise } = context.transcribeData(audio.buffer, {
+      language: job.language,
+      maxThreads: 4,
+    });
+    const result = await promise;
+    const sttMs = Date.now() - t;
+    const total = decodeMs + sttMs;
+    const excerpt = result.result.trim().replace(/\s+/g, ' ').slice(0, 300);
+    const report =
+      `cpp-${model} on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
+      `decode ${(decodeMs / 1000).toFixed(0)} s, load ${(loadMs / 1000).toFixed(1)} s; ` +
+      `${result.segments.length} segments, ${result.result.length} characters; ` +
+      `1 h would take about ${((total / endMs) * 60).toFixed(1)} min`;
+    log(report);
+    log('excerpt', `cpp-${model}`, excerpt);
+    return `${report}\n${excerpt}`;
+  } finally {
+    await context.release();
+  }
+}
+
 /** Runs one measurement; the report is shown on screen and logged for logcat. */
 export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<string> {
   if (kind === 'import') return importBenchRecording();
+  if (kind.startsWith('cpp-')) return runWhisperCpp(kind.slice(4), limitMinutes ?? 10);
   const job = await target();
   const endMs = limitMinutes ? Math.min(job.durationMs, limitMinutes * 60_000) : job.durationMs;
   log('start', kind, job.id, `${minutes(endMs)} of ${minutes(job.durationMs)} min`, job.language);
@@ -177,6 +267,8 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
   let segments = 0;
   let empty = 0;
   let characters = 0;
+  // Public-domain synthetic speech only: the bench recording, never someone's conversation.
+  let excerpt = '';
   try {
     for (let cursor = 0; cursor < endMs;) {
       let t = Date.now();
@@ -208,6 +300,8 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
         sttMs += Date.now() - t;
         if (text) characters += text.length;
         else empty += 1;
+        if (job.isBench && excerpt.length < 300)
+          excerpt = `${excerpt} ${text}`.trim().slice(0, 300);
       }
       if (segments % 20 === 0) log('progress', minutes(plan.nextCursorMs), 'min');
       if (last) break;
@@ -225,5 +319,6 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
     `speech ${minutes(speechMs)} min in ${segments} segments, ${empty} empty, ${characters} characters; ` +
     `1 h would take about ${((total / endMs) * 60).toFixed(0)} min`;
   log(report);
-  return report;
+  if (excerpt) log('excerpt', kind, excerpt);
+  return excerpt ? `${report}\n${excerpt}` : report;
 }

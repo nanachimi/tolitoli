@@ -107,7 +107,11 @@
         "base10": "base, 10 premières minutes",
         "tinyFull": "tiny, fichier entier",
         "running": "Mesure en cours…",
-        "import": "Importer le fichier de banc et le transcrire"
+        "import": "Importer le fichier de banc et le transcrire",
+        "cppTinyQ5": "whisper.cpp tiny q5_1, 10 min",
+        "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
+        "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
+        "cppBaseQ8": "whisper.cpp base q8_0, 10 min"
       }
     },
     "model": {

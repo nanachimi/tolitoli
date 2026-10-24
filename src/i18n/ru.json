@@ -108,7 +108,11 @@
         "base10": "base, первые 10 минут",
         "tinyFull": "tiny, весь файл",
         "running": "Идёт измерение…",
-        "import": "Импортировать тестовый файл и расшифровать"
+        "import": "Импортировать тестовый файл и расшифровать",
+        "cppTinyQ5": "whisper.cpp tiny q5_1, 10 min",
+        "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
+        "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
+        "cppBaseQ8": "whisper.cpp base q8_0, 10 min"
       }
     },
     "model": {

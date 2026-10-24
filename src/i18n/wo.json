@@ -105,7 +105,11 @@
         "base10": "base, 10 simili yu njëkk",
         "tinyFull": "tiny, dosi bi yépp",
         "running": "Mi ngi natt…",
-        "import": "Indi dosi natt bi te bind ko"
+        "import": "Indi dosi natt bi te bind ko",
+        "cppTinyQ5": "whisper.cpp tiny q5_1, 10 min",
+        "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
+        "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
+        "cppBaseQ8": "whisper.cpp base q8_0, 10 min"
       }
     },
     "model": {

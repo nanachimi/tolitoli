@@ -105,7 +105,11 @@
         "base10": "base，前 10 分钟",
         "tinyFull": "tiny，整个文件",
         "running": "正在测量…",
-        "import": "导入测试文件并转写"
+        "import": "导入测试文件并转写",
+        "cppTinyQ5": "whisper.cpp tiny q5_1, 10 min",
+        "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
+        "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
+        "cppBaseQ8": "whisper.cpp base q8_0, 10 min"
       }
     },
     "model": {
