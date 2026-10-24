@@ -211,15 +211,21 @@ export function retryRecordingTranscription(id: string): void {
 
 let modelWatch: (() => void) | null = null;
 
+/** Recordings that waited for the model go back to the queue, with what was already done. */
+function resumeWaitingForModel(): void {
+  const waiting = getLibrary().failedTranscriptions('model-missing');
+  waiting.forEach((id) => getLibrary().resumeTranscription(id));
+  if (waiting.length > 0) log('model ready, resumed', waiting.join(', '));
+}
+
 /** At launch, after the recovery (launch.ts): resumes what was queued or cut while running. */
 export function startTranscription(): void {
+  // A model already there at launch counts as one that just arrived: nothing stays waiting.
+  if (readyModel()) resumeWaitingForModel();
   transcriptionQueue.start();
   modelWatch ??= useModel.subscribe((state, previous) => {
     if (state.status === 'ready' && previous.status !== 'ready') {
-      // Recordings that waited for the model go back to the queue, with what was already done.
-      const waiting = getLibrary().failedTranscriptions('model-missing');
-      waiting.forEach((id) => getLibrary().resumeTranscription(id));
-      if (waiting.length > 0) log('model ready, requeued', waiting.join(', '));
+      resumeWaitingForModel();
       transcriptionQueue.kick();
     }
   });
