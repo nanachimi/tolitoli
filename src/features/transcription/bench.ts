@@ -23,7 +23,8 @@ import { holdTranscriptionService, transcribeRecording, transcriptionQueue } fro
 /**
  * Development and preview-trace only (docs/plans/step-3.md, « Banc »): the uncertain points of
  * step 3, measured on the device on the longest recording of the library. Nothing is written
- * to the library; transcripts are counted, never logged (they are someone's conversation).
+ * to the library; transcripts are counted, never logged (they are someone's conversation),
+ * except the bench recording's, public-domain speech read by a synthetic voice.
  */
 
 export type BenchKind =
@@ -182,6 +183,20 @@ function externalFilesDir(): string {
 }
 
 /**
+ * Each report, with the bench recording's whole text, appended to `…/files/bench-results.txt`:
+ * adb reads it there with the phone locked, screen off on battery, where logcat shows nothing.
+ */
+async function record(report: string, text: string | null): Promise<void> {
+  try {
+    const file = new File(`file://${externalFilesDir()}/bench-results.txt`);
+    const entry = `${new Date().toISOString()} ${report}\n${text ? `${text}\n` : ''}\n`;
+    await file.write(entry, { append: file.exists });
+  } catch (error) {
+    log('results file', String(error));
+  }
+}
+
+/**
  * whisper.cpp on the same audio as executorch: the first minutes of the bench recording,
  * decoded by the same decoder, in one buffer; whisper.cpp cuts it in 30 s windows itself.
  * The text excerpt is public-domain synthetic speech: an indication, never a quality figure.
@@ -222,15 +237,16 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
     const result = await promise;
     const sttMs = Date.now() - t;
     const total = decodeMs + sttMs;
-    const excerpt = result.result.trim().replace(/\s+/g, ' ').slice(0, 300);
+    const text = job.isBench ? result.result.trim().replace(/\s+/g, ' ') : '';
+    const excerpt = text.slice(0, 300);
     const report =
       `cpp-${model} on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
       `decode ${(decodeMs / 1000).toFixed(0)} s, load ${(loadMs / 1000).toFixed(1)} s; ` +
       `${result.segments.length} segments, ${result.result.length} characters; ` +
       `1 h would take about ${((total / endMs) * 60).toFixed(1)} min`;
     log(report);
-    log('excerpt', `cpp-${model}`, excerpt);
-    return `${report}\n${excerpt}`;
+    await record(report, text || null);
+    return excerpt ? `${report}\n${excerpt}` : report;
   } finally {
     await context.release();
   }
@@ -272,6 +288,7 @@ async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> 
       `(${(endMs / elapsed).toFixed(0)}x real time); ${samples} samples = ` +
       `${(samplesToMs(samples) / 1000).toFixed(2)} s for ${(endMs / 1000).toFixed(2)} s expected`;
     log(report);
+    await record(report, null);
     return report;
   }
 
@@ -286,7 +303,7 @@ async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> 
   let empty = 0;
   let characters = 0;
   // Public-domain synthetic speech only: the bench recording, never someone's conversation.
-  let excerpt = '';
+  const texts: string[] = [];
   try {
     for (let cursor = 0; cursor < endMs;) {
       let t = Date.now();
@@ -318,8 +335,7 @@ async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> 
         sttMs += Date.now() - t;
         if (text) characters += text.length;
         else empty += 1;
-        if (job.isBench && excerpt.length < 300)
-          excerpt = `${excerpt} ${text}`.trim().slice(0, 300);
+        if (job.isBench && text) texts.push(text);
       }
       if (segments % 20 === 0) log('progress', minutes(plan.nextCursorMs), 'min');
       if (last) break;
@@ -337,6 +353,7 @@ async function measure(kind: BenchKind, limitMinutes?: number): Promise<string> 
     `speech ${minutes(speechMs)} min in ${segments} segments, ${empty} empty, ${characters} characters; ` +
     `1 h would take about ${((total / endMs) * 60).toFixed(0)} min`;
   log(report);
-  if (excerpt) log('excerpt', kind, excerpt);
-  return excerpt ? `${report}\n${excerpt}` : report;
+  const text = texts.join(' ').replace(/\s+/g, ' ');
+  await record(report, text || null);
+  return text ? `${report}\n${text.slice(0, 300)}` : report;
 }
