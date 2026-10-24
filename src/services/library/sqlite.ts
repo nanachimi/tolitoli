@@ -376,6 +376,14 @@ export class SqliteLibraryRepository implements LibraryRepository {
       .map((row) => row.id);
   }
 
+  /**
+   * Back in the queue after waiting for the model: same job, drafts and cursor kept (step 3:
+   * a transcription cut at 40 min must not start again from 0 because the model was missing).
+   */
+  resumeTranscription(id: string): void {
+    this.moveTranscription(id, 'queue', { transcriptionIssue: null });
+  }
+
   /** A length found by decoding, for a recording that had none; a known one is kept. */
   recordDuration(id: string, durationMs: number): void {
     const row = this.requireRow(id);

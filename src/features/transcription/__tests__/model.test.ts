@@ -52,6 +52,16 @@ describe('local model store', () => {
     expect(model.useModel.getState().model).toBe('small');
   });
 
+  it('keeps the model already on the phone when nothing was chosen (no forced download)', () => {
+    const model = fresh((storage) =>
+      storage.setItemSync(
+        'model.local',
+        JSON.stringify({ model: 'tiny', paths: { whisper: '/w', tokenizer: '/t', vad: '/v' } }),
+      ),
+    );
+    expect(model.selectedModel()).toBe('tiny');
+  });
+
   it('reads the tiny model downloaded before the model choice', () => {
     const model = fresh((storage) => {
       storage.setItemSync(

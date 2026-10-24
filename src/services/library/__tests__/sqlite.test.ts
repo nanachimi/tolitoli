@@ -343,6 +343,19 @@ describe('SqliteLibraryRepository: transcript drafts (step 3)', () => {
     expect(repository.pendingTranscriptions()).toEqual([]);
   });
 
+  it('resumes a transcription that waited for the model, with its drafts and cursor', () => {
+    const { repository } = transcribing();
+    repository.saveDraft('rec', { startMs: 0, endMs: 3000, text: 'Un' }, 3000);
+    repository.failTranscription('rec', 'model-missing');
+    repository.resumeTranscription('rec');
+    expect(repository.pendingTranscriptions()).toEqual([{ id: 'rec', state: 'queued' }]);
+    expect(repository.get('rec')?.issue).toBeUndefined();
+    expect(repository.transcriptionCheckpoint('rec')).toEqual({
+      cursorMs: 3000,
+      drafts: [{ startMs: 0, endMs: 3000, text: 'Un' }],
+    });
+  });
+
   it('lists the transcriptions that waited for the model', () => {
     const { repository } = transcribing();
     repository.failTranscription('rec', 'model-missing');

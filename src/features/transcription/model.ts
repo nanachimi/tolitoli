@@ -45,11 +45,6 @@ export const DEVICE_MEMORY_BYTES = readDeviceMemory();
 /** base unless this phone is known not to run it (owner, step 3). */
 export const DEFAULT_MODEL = defaultModel(DEVICE_MEMORY_BYTES);
 
-function storedSelection(): LocalModelId {
-  const value = Storage.getItemSync(MODEL_SELECTION_STORAGE_KEY);
-  return isLocalModelId(value) ? value : DEFAULT_MODEL;
-}
-
 function loadSaved(model: LocalModelId): { model: LocalModelId; paths: ModelPaths } | null {
   for (const key of [modelStorageKey(model), LEGACY_MODEL_STORAGE_KEY]) {
     try {
@@ -63,6 +58,14 @@ function loadSaved(model: LocalModelId): { model: LocalModelId; paths: ModelPath
     }
   }
   return null;
+}
+
+/** The choice made; else a model already on the phone (never a forced download); else the default. */
+function storedSelection(): LocalModelId {
+  const value = Storage.getItemSync(MODEL_SELECTION_STORAGE_KEY);
+  if (isLocalModelId(value)) return value;
+  const onPhone = LOCAL_MODEL_IDS.find((model) => loadSaved(model) !== null);
+  return onPhone ?? DEFAULT_MODEL;
 }
 
 /** Set right below: a downloader reports its first state while the store is being created. */

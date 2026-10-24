@@ -19,6 +19,7 @@ import { isLocalModelId } from '@/services/whisper/models';
 import { color } from '@/ui/theme/tokens';
 
 import { FsmnDetector, WhisperLocal } from './executorch';
+import { createServiceSwitch } from './serviceSwitch';
 import { readyModel, selectedModel, useModel } from './model';
 
 function log(...args: unknown[]): void {
@@ -114,7 +115,6 @@ const store: TranscriptionStore = {
 // ---- foreground service (Android, owner's answer A) -------------------------------------
 
 const NOTIFICATION_COLOR = processColor(color.light.accent) as number | null;
-let serviceRunning = false;
 let lastPercent = -1;
 
 function notificationTexts(progress: number | null) {
@@ -128,30 +128,19 @@ function notificationTexts(progress: number | null) {
   };
 }
 
-async function startService(): Promise<void> {
-  if (serviceRunning) return;
-  const { title, body, channel } = notificationTexts(null);
-  try {
+const service = createServiceSwitch({
+  start: async () => {
+    const { title, body, channel } = notificationTexts(null);
     await AudioEncoder.startTranscriptionService(title, body, channel, NOTIFICATION_COLOR);
-    serviceRunning = true;
     lastPercent = -1;
-  } catch (error) {
-    // In the background, Android refuses: the queue goes on while the process lives.
-    log('foreground service not started', String(error));
-  }
-}
-
-async function stopService(): Promise<void> {
-  if (!serviceRunning) return;
-  serviceRunning = false;
-  await AudioEncoder.stopTranscriptionService().catch((error: unknown) =>
-    log('foreground service not stopped', String(error)),
-  );
-}
+  },
+  stop: () => AudioEncoder.stopTranscriptionService(),
+  log,
+});
 
 async function updateNotification(progress: number): Promise<void> {
   const percent = Math.floor(progress * 100);
-  if (!serviceRunning || percent === lastPercent) return;
+  if (!service.running || percent === lastPercent) return;
   lastPercent = percent;
   const { title, body, channel } = notificationTexts(progress);
   await AudioEncoder.updateTranscriptionService(title, body, channel, NOTIFICATION_COLOR).catch(
@@ -191,7 +180,7 @@ export const transcriptionQueue = new TranscriptionQueue({
     : {}),
   qualityFor: (language, model) =>
     isLocalModelId(model) ? localQualityFor(language, model) : null,
-  onActivity: (activity) => void (activity === 'running' ? startService() : stopService()),
+  onActivity: (activity) => void service.set(activity === 'running'),
   log,
 });
 
@@ -227,9 +216,9 @@ export function startTranscription(): void {
   transcriptionQueue.start();
   modelWatch ??= useModel.subscribe((state, previous) => {
     if (state.status === 'ready' && previous.status !== 'ready') {
-      // Recordings that waited for the model go back to the queue.
+      // Recordings that waited for the model go back to the queue, with what was already done.
       const waiting = getLibrary().failedTranscriptions('model-missing');
-      waiting.forEach((id) => getLibrary().retryTranscription(id));
+      waiting.forEach((id) => getLibrary().resumeTranscription(id));
       if (waiting.length > 0) log('model ready, requeued', waiting.join(', '));
       transcriptionQueue.kick();
     }
