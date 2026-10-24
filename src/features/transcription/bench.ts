@@ -18,7 +18,12 @@ import { nativeAudioFiles } from '@/features/recording/nativeAudioFiles';
 
 import { FsmnDetector, fetchModelFiles, WhisperLocal } from './executorch';
 import { readyModel } from './model';
-import { holdTranscriptionService, transcribeRecording, transcriptionQueue } from './transcription';
+import {
+  holdTranscriptionService,
+  releaseLocalModels,
+  transcribeRecording,
+  transcriptionQueue,
+} from './transcription';
 
 /**
  * Development and preview-trace only (docs/plans/step-3.md, « Banc »): the uncertain points of
@@ -290,6 +295,7 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
   if (kind === 'import') return importBenchRecording();
   transcriptionQueue.stop();
   await transcriptionQueue.idle();
+  releaseLocalModels();
   await holdTranscriptionService(true);
   try {
     if (kind !== 'series') return await measureOne(kind, limitMinutes);

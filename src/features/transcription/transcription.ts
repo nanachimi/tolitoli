@@ -95,6 +95,11 @@ class LocalModels {
 
 const models = new LocalModels();
 
+/** The bench measures each engine alone: the queue's models leave memory first. */
+export function releaseLocalModels(): void {
+  models.dispose();
+}
+
 /** The real library only: the development demo database is never transcribed. */
 const store: TranscriptionStore = {
   pendingTranscriptions: () => (isDemoDataEnabled() ? [] : library.pendingTranscriptions()),
