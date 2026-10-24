@@ -18,7 +18,7 @@ import { nativeAudioFiles } from '@/features/recording/nativeAudioFiles';
 
 import { FsmnDetector, fetchModelFiles, WhisperLocal } from './executorch';
 import { readyModel } from './model';
-import { transcribeRecording, transcriptionQueue } from './transcription';
+import { holdTranscriptionService, transcribeRecording, transcriptionQueue } from './transcription';
 
 /**
  * Development and preview-trace only (docs/plans/step-3.md, « Banc »): the uncertain points of
@@ -239,17 +239,20 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
 /**
  * Runs one measurement; the report is shown on screen and logged for logcat. The queue stops
  * meanwhile (a transcription under way is suspended with its cursor): two engines at once
- * would measure neither.
+ * would measure neither. The foreground service and its wake lock are held as the queue holds
+ * them, so that a run screen off on battery is measured as the reference was.
  */
 export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<string> {
   if (kind === 'import') return importBenchRecording();
   transcriptionQueue.stop();
   await transcriptionQueue.idle();
+  await holdTranscriptionService(true);
   try {
     return kind.startsWith('cpp-')
       ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10)
       : await measure(kind, limitMinutes);
   } finally {
+    await holdTranscriptionService(false);
     transcriptionQueue.start();
   }
 }

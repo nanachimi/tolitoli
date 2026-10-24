@@ -138,6 +138,15 @@ const service = createServiceSwitch({
   log,
 });
 
+/**
+ * The bench holds the service and its wake lock while it measures with the queue stopped: the
+ * reference figures were taken screen off under it (D-037), and a phone that sleeps mid-run
+ * measures nothing.
+ */
+export function holdTranscriptionService(on: boolean): Promise<void> {
+  return service.set(on);
+}
+
 async function updateNotification(progress: number): Promise<void> {
   const percent = Math.floor(progress * 100);
   if (!service.running || percent === lastPercent) return;
