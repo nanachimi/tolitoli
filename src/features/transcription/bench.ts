@@ -196,13 +196,15 @@ function externalFilesDir(): string {
 
 /**
  * Each report, with the bench recording's whole text, appended to `…/files/bench-results.txt`:
- * adb reads it there with the phone locked, screen off on battery, where logcat shows nothing.
+ * adb reads it there with the phone locked, screen off on battery, where logcat overflows with
+ * executorch's own lines. expo-file-system cannot create a file outside the app's internal
+ * storage (it asks a missing file canWrite()): adb creates it empty and writable beforehand.
  */
 async function record(report: string, text: string | null): Promise<void> {
   try {
     const file = new File(`file://${externalFilesDir()}/bench-results.txt`);
     const entry = `${new Date().toISOString()} ${report}\n${text ? `${text}\n` : ''}\n`;
-    await file.write(entry, { append: file.exists });
+    await file.write(entry, { append: true });
   } catch (error) {
     log('results file', String(error));
   }
@@ -229,10 +231,15 @@ async function runWhisperCpp(model: string, limitMinutes: number): Promise<strin
     samples += keep.length;
     if (pcm.length < msToSamples(WINDOW_MS)) break;
   }
-  const audio = new Float32Array(samples);
+  // whisper.rn reads an ArrayBuffer as signed 16-bit PCM (decodePcm16, RNWhisperJSI.cpp),
+  // whatever its documentation says: Float32 there is noise ("[Musique]"), and twice the length.
+  // The conversion counts with decoding.
+  const audio = new Int16Array(samples);
   let offset = 0;
   for (const part of parts) {
-    audio.set(part, offset);
+    for (let i = 0; i < part.length; i += 1) {
+      audio[offset + i] = Math.round(Math.max(-1, Math.min(1, part[i] ?? 0)) * 32767);
+    }
     offset += part.length;
   }
   const decodeMs = Date.now() - t;
