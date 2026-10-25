@@ -836,3 +836,49 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - l'enregistrement de banc `f6adae63` de la preview est resté « en cours » : **au prochain lancement de la preview, la transcription reprendra d'elle-même** (c'est aussi le test de reprise après fermeture forcée) ;
 - l'émulateur a le dev client `a2a4e5d6` installé, avec tiny téléchargé ;
 - rien ne tourne : ni Metro, ni boucle de surveillance. Le téléphone est revenu en adb USB, sans verrou de veille ni service actif. Ni le volume ni la veille n'ont été touchés.
+
+### Expérience whisper.cpp (24 et 25 octobre)
+
+- **Conditions** :
+  - preview-trace `53670f7c` (runtime `40e33caf`) avec whisper.rn 0.7.4, JS par EAS Update `2980eabe` (commit `1d4378c`, branche `step-3-whispercpp-bench`) ;
+  - une seule série lancée par le propriétaire, téléphone débranché, écran éteint, sans adb : 23:53:53 → 00:52:39 ;
+  - historique de la batterie : débranché à 23:52:13 (`status=discharging plug=none`), écran éteint à +2 min 30, batterie de 100 à 86 %, température de 31,0 °C au départ, 34,6 °C au plus ;
+  - service de premier plan et verrou de veille tenus par le banc ; modèle executorch de la file libéré avant chaque mesure ;
+  - **économie d'énergie active pendant toute la série** (`low_power=1`, `sticky`, `+power_save` dans l'historique, jamais retirée ; réglage du propriétaire, non touché). On ne sait pas si elle l'était pendant la référence du 23 octobre. Elle bride les deux moteurs de la même façon : l'écart entre eux tient, pas les valeurs absolues ;
+  - mêmes 10 premières minutes du fichier de banc (table des matières puis début du livre premier). **Parole lue par une voix de synthèse : chiffres de vitesse ; les taux d'erreur ne comparent que les moteurs entre eux, ce ne sont pas des qualités.**
+- **Débit** (minutes de calcul par heure d'audio, décodage compris) :
+
+  | Moteur                                | Fils | min/h | Pic PSS                 | WER 10 min / prose |
+  | ------------------------------------- | ---- | ----- | ----------------------- | ------------------ |
+  | executorch tiny fp32, 1re course      | —    | 95    | 627 Mo (432 Mo en swap) | 35,4 / 28,3 %      |
+  | whisper.cpp tiny q5_1                 | 4    | 24,6  | 658 Mo                  | 37,2 / 30,2 %      |
+  | whisper.cpp tiny q8_0                 | 4    | 21,2  | 678 Mo                  | 35,7 / 28,7 %      |
+  | whisper.cpp base q5_1                 | 4    | 32,1  | 660 Mo                  | 27,0 / 19,6 %      |
+  | whisper.cpp base q8_0                 | 4    | 29,6  | 761 Mo                  | 27,1 / 20,3 %      |
+  | whisper.cpp tiny q5_1                 | 2    | 27,9  | 673 Mo                  | identique à 4 fils |
+  | whisper.cpp tiny q5_1                 | 8    | 35,9  | 660 Mo                  | identique à 4 fils |
+  | executorch tiny fp32, dernière course | —    | 85    | 776 Mo                  | identique à la 1re |
+
+- **Écart** : tiny whisper.cpp est 3,5 à 3,9 fois plus rapide en q5_1, 4,0 à 4,5 fois en q8_0. base whisper.cpp reste 2,6 à 3,2 fois plus rapide que tiny executorch, avec 8 points d'erreur en moins sur la prose. Dérive de la série : executorch plus rapide à la fin qu'au début (95 puis 85) ; aucun bridage ne pénalise les courses du milieu.
+- **À ne pas surinterpréter** :
+  - executorch reçoit des segments VAD de 15 s au plus, que l'encodeur Whisper complète chacun à 30 s : environ 43 passes d'encodeur pour 10 min, contre environ 20 fenêtres pleines pour whisper.cpp. Une part de l'écart vient donc probablement de notre découpage, pas du moteur. **Hypothèse, non mesurée** ;
+  - executorch a transcrit environ 8 % d'audio en plus (marge du dernier segment après 10:00) ;
+  - pic mémoire lu par l'app dans `/proc/self/smaps_rollup` (620 Mo, contre 652 Mo au plus par `dumpsys` au même moment) ; **non concluant** : le banc whisper.cpp garde les 10 min d'audio en un seul tampon (Float32 et Int16 en JS, copie en C++), alors qu'un usage par fenêtres coûterait moins ;
+  - q8_0 est plus rapide que q5_1 sur ce processeur (Helio G85) ; 4 fils est le meilleur réglage, 8 fils le pire (6 des 8 cœurs sont lents).
+- **Ce qui pèse autant que le débit** (propriétaire) :
+  - **téléchargement** : tiny q5_1 32 Mo et tiny q8_0 44 Mo, contre 233 Mo pour tiny executorch (7,3 et 5,3 fois moins) ; base q5_1 60 Mo et base q8_0 82 Mo, contre 399 Mo pour base executorch ;
+  - **32 bits** : whisper.rn livre des bibliothèques `armeabi-v7a`. L'exclusion de ces appareils (D-036) n'existait que parce qu'executorch n'en fournissait pas : changer de moteur nous rendrait une partie du parc abandonnée.
+- **Même passage** (prose, après la table des matières) :
+  - texte lu : « En 1815, M. Charles-François-Bienvenu Myriel était évêque de Digne. C'était un vieillard d'environ soixante-quinze ans; il occupait le siège de Digne depuis 1806. » ;
+  - executorch tiny fp32 : « en 1815 Monsieur Charles François bienvenu Miriel était évêque de Dignes, c'était un vieillard environ 75 ans, il occupeait le siège de Dignes depuis 1806. » ;
+  - whisper.cpp tiny q5_1 : « en 1815, monsieur Charles François bienvenue mirièles était évêque de dînes, c'était un vieillard environ 75 ans, il occupe le siège de dînes depuis 1816. » ;
+  - whisper.cpp tiny q8_0 : « en 1815, monsieur Charles François bienvenue Miriel était évêque de dînes, c'était un vieillard environ 75 ans, il occupe le siège de dînes depuis 1806. » ;
+  - whisper.cpp base q8_0 : « en 1815 monsieur Charles François bienvenue mireille était évêque de digne c'était un vieillard environ 75 ans il occupait le siège de digne depuis 1806 ».
+  - **Lecture** : q8_0 vaut fp32 (0,4 point d'écart) ; q5_1 coûte environ 2 points sur tiny, rien sur base.
+- **Défauts trouvés** :
+  - whisper.rn lit un ArrayBuffer en PCM 16 bits signé (`decodePcm16`), contrairement à sa documentation (« float32 ») : le premier essai ne rendait que « [Musique] » ;
+  - expo-file-system ne peut pas créer de fichier hors du stockage interne (il demande `canWrite()` à un fichier absent) ;
+  - **produit** : la file garde le modèle executorch en mémoire tant que l'app vit (PSS de 544 Mo au repos, 185 Mo une fois libéré). Correction proposée : libérer le modèle quand la file n'a plus de travail. En attente de l'accord du propriétaire.
+- **Reprise après `am force-stop`** : vérifiée sur `f6adae63`, repartie du curseur (2 640 228 ms, 62 %), puis de 2 910 228 ms.
+- **Réglages du téléphone** : `stay_on_while_plugged_in` passé à 1 pour la préparation, remis à 0 (vérifié). adb remis en USB après un essai de `tcpip`. Le wifi n'a pas été touché : le Mac et le téléphone sont sur deux réseaux différents.
+- **Proposition au propriétaire** (facteur 3 ou plus atteint) : remplacer react-native-executorch par whisper.rn (whisper.cpp) pour la transcription locale. Bibliothèque native imposée par CLAUDE.md : **le propriétaire tranche.** Même au mieux (21 min/h), le local reste au-dessus des 15 min/h du cahier sur l'A05.
