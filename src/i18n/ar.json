@@ -115,7 +115,7 @@
         "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
         "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
         "cppBaseQ8": "whisper.cpp base q8_0, 10 min",
-        "series": "سلسلة: tiny، ثم whisper.cpp (أربعة نماذج، ثم 2 و8 خيوط)، ثم tiny مجددًا (10 دقائق لكلٍّ)"
+        "series": "سلسلة: tiny، ثم whisper.cpp base q8_0 وbase q5_1 وbase q5_1 بتوقيت لكل رمز، ثم tiny مجددًا (10 دقائق لكلٍّ)"
       }
     },
     "model": {

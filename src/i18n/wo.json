@@ -110,7 +110,7 @@
         "cppTinyQ8": "whisper.cpp tiny q8_0, 10 min",
         "cppBaseQ5": "whisper.cpp base q5_1, 10 min",
         "cppBaseQ8": "whisper.cpp base q8_0, 10 min",
-        "series": "Toftalante: tiny, whisper.cpp (ñeenti modèle, ci kanam 2 ak 8 fil), tiny ci kanam (10 simili ku nekk)"
+        "series": "Toftalante: tiny, whisper.cpp base q8_0, base q5_1, base q5_1 ak waxtu bu jeton bu nekk, tiny ci kanam (10 simili ku nekk)"
       }
     },
     "model": {

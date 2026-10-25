@@ -43,21 +43,25 @@ export type BenchKind =
   | 'cpp-tiny-q8_0'
   | 'cpp-base-q5_1'
   | 'cpp-base-q8_0'
-  // All of the experiment in one tap, the phone locked screen off: executorch tiny before and
+  // All of a measurement in one tap, the phone locked screen off: executorch tiny before and
   // after the whisper.cpp runs, the drift of the series between the two.
   | 'series';
 
-/** whisper.cpp threads: 4 unless said; the A05 has 2 fast cores and 6 slow ones. */
+/** whisper.cpp threads: 4 unless said; the A05 has 2 fast cores and 6 slow ones (D-037). */
 const CPP_THREADS = 4;
 
-const SERIES: readonly { kind: BenchKind; threads?: number }[] = [
+/** `words`: timestamps per token (`tokenTimestamps`, one token per segment), D-038. */
+type CppOptions = { threads?: number; words?: boolean };
+
+/**
+ * The counter-measure of 25 October (D-038), battery saver off: the series of 24 October
+ * (D-037) ran with it on. base q5_1 is the configuration most likely shipped.
+ */
+const SERIES: readonly ({ kind: BenchKind } & CppOptions)[] = [
   { kind: 'tiny' },
-  { kind: 'cpp-tiny-q5_1' },
-  { kind: 'cpp-tiny-q8_0' },
-  { kind: 'cpp-base-q5_1' },
   { kind: 'cpp-base-q8_0' },
-  { kind: 'cpp-tiny-q5_1', threads: 2 },
-  { kind: 'cpp-tiny-q5_1', threads: 8 },
+  { kind: 'cpp-base-q5_1' },
+  { kind: 'cpp-base-q5_1', words: true },
   { kind: 'tiny' },
 ];
 
@@ -233,8 +237,17 @@ type WhisperCpp = {
   initWhisper(options: { filePath: string; useGpu?: boolean }): Promise<{
     transcribeData(
       data: ArrayBuffer,
-      options: { language?: string; maxThreads?: number; onProgress?: (progress: number) => void },
-    ): { promise: Promise<{ result: string; segments: { t0: number; t1: number }[] }> };
+      options: {
+        language?: string;
+        maxThreads?: number;
+        tokenTimestamps?: boolean;
+        maxLen?: number;
+        onProgress?: (progress: number) => void;
+      },
+    ): {
+      // Times in hundredths of a second (whisper_full_get_segment_t0).
+      promise: Promise<{ result: string; segments: { text: string; t0: number; t1: number }[] }>;
+    };
     release(): Promise<void>;
   }>;
 };
@@ -275,7 +288,7 @@ async function record(report: string, text: string | null): Promise<void> {
 async function runWhisperCpp(
   model: string,
   limitMinutes: number,
-  threads = CPP_THREADS,
+  { threads = CPP_THREADS, words = false }: CppOptions = {},
 ): Promise<string> {
   const job = await target();
   const endMs = Math.min(job.durationMs, limitMinutes * 60_000);
@@ -314,6 +327,8 @@ async function runWhisperCpp(
     const { promise } = context.transcribeData(audio.buffer, {
       language: job.language,
       maxThreads: threads,
+      // One token per segment: its own start and end (no DTW in whisper.rn, D-038).
+      ...(words ? { tokenTimestamps: true, maxLen: 1 } : {}),
       onProgress: () => peak.sample(),
     });
     const result = await promise;
@@ -322,12 +337,17 @@ async function runWhisperCpp(
     const text = job.isBench ? result.result.trim().replace(/\s+/g, ' ') : '';
     const excerpt = text.slice(0, 300);
     const report =
-      `cpp-${model} ${threads} threads on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
+      `cpp-${model}${words ? ' words' : ''} ${threads} threads on ${minutes(endMs)} min (${job.language}): Whisper ${(sttMs / 1000).toFixed(0)} s, ` +
       `decode ${(decodeMs / 1000).toFixed(0)} s, load ${(loadMs / 1000).toFixed(1)} s; ` +
       `${result.segments.length} segments, ${result.result.length} characters; ` +
       `1 h would take about ${((total / endMs) * 60).toFixed(1)} min`;
     log(report);
     await record(report, text || null);
+    // The bench recording only: each segment's times, to check them against the audio.
+    if (text) {
+      const times = result.segments.map(({ t0, t1, text: part }) => `${t0} ${t1} ${part}`);
+      await record(`timings cpp-${model}${words ? ' words' : ''}`, times.join('\n'));
+    }
     return excerpt ? `${report}\n${excerpt}` : report;
   } finally {
     await context.release();
@@ -349,11 +369,17 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
   try {
     if (kind !== 'series') return await measureOne(kind, limitMinutes);
     const reports: string[] = [];
-    for (const step of SERIES) {
-      const name = step.threads ? `${step.kind} ${step.threads} threads` : step.kind;
+    for (const { kind: stepKind, ...options } of SERIES) {
+      const name = [
+        stepKind,
+        options.words ? 'words' : '',
+        options.threads ? `${options.threads} threads` : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
       await record(`start ${name}`, null);
       reports.push(
-        await measureOne(step.kind, limitMinutes ?? 10, step.threads).catch((error: unknown) => {
+        await measureOne(stepKind, limitMinutes ?? 10, options).catch((error: unknown) => {
           const failure = `${name} failed: ${String(error)}`;
           void record(failure, null);
           return failure;
@@ -370,12 +396,12 @@ export async function runBench(kind: BenchKind, limitMinutes?: number): Promise<
 async function measureOne(
   kind: BenchKind,
   limitMinutes?: number,
-  threads?: number,
+  options: CppOptions = {},
 ): Promise<string> {
   const before = power();
   peak.reset();
   const report = kind.startsWith('cpp-')
-    ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10, threads)
+    ? await runWhisperCpp(kind.slice(4), limitMinutes ?? 10, options)
     : await measure(kind, limitMinutes);
   const conditions = `${peak.toString()}; battery ${before} → ${power()}`;
   log(conditions);
