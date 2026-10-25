@@ -194,7 +194,11 @@ export const transcriptionQueue = new TranscriptionQueue({
     : {}),
   qualityFor: (language, model) =>
     isLocalModelId(model) ? localQualityFor(language, model) : null,
-  onActivity: (activity) => void service.set(activity === 'running'),
+  onActivity: (activity) => {
+    void service.set(activity === 'running');
+    // Nothing left to transcribe: the model leaves memory (544 MB held at rest on the A05, D-037).
+    if (activity === 'idle') models.dispose();
+  },
   log,
 });
 
