@@ -882,3 +882,18 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **Reprise après `am force-stop`** : vérifiée sur `f6adae63`, repartie du curseur (2 640 228 ms, 62 %), puis de 2 910 228 ms.
 - **Réglages du téléphone** : `stay_on_while_plugged_in` passé à 1 pour la préparation, remis à 0 (vérifié). adb remis en USB après un essai de `tcpip`. Le wifi n'a pas été touché : le Mac et le téléphone sont sur deux réseaux différents.
 - **Proposition au propriétaire** (facteur 3 ou plus atteint) : remplacer react-native-executorch par whisper.rn (whisper.cpp) pour la transcription locale. Bibliothèque native imposée par CLAUDE.md : **le propriétaire tranche.** Même au mieux (21 min/h), le local reste au-dessus des 15 min/h du cahier sur l'A05.
+
+## D-038 — whisper.rn remplace react-native-executorch pour la transcription locale
+
+- **Date / étape** : 2026-10-25, étape 3. Décision du propriétaire, sur les chiffres de l'expérience whisper.cpp (D-037). Branche `step-3-whispercpp-bench`.
+- **Décidé** : la transcription locale passe de react-native-executorch (Whisper XNNPACK fp32) à **whisper.rn** (whisper.cpp, modèles ggml quantifiés). Pas d'arbitrage : le facteur 3 posé avant la mesure est dépassé (tiny 3,5 à 4,5 fois plus rapide sur l'A05), la qualité est égale en q8_0, le téléchargement est 5 à 7 fois plus léger, et whisper.rn livre des bibliothèques 32 bits.
+- **Conséquences** :
+  - CLAUDE.md, table de stack : ligne « Transcription locale » mise à jour ;
+  - **D-036, option A (exclusion des appareils 32 bits), perd sa justification** : elle n'existait que parce qu'executorch n'existait qu'en arm64 et x86_64. **À rouvrir**, avec le chiffre du catalogue d'appareils de la Play Console au premier envoi d'AAB (obligation déjà inscrite dans D-036) ;
+  - avant de porter le code, vérifier ce que whisper.rn rend lui-même, car notre VAD, notre segmenteur et nos segments de 15 s n'existent que parce que l'API principale d'executorch imposait `<|notimestamps|>` et ne rendait qu'une chaîne :
+    - segments horodatés : **oui** dans whisper.rn 0.7.4 (`segments: { text, t0, t1 }`) ;
+    - horodatages au jeton : **oui**, par `tokenTimestamps` avec `maxLen: 1` (heuristique historique de whisper.cpp). **DTW : non exposé** par whisper.rn (présent dans le whisper.cpp qu'il compile ; il faudrait un patch natif) ; `split_on_word` non exposé non plus ;
+    - **à vérifier sur l'appareil avant tout changement du cahier** : si les horodatages au jeton tiennent, « appui sur un segment » pourrait redevenir « appui sur un mot » (correction de D-037 à reconsidérer) ;
+  - le débit réel se conclut sur la contre-mesure sans économie d'énergie : executorch tiny, whisper.cpp base q8_0 et base q5_1 (la configuration probablement livrée), sans notre découpage ;
+  - le modèle est libéré quand la file n'a plus de travail, pour whisper.rn comme pour executorch (accord du propriétaire).
+- **Reste ouvert, tranché après la contre-mesure** (propriétaire) : la répartition entre mémo court en local et réunion dans le cloud. Si base q5_1 descend près des 15 min/h sans économie d'énergie, le périmètre du cahier tient ; sinon il bouge, et l'étape 8 passe avant l'étape 4.

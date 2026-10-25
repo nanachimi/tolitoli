@@ -59,7 +59,7 @@ Le cahier des charges complet est dans `docs/CAHIER_DES_CHARGES.md`. Lis-le avan
 | Navigation | expo-router | Oui |
 | Audio | react-native-audio-api (enregistrement : WAV 16 kHz mono continu, flux PCM 16 kHz ; patch-package sur l'écouteur de focus, D-023) ; expo-audio (lecture) — voir D-020, D-021 | Oui |
 | Encodage audio | module Expo local `modules/audio-encoder/` (MediaCodec + MediaMuxer sur Android, AVAudioConverter sur iOS) : WAV → .m4a 64 kbit/s à l'arrêt | Oui |
-| Transcription locale | react-native-executorch, hook `useSpeechToText` (Whisper) | Oui |
+| Transcription locale | whisper.rn (whisper.cpp, modèles ggml quantifiés, figés au commit et vérifiés en SHA-256) — remplace react-native-executorch (D-038) | Oui |
 | Détection de voix | react-native-vad ou le VAD d'executorch | Non |
 | Base locale | expo-sqlite (ou op-sqlite si SQLCipher requis) + drizzle-orm, FTS5 | Oui |
 | Fichiers | expo-file-system | Oui |
