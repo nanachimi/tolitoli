@@ -878,10 +878,44 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
 - **Défauts trouvés** :
   - whisper.rn lit un ArrayBuffer en PCM 16 bits signé (`decodePcm16`), contrairement à sa documentation (« float32 ») : le premier essai ne rendait que « [Musique] » ;
   - expo-file-system ne peut pas créer de fichier hors du stockage interne (il demande `canWrite()` à un fichier absent) ;
-  - **produit** : la file garde le modèle executorch en mémoire tant que l'app vit (PSS de 544 Mo au repos, 185 Mo une fois libéré). Correction proposée : libérer le modèle quand la file n'a plus de travail. En attente de l'accord du propriétaire.
+  - **produit** : la file garde le modèle executorch en mémoire tant que l'app vit (PSS de 544 Mo au repos, 185 Mo une fois libéré). Corrigé avec l'accord du propriétaire (`0e55743`) : le modèle est libéré quand la file n'a plus de travail, avec un test.
 - **Reprise après `am force-stop`** : vérifiée sur `f6adae63`, repartie du curseur (2 640 228 ms, 62 %), puis de 2 910 228 ms.
 - **Réglages du téléphone** : `stay_on_while_plugged_in` passé à 1 pour la préparation, remis à 0 (vérifié). adb remis en USB après un essai de `tcpip`. Le wifi n'a pas été touché : le Mac et le téléphone sont sur deux réseaux différents.
 - **Proposition au propriétaire** (facteur 3 ou plus atteint) : remplacer react-native-executorch par whisper.rn (whisper.cpp) pour la transcription locale. Bibliothèque native imposée par CLAUDE.md : **le propriétaire tranche.** Même au mieux (21 min/h), le local reste au-dessus des 15 min/h du cahier sur l'A05.
+
+### Contre-mesure sans économie d'énergie (25 et 26 octobre)
+
+- **Conditions** :
+  - même build, JS par EAS Update `0e51c4e3` (commit `11cdd37`), appliqué par deux démarrages à froid ; une série lancée par le propriétaire, téléphone débranché, écran éteint, sans adb : 23:06:28 → 00:00:51 ;
+  - **économie d'énergie coupée par moi pour la mesure, avec l'accord du propriétaire** : `low_power` et `low_power_sticky` passés de 1 à 0 (`mSettingBatterySaverEnabled=false`) ; `cmd power set-mode 0` était resté sans effet. Aucun `power_save` dans l'historique de la série. **Remis à 1 au rebranchement et vérifié** (`mSettingBatterySaverEnabled=true`, `low_power_back_data_off=1` jamais touché) ;
+  - historique de la batterie : débranché du début à la fin (`status=discharging plug=none`), écran éteint à +27 s, batterie de 94 à 86 %, température de 29,6 °C au départ, 35,3 °C au plus ;
+  - mêmes 10 minutes, même voix de synthèse : **chiffres de vitesse ; les taux d'erreur ne comparent que les moteurs entre eux**. whisper.cpp reçoit les 10 minutes d'un seul appel (`transcribeData`), sans notre VAD ni notre découpage : il avance seul par fenêtres de 30 s.
+- **Débit** (minutes de calcul par heure d'audio, décodage compris ; série A du tableau précédent, économie d'énergie active) :
+
+  | Moteur                                      | min/h, sans économie | min/h, série A | Pic PSS | WER 10 min / prose |
+  | ------------------------------------------- | -------------------- | -------------- | ------- | ------------------ |
+  | executorch tiny fp32, 1re course            | 97                   | 95             | 684 Mo  | 35,4 / 28,3 %      |
+  | whisper.cpp base q8_0, 4 fils               | 36,2                 | 29,6           | 734 Mo  | 27,1 / 20,3 %      |
+  | whisper.cpp base q5_1, 4 fils               | 39,9                 | 32,1           | 631 Mo  | 27,0 / 19,6 %      |
+  | whisper.cpp base q5_1, horodatages au jeton | 40,3                 | —              | 698 Mo  | identique          |
+  | executorch tiny fp32, dernière course       | 111                  | 85             | 936 Mo  | identique          |
+
+- **Lecture** :
+  - **sans économie d'énergie, tout est plus lent, pas plus rapide** : de 22 à 24 % sur base whisper.cpp, et executorch ralentit au fil de la série (97 puis 111) au lieu d'accélérer (95 puis 85). L'économie d'énergie n'est donc pas ce qui bridait la série A ;
+  - cause probable, **non démontrée** : sans elle, Android laisse tourner les tâches de fond des autres apps. L'historique compte 34 démarrages de tâches pendant la série (mises à jour Facebook, Play Store, Chrome, Home Assistant au premier plan…), contre 10 sur la même durée en série A. whisper.cpp synchronise ses 4 fils à chaque étape : un seul fil retardé par une autre app retarde les quatre. Une seule série de chaque côté : l'écart entre les deux conditions est de l'ordre de la variabilité qu'on doit attendre chez un utilisateur ;
+  - **base q5_1, configuration probablement livrée : 32 à 40 min/h, loin des 15 min/h du cahier**. Aucun moteur mesuré n'en approche sur l'A05 (le meilleur, tiny q8_0, fait 21 min/h) ;
+  - q8_0 reste plus rapide que q5_1 sur ce processeur (9 à 10 %), à erreur égale, pour 22 Mo de téléchargement et environ 100 Mo de pic en plus ;
+  - texte identique d'une condition à l'autre et d'une course à l'autre (calcul déterministe) ;
+  - le pic de 936 Mo de la dernière course executorch, sur un téléphone de 4 Go, est le plus haut mesuré ; executorch ne sera pas livré (D-038), il n'est pas étudié plus loin ;
+  - la lecture de la batterie par l'app (`/sys/class/power_supply`) est refusée par SELinux : seuls comptent les chiffres de `dumpsys batterystats`. 8 points de batterie pour 54 min de calcul continu.
+- **Horodatages de whisper.cpp** (base q5_1), contre les pauses de la source WAV (énergie par trames de 10 ms, pause = au moins 150 ms sous −30 dB du niveau de crête) :
+  - **segments** : 116 segments d'environ 5 s, bornes contiguës (la fin de l'un est le début du suivant). 18 débuts sur 115 seulement tombent à moins de 300 ms d'une pause : whisper.cpp coupe au milieu des phrases, une borne de segment n'est pas une pause ;
+  - **jetons** (`tokenTimestamps`, `maxLen: 1`) : 2 886 jetons, regroupés en 1 679 mots par l'espace initiale. Coût : 1,4 % de calcul en plus, texte identique ;
+  - test retenu, ancré sur le texte : aux 61 débuts de proposition (mot qui suit `. ? ! , ; :`), écart entre le début du mot et la fin de la pause la plus proche : **médiane +50 ms, 10 % sous −250 ms, 10 % au-dessus de +340 ms ; 48 sur 61 à moins de 300 ms**, contre 7 à 17 pour les mêmes instants décalés de 0,7 à 2,1 s (le hasard). Une seule erreur de plus d'une seconde (−1,9 s). Le décalage de l'AAC est compris dans la médiane, qui reste faible ;
+  - la fin d'un mot est collée au début du suivant : une pause est comptée dans le mot qui la précède (20 des 47 pauses de plus de 250 ms tombent à l'intérieur d'un mot). Un surlignage du mot en cours resterait donc sur le dernier mot pendant les silences ; un saut au début d'un mot n'en souffre pas ;
+  - limites : parole de synthèse, sans chevauchement ni bruit ; seuls les débuts de proposition sont vérifiables, la parole enchaînée n'ayant pas de pause entre les mots. Le vrai test est sur conversation réelle.
+- **Pour le propriétaire, rien changé au cahier** : « appui sur un mot » paraît faisable avec whisper.rn tel quel (à environ 300 ms près dans huit cas sur dix), sans DTW ni patch natif ; à confirmer sur conversation réelle avant d'y revenir.
+- **Selon la règle posée par le propriétaire avant la mesure** (« si base q5_1 descend près des 15 min/h sans économie d'énergie, le périmètre du cahier tient ; sinon il bouge, et l'étape 8 passe avant l'étape 4 ») : base q5_1 fait 39,9 min/h, c'est le second cas. **À trancher par le propriétaire.**
 
 ## D-038 — whisper.rn remplace react-native-executorch pour la transcription locale
 
@@ -893,7 +927,8 @@ Décisions de l'étape : D-020 à D-028. L'enregistrement continue aussi après 
   - avant de porter le code, vérifier ce que whisper.rn rend lui-même, car notre VAD, notre segmenteur et nos segments de 15 s n'existent que parce que l'API principale d'executorch imposait `<|notimestamps|>` et ne rendait qu'une chaîne :
     - segments horodatés : **oui** dans whisper.rn 0.7.4 (`segments: { text, t0, t1 }`) ;
     - horodatages au jeton : **oui**, par `tokenTimestamps` avec `maxLen: 1` (heuristique historique de whisper.cpp). **DTW : non exposé** par whisper.rn (présent dans le whisper.cpp qu'il compile ; il faudrait un patch natif) ; `split_on_word` non exposé non plus ;
-    - **à vérifier sur l'appareil avant tout changement du cahier** : si les horodatages au jeton tiennent, « appui sur un segment » pourrait redevenir « appui sur un mot » (correction de D-037 à reconsidérer) ;
-  - le débit réel se conclut sur la contre-mesure sans économie d'énergie : executorch tiny, whisper.cpp base q8_0 et base q5_1 (la configuration probablement livrée), sans notre découpage ;
+    - **vérifié sur l'A05** (D-037, contre-mesure) : les débuts de mot tiennent à environ 300 ms près dans huit cas sur dix sur voix de synthèse ; les bornes de segment, elles, tombent au milieu des phrases. « Appui sur un mot » paraît faisable ; le cahier n'est pas modifié avant une vérification sur conversation réelle ;
+    - conséquence pour le portage : notre segmenteur et nos segments de 15 s deviennent inutiles. Le VAD reste à juger sur conversation réelle (silences longs, hallucinations), avec le VAD Silero de whisper.rn si besoin ;
+  - débit réel, contre-mesure sans économie d'énergie, sans notre découpage (D-037) : base q5_1 39,9 min/h, base q8_0 36,2, executorch tiny 97 puis 111. Plus lent qu'avec l'économie d'énergie, probablement à cause des tâches de fond des autres apps ;
   - le modèle est libéré quand la file n'a plus de travail, pour whisper.rn comme pour executorch (accord du propriétaire).
-- **Reste ouvert, tranché après la contre-mesure** (propriétaire) : la répartition entre mémo court en local et réunion dans le cloud. Si base q5_1 descend près des 15 min/h sans économie d'énergie, le périmètre du cahier tient ; sinon il bouge, et l'étape 8 passe avant l'étape 4.
+- **Reste ouvert, tranché après la contre-mesure** (propriétaire) : la répartition entre mémo court en local et réunion dans le cloud. Si base q5_1 descend près des 15 min/h sans économie d'énergie, le périmètre du cahier tient ; sinon il bouge, et l'étape 8 passe avant l'étape 4. **Résultat : 39,9 min/h, second cas. Décision du propriétaire attendue.**
